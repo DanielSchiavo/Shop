@@ -1,13 +1,10 @@
-package br.com.danielschiavo.shop.models.dto;
+package br.com.danielschiavo.shop.models.product;
 
 import java.math.BigDecimal;
 
-import br.com.danielschiavo.shop.models.SubCategory;
-import jakarta.validation.constraints.NotNull;
+import br.com.danielschiavo.shop.models.subcategory.SubCategory;
 
 public record UpdateProductDTO(
-		@NotNull
-		Long id,
 		String name,
 		String description,
 		String images,

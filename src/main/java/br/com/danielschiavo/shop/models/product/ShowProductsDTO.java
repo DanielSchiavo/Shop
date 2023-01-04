@@ -1,8 +1,6 @@
-package br.com.danielschiavo.shop.models.dto;
+package br.com.danielschiavo.shop.models.product;
 
 import java.math.BigDecimal;
-
-import br.com.danielschiavo.shop.models.Product;
 
 public record ShowProductsDTO(
 		Long id, 

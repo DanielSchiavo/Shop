@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.danielschiavo.shop.models.Product;
-import br.com.danielschiavo.shop.models.dto.DetailingProductDTO;
-import br.com.danielschiavo.shop.models.dto.ProductDTO;
-import br.com.danielschiavo.shop.models.dto.ShowProductsDTO;
-import br.com.danielschiavo.shop.models.dto.UpdateProductDTO;
-import br.com.danielschiavo.shop.repositories.ProductRepository;
+import br.com.danielschiavo.shop.models.product.DetailingProductDTO;
+import br.com.danielschiavo.shop.models.product.Product;
+import br.com.danielschiavo.shop.models.product.ProductDTO;
+import br.com.danielschiavo.shop.models.product.ShowProductsDTO;
+import br.com.danielschiavo.shop.models.product.UpdateProductDTO;
+import br.com.danielschiavo.shop.services.ProductService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,13 +29,13 @@ import jakarta.validation.Valid;
 public class ProductController {
 
 	@Autowired
-	private ProductRepository repository;
+	private ProductService service;
 	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<DetailingProductDTO> register(@RequestBody @Valid ProductDTO dto, UriComponentsBuilder uriBuilder){
+	public ResponseEntity<DetailingProductDTO> registerProduct(@RequestBody @Valid ProductDTO dto, UriComponentsBuilder uriBuilder){
 		var product = new Product(dto);
-		repository.save(product);
+		service.save(product);
 		
 		var uri = uriBuilder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
 		
@@ -43,8 +44,8 @@ public class ProductController {
 	
 	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<DetailingProductDTO> update(@PathVariable Long id, @RequestBody @Valid UpdateProductDTO updateProductDTO){
-		var product = repository.getReferenceById(id);
+	public ResponseEntity<DetailingProductDTO> updateById(@PathVariable Long id, @RequestBody UpdateProductDTO updateProductDTO){
+		var product = service.getReferenceById(id);
 		product.updateAttributes(updateProductDTO);
 		
 		return ResponseEntity.ok(new DetailingProductDTO(product));
@@ -53,23 +54,27 @@ public class ProductController {
 	@PutMapping("/{id}/active")
 	@Transactional
 	public ResponseEntity<DetailingProductDTO> changeActive(@PathVariable Long id){
-		var product = repository.getReferenceById(id);
+		var product = service.getReferenceById(id);
 		product.changeActive();
 		
 		return ResponseEntity.ok(new DetailingProductDTO(product));
 	}
 	
 	@GetMapping
-	public ResponseEntity<Page<ShowProductsDTO>> list(@PageableDefault(size = 10, sort = {"nome"}) Pageable pageable){
-		var page = repository.findAllByActiveTrue(pageable).map(ShowProductsDTO::new);
-		
+	public ResponseEntity<Page<ShowProductsDTO>> listAllPageable(@PageableDefault(size = 10, sort = {"nome"}) Pageable pageable){		
+		var page = service.findAllByActiveTrue(pageable);
 		return ResponseEntity.ok(page);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<ProductDTO> datailing(@PathVariable Long id){
-		var product = repository.getReferenceById(id);
-		
+	public ResponseEntity<ProductDTO> datailingById(@PathVariable Long id){
+		var product = service.getReferenceById(id);
 		return ResponseEntity.ok(new ProductDTO(product));
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteById(@PathVariable Long id){
+		service.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 }

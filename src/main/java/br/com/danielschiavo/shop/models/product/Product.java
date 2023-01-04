@@ -1,9 +1,8 @@
-package br.com.danielschiavo.shop.models;
+package br.com.danielschiavo.shop.models.product;
 
 import java.math.BigDecimal;
 
-import br.com.danielschiavo.shop.models.dto.ProductDTO;
-import br.com.danielschiavo.shop.models.dto.UpdateProductDTO;
+import br.com.danielschiavo.shop.models.subcategory.SubCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,14 +28,16 @@ public class Product {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private String name;
 	private String description;
+	
 	@Column(name="first_image")
 	private String firstImage;
+	
 	private String images;
 	private BigDecimal price;
 	private Integer quantity;
-		
 	private Boolean active;
 	
 	@ManyToOne(fetch = FetchType.EAGER)

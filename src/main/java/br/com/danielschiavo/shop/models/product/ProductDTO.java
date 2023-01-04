@@ -1,11 +1,10 @@
-package br.com.danielschiavo.shop.models.dto;
+package br.com.danielschiavo.shop.models.product;
 
 import java.math.BigDecimal;
 
 import org.springframework.format.annotation.NumberFormat;
 
-import br.com.danielschiavo.shop.models.Product;
-import br.com.danielschiavo.shop.models.SubCategory;
+import br.com.danielschiavo.shop.models.subcategory.SubCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
