@@ -95,7 +95,7 @@ public class FilesStorageService {
 		return fileUrlResource.getContentAsByteArray();
 	}
 	
-	public String pegarNomeFotoPerfil(Long clienteId, MultipartFile fotoPerfil) {
+	public String gerarNovoNomeFotoPerfil(Long clienteId, MultipartFile fotoPerfil) {
 		String[] split = fotoPerfil.getContentType().split("/");
 		if (split[0] != "image") {
 			throw new RuntimeException("Só é aceito imagens para foto de perfil!");

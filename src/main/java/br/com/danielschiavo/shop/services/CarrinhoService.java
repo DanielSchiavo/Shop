@@ -37,7 +37,7 @@ public class CarrinhoService {
 	@Autowired
 	private CarrinhoRepository carrinhoRepository;
 	
-	public void adicionarNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
+	public void adicionarProdutosNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
 		if (itemCarrinhoDTO.quantidade() <= 0) {
 			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: " + itemCarrinhoDTO.quantidade());
 		}
@@ -94,7 +94,7 @@ public class CarrinhoService {
 	    
 	}
 	
-	public void mudarCarrinhoCliente(ItemCarrinhoDTO itemCarrinhoDTO) {
+	public void alterarQuantidadeProdutoNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
 		produtoService.getReferenceById(itemCarrinhoDTO.produto_id());
 		Carrinho carrinho = carrinhoRepository.findByClienteId(tokenJWTService.getClaimIdJWT()).orElseThrow();
 		
@@ -109,7 +109,7 @@ public class CarrinhoService {
 	    }
 	}
 
-	public void deletarItemCarrinho(@Valid DeletarItemCarrinhoDTO itemCarrinhoDTO) {
+	public void deletarProdutoNoCarrinho(@Valid DeletarItemCarrinhoDTO itemCarrinhoDTO) {
 		produtoService.getReferenceById(itemCarrinhoDTO.produtoId());
 		Carrinho carrinho = carrinhoRepository.findByClienteId(tokenJWTService.getClaimIdJWT()).orElseThrow();
 		

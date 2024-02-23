@@ -1,6 +1,5 @@
 package br.com.danielschiavo.shop.controllers;
 
-import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,8 +24,8 @@ import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.ClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.cliente.DetalharClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MensagemEFotoPerfilDTO;
+import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.services.ClienteService;
-import br.com.danielschiavo.shop.services.FilesStorageService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -37,18 +36,15 @@ public class ClienteController {
 	private ClienteService clienteService;
 	
 	@Autowired
-	private FilesStorageService fileService;
+	private ClienteRepository clientRepository;
 
 	@PostMapping("/registrar/cliente")
 	@Transactional
 	public ResponseEntity<DetalharClienteDTO> cadastrarCliente(@RequestBody @Valid ClienteDTO clientDTO,
 			UriComponentsBuilder uriBuilder) {
-		
-		Cliente cliente = clienteService.createAndSave(clientDTO);
-		
+		Cliente cliente = clienteService.cadastrarCliente(clientDTO);
 		
 		var uri = uriBuilder.path("/shop/cliente/{id}").buildAndExpand(cliente.getId()).toUri();
-
 		return ResponseEntity.created(uri).body(new DetalharClienteDTO(cliente));
 	}
 	
@@ -56,8 +52,7 @@ public class ClienteController {
 	@Transactional
 	public ResponseEntity<DetalharClienteDTO> atualizarClientePorId(@PathVariable Long id,
 			@RequestBody AtualizarClienteDTO updateClientDTO) {
-		Cliente cliente = clienteService.pegarEVerificarId(id);
-		cliente.atualizarAtributos(updateClientDTO);
+		Cliente cliente = clienteService.atualizarClientePorId(id, updateClientDTO);
 
 		return ResponseEntity.ok(new DetalharClienteDTO(cliente));
 	}
@@ -81,49 +76,28 @@ public class ClienteController {
 	@Transactional
 	public ResponseEntity<MensagemEFotoPerfilDTO> atualizarFotoPerfil(@PathVariable Long id,
 			@RequestParam("foto_perfil") MultipartFile novaImagem) {
-		Cliente cliente = clienteService.pegarEVerificarId(id);
+		MensagemEFotoPerfilDTO mensagemEFotoPerfilDTO = clienteService.atualizarFotoPerfil(id, novaImagem);
 		
-		String nomeFotoPerfil = fileService.pegarNomeFotoPerfil(cliente.getId(), novaImagem);
-
-		cliente.setFoto_perfil(nomeFotoPerfil);
-		
-		fileService.salvarNoDiscoFotoPerfil(nomeFotoPerfil, novaImagem);
-		
-		try {
-			byte[] bytesImagemPerfil = fileService.pegarFotoPerfil(nomeFotoPerfil);
-			String mensagem = "Alterou a imagem de perfil com sucesso! ";
-			return ResponseEntity.ok(new MensagemEFotoPerfilDTO(mensagem, bytesImagemPerfil));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return ResponseEntity.ok(mensagemEFotoPerfilDTO);
 	}
 
 	@DeleteMapping("/cliente/{id}/imagem-perfil")
 	public ResponseEntity<?> deletarFotoPerfil(@PathVariable Long id) {
-		Cliente cliente = clienteService.pegarEVerificarId(id);
-
-		fileService.deletarFotoPerfilNoDisco(cliente.getFoto_perfil());
+		clienteService.deletarFotoPerfil(id);
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/cliente/{id}/pagina-inicial")
 	public ResponseEntity<ClientePaginaInicialDTO> pegarDadosParaExibirNaPaginaInicial(@PathVariable Long id) {
-		Cliente cliente = clienteService.pegarEVerificarId(id);
-		try {
-			byte[] bytesFotoPerfil = fileService.pegarFotoPerfil(cliente.getFoto_perfil());
-			ClientePaginaInicialDTO clientePaginaInicialDTO = new ClientePaginaInicialDTO(cliente.getNome(), bytesFotoPerfil);
-			return ResponseEntity.ok(clientePaginaInicialDTO);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		ClientePaginaInicialDTO clientePaginaInicialDTO = clienteService.pegarDadosParaExibirNaPaginaInicial(id);
+		
+		return ResponseEntity.ok(clientePaginaInicialDTO);
 	}
 	
 	@DeleteMapping("/admin/cliente/{id}")
 	public ResponseEntity<?> deletarClientePorId(@PathVariable Long id) {
-		clienteService.deleteById(id);
+		clientRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 	

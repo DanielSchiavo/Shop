@@ -38,16 +38,16 @@ public class SubCategoryController {
 	@PostMapping("/admin/sub-categoria")
 	@Transactional
 	public ResponseEntity<DetalhandoSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid SubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
-		SubCategoria subCategoria = subCategoriaService.save(dto);
-		var uri = uriBuilder.path("/shop/admin/sub-categoria/{id}").buildAndExpand(subCategoria.getId()).toUri();
+		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
 		
+		var uri = uriBuilder.path("/shop/admin/sub-categoria/{id}").buildAndExpand(subCategoria.getId()).toUri();
 		return ResponseEntity.created(uri).body(new DetalhandoSubCategoriaDTO(subCategoria));
 	}
 	
 	@PutMapping("/admin/sub-categoria/{id}")
 	@Transactional
 	public ResponseEntity<DetalhandoSubCategoriaDTO> alterarSubCategoriaPorId(@PathVariable Long id, @RequestBody UpdateSubCategoryDTO categoryDTO) {
-		var subCategoria = subCategoriaService.updateSubCategory(id, categoryDTO);
+		var subCategoria = subCategoriaService.alterarSubCategoriaPorId(id, categoryDTO);
 		
 		return ResponseEntity.ok(new DetalhandoSubCategoriaDTO(subCategoria));
 	}

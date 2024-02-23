@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.danielschiavo.shop.models.categoria.Categoria;
 import br.com.danielschiavo.shop.models.categoria.CategoriaDTO;
+import br.com.danielschiavo.shop.repositories.CategoriaRepository;
 import br.com.danielschiavo.shop.services.CategoriaService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,16 +28,19 @@ public class CategoriaController {
 	@Autowired
 	private CategoriaService categoriaService;
 	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
+	
 	@GetMapping("/publico/categoria")
 	public ResponseEntity<Page<Categoria>> listarCategorias(Pageable pageable){		
-		var lista = categoriaService.pegarCategorias(pageable);
+		var lista = categoriaRepository.findAll(pageable);
 		return ResponseEntity.ok(lista);
 	}
 	
 	@PostMapping("/admin/categoria")
 	@Transactional
 	public ResponseEntity<?> cadastrarCategoria(@RequestBody @Valid CategoriaDTO categoriaDTO) {
-		categoriaService.salvar(categoriaDTO.nome());
+		categoriaService.cadastrarCategoria(categoriaDTO.nome());
 		
 		return ResponseEntity.ok().build();
 	}
@@ -44,7 +48,7 @@ public class CategoriaController {
 	@PutMapping("/admin/categoria/{id}")
 	@Transactional
 	public ResponseEntity<?> atualizarNomePorId(@PathVariable Long id, @RequestBody @NotNull String nome) {
-		categoriaService.alterarNomeCategoria(id, nome);
+		categoriaService.atualizarNomePorId(id, nome);
 		
 		return ResponseEntity.ok().build();
 	}
@@ -52,7 +56,7 @@ public class CategoriaController {
 	@DeleteMapping("/admin/categoria/{id}")
 	@Transactional
 	public ResponseEntity<?> deleteById(@PathVariable Long id){		
-		categoriaService.deleteById(id);
+		categoriaRepository.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 

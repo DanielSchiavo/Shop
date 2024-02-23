@@ -13,6 +13,7 @@ import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.UpdateSubCategoryDTO;
 import br.com.danielschiavo.shop.repositories.CategoriaRepository;
 import br.com.danielschiavo.shop.repositories.SubCategoriaRepository;
+import jakarta.validation.Valid;
 
 @Service
 public class SubCategoriaService {
@@ -43,7 +44,7 @@ public class SubCategoriaService {
 		subCategoriaRepository.deleteById(id);
 	}
 
-	public SubCategoria updateSubCategory(Long subCategoryId, UpdateSubCategoryDTO categoryDTO) {
+	public SubCategoria alterarSubCategoriaPorId(Long subCategoryId, UpdateSubCategoryDTO categoryDTO) {
 		SubCategoria subCategory = this.verificarId(subCategoryId);
 		if (categoryDTO.name() != null) {
 			subCategory.setNome(categoryDTO.name());
@@ -67,6 +68,11 @@ public class SubCategoriaService {
 	    } else {
 	    	throw new RuntimeException("Não existe Sub Categoria com esse ID");
 	    }
+	}
+
+	public SubCategoria cadastrarSubCategoria(@Valid SubCategoriaDTO dto) {
+		SubCategoria subCategoria = save(dto);
+		return subCategoria;
 	}
 
 }

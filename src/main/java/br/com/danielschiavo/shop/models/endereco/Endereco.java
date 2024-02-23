@@ -39,12 +39,13 @@ public class Endereco {
 	@JoinColumn(name = "cliente_id")
 	private Cliente cliente;
 	
-	public Endereco(ClienteDTO clienteDTO) {
+	public Endereco(ClienteDTO clienteDTO, Cliente cliente) {
 		this.cep = clienteDTO.endereco().cep();
 		this.rua = clienteDTO.endereco().rua();
 		this.numero = clienteDTO.endereco().numero();
 		this.complemento = clienteDTO.endereco().complemento();
 		this.bairro = clienteDTO.endereco().bairro();
 		this.estado = clienteDTO.endereco().estado();
+		this.cliente = cliente;
 	}
 }

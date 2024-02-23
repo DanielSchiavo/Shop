@@ -25,7 +25,7 @@ public class CarrinhoController {
 	
 	@PostMapping("/cliente/carrinho")
 	public ResponseEntity<Object> adicionarProdutosNoCarrinho(@RequestBody @Valid ItemCarrinhoDTO itemCarrinhoDTO) {
-		carrinhoService.adicionarNoCarrinho(itemCarrinhoDTO);
+		carrinhoService.adicionarProdutosNoCarrinho(itemCarrinhoDTO);
 		
 		return ResponseEntity.ok().build();
 	}
@@ -39,13 +39,13 @@ public class CarrinhoController {
 	
 	@PutMapping("/cliente/carrinho")
 	public ResponseEntity<Object> alterarQuantidadeProdutoNoCarrinho(@RequestBody @Valid ItemCarrinhoDTO itemCarrinhoDTO) {
-		carrinhoService.mudarCarrinhoCliente(itemCarrinhoDTO);
+		carrinhoService.alterarQuantidadeProdutoNoCarrinho(itemCarrinhoDTO);
 		return ResponseEntity.ok().build();
 	}
 	
 	@DeleteMapping("/cliente/carrinho")
 	public ResponseEntity<Object> deletarProdutoNoCarrinho(@RequestBody @Valid DeletarItemCarrinhoDTO deletarItemNoCarrinhoDTO) {
-		carrinhoService.deletarItemCarrinho(deletarItemNoCarrinhoDTO);
+		carrinhoService.deletarProdutoNoCarrinho(deletarItemNoCarrinhoDTO);
 		return ResponseEntity.noContent().build();
 	}
 

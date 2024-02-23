@@ -1,17 +1,23 @@
 package br.com.danielschiavo.shop.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
+import br.com.danielschiavo.shop.models.cliente.AtualizarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.ClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.cliente.DetalharClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.MensagemEFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.Pedido;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
@@ -23,50 +29,34 @@ public class ClienteService {
 	private ClienteRepository clientRepository;
 	
 	@Autowired
-	private EnderecoService adressService;
+	private EnderecoService enderecoService;
 	
 	@Autowired
 	private PedidoService pedidoService;
 	
+	@Autowired
+	private FilesStorageService fileService;
+	
 	private TokenJWTService tokenJWTService;
 
-	public Cliente createAndSave(ClienteDTO clientDTO) {
+	public Cliente cadastrarCliente(ClienteDTO clientDTO) {
 		Endereco endereco = null;
-		var client = new Cliente(clientDTO);
+		var cliente = new Cliente(clientDTO);
 		
 		if (clientDTO.endereco() != null) {
-			endereco = new Endereco(clientDTO);
-			endereco.setCliente(client);
-			adressService.save(endereco);
-			client.getEnderecos().add(endereco);
+			endereco = new Endereco(clientDTO, cliente);
+			enderecoService.save(endereco);
+			cliente.getEnderecos().add(endereco);
 		}
 
-		clientRepository.save(client);
+		clientRepository.save(cliente);
 		
-		return client;
+		return cliente;
 	}
 	
 	public Page<DetalharClienteDTO> pegarTodosClientes(Pageable pageable) {
 		Page<Cliente> pageClientes = clientRepository.findAll(pageable);
 		return pageClientes.map(this::converterParaDetalharClienteDTO);
-	}
-
-	public Cliente getReferenceById(Long id) {
-		return clientRepository.getReferenceById(id);
-	}
-
-	public void deleteById(Long id) {
-		clientRepository.deleteById(id);
-	}
-
-	public Cliente pegarEVerificarId(Long clientId) {
-		Optional<Cliente> optionalCliente = clientRepository.findById(clientId);
-	    if (optionalCliente.isPresent()) {
-	        Cliente cliente = optionalCliente.get();
-	        return cliente;
-	    } else {
-	    	throw new RuntimeException("Não existe Cliente com esse ID ");
-	    }
 	}
 
 	private DetalharClienteDTO converterParaDetalharClienteDTO(Cliente cliente) {
@@ -75,14 +65,57 @@ public class ClienteService {
 
 	public DetalharClienteDTO detalharClientePorId() {
 		Long id = tokenJWTService.getClaimIdJWT();
-		Cliente cliente = pegarEVerificarId(id);
+		Cliente cliente = clientRepository.findById(id).get();
 		return new DetalharClienteDTO(cliente);
 	}
 	
 	public DetalharClienteDTO detalharClientePorIdMaisTodosOsPedidos(Long id) {
-		Cliente cliente = pegarEVerificarId(id);
+		Cliente cliente = clientRepository.findById(id).get();
 		List<Pedido> listPedidos = pedidoService.pegarPedidosPeloIdDoCliente(id);
 		return new DetalharClienteDTO(cliente);
+	}
+
+	public Cliente atualizarClientePorId(Long id, AtualizarClienteDTO updateClientDTO) {
+		Cliente cliente = clientRepository.getReferenceById(id);
+		cliente.atualizarAtributos(updateClientDTO);
+		return cliente;
+	}
+
+	public MensagemEFotoPerfilDTO atualizarFotoPerfil(Long id, MultipartFile novaImagem) {
+		Cliente cliente = clientRepository.getReferenceById(id);
+		
+		String nomeFotoPerfil = fileService.gerarNovoNomeFotoPerfil(cliente.getId(), novaImagem);
+
+		cliente.setFoto_perfil(nomeFotoPerfil);
+		clientRepository.save(cliente);
+		
+		fileService.salvarNoDiscoFotoPerfil(nomeFotoPerfil, novaImagem);
+		
+		try {
+			byte[] bytesImagemPerfil = fileService.pegarFotoPerfil(nomeFotoPerfil);
+			String mensagem = "Alterou a imagem de perfil com sucesso! ";
+			return new MensagemEFotoPerfilDTO(mensagem, bytesImagemPerfil);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Erro ao recuperar foto do perfil");
+		}
+	}
+
+	public ClientePaginaInicialDTO pegarDadosParaExibirNaPaginaInicial(Long id) {
+		Cliente cliente = clientRepository.findById(id).get();
+		try {
+			byte[] bytesFotoPerfil = fileService.pegarFotoPerfil(cliente.getFoto_perfil());
+			return new ClientePaginaInicialDTO(cliente.getNome(), bytesFotoPerfil);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Erro ao recuperar foto do perfil");
+		}
+	}
+	
+	public void deletarFotoPerfil(Long id) {
+		Cliente cliente = clientRepository.findById(id).get();
+
+		fileService.deletarFotoPerfilNoDisco(cliente.getFoto_perfil());
 	}
 
 }

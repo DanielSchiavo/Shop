@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.AtualizarProdutoDTO;
+import br.com.danielschiavo.shop.models.produto.DetalharProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.MostrarArquivosProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.MostrarProdutosDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
@@ -34,7 +36,10 @@ public class ProdutoService {
 	@Autowired
 	private FilesStorageService fileService;
 	
+	@Autowired
 	private SubCategoriaService subCategoriaService;
+	
+	private final int MAX_FILES = 10;
 
 	public void salvar(Produto product) {
 		produtoRepository.save(product);
@@ -215,5 +220,63 @@ public class ProdutoService {
 			int[] position = transformarStringPosicaoEmArrayInt(posicoesString);
 			atualizarArquivos(arquivos, position, produto);
 		}
+	}
+
+	public MostrarProdutosDTO cadastrarProduto(String jsonProduto, MultipartFile[] multipartArquivos, String stringPosicoes) {
+		ProdutoDTO produtoDTO = transformarStringJsonEmProdutoDTO(jsonProduto);
+		int[] posicoes = transformarStringPosicaoEmArrayInt(stringPosicoes);
+		
+		if (multipartArquivos.length != posicoes.length) {
+			ResponseEntity.badRequest().body("Cada FILE deve corresponder a uma POSITION!");
+		}
+		
+		if (posicoes[0] != 0) {
+			throw new RuntimeException("O produto precisa ter uma imagem principal! que corresponde a POSITION: 0");
+		}
+		
+		if (multipartArquivos.length > MAX_FILES && posicoes.length > MAX_FILES) {
+			throw new RuntimeException("O número máximo de imagens e vídeos é " + MAX_FILES + "!");
+		}
+		
+		SubCategoria subCategoria = subCategoriaService.verificarId(produtoDTO.subCategoriaId());
+		
+		Produto produto = new Produto(produtoDTO, subCategoria);
+		MostrarProdutosDTO mostrarProdutosDTO = null;
+		try {
+			mostrarProdutosDTO = criarNovoProduto(produto, multipartArquivos, posicoes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return mostrarProdutosDTO;
+	}
+
+	public Produto alterarProdutoPorId(Long id, String jsonProduto, MultipartFile[] multipartArquivos, String stringPosicoes) {
+		Produto produto = getReferenceById(id);
+		int[] posicoes = transformarStringPosicaoEmArrayInt(stringPosicoes);
+
+		if (jsonProduto == null && multipartArquivos == null && posicoes == null) {
+			ResponseEntity.badRequest().body("Nenhum dado foi enviado com a requisição, portanto nada foi alterado.");
+		}
+		
+		if (multipartArquivos.length != posicoes.length) {
+			ResponseEntity.badRequest().body("Cada ARQUIVO deve corresponder a uma POSICAO, para saber a ordem de exibicao do arquivo.");
+		}
+		
+		atualizarDadosProduto(produto, jsonProduto, multipartArquivos, stringPosicoes);
+		
+		return produto;
+	}
+
+	public DetalharProdutoDTO detalharProdutoPorId(Long id) {
+		Produto produto = getReferenceById(id);
+		List<MostrarArquivosProdutoDTO> mostrarArquivosProdutoDTO;
+		DetalharProdutoDTO detalharProdutoDTO = null;
+		try {
+			mostrarArquivosProdutoDTO = carregarArquivosProduto(produto.getArquivosProduto());
+			detalharProdutoDTO = new DetalharProdutoDTO(produto, mostrarArquivosProdutoDTO);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return detalharProdutoDTO;
 	}
 }
