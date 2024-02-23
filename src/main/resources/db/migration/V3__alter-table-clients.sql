@@ -1,0 +1,7 @@
+ALTER TABLE clients 
+DROP COLUMN cep,
+DROP COLUMN street,
+DROP COLUMN number,
+DROP COLUMN complement,
+DROP COLUMN district,
+DROP COLUMN uf;

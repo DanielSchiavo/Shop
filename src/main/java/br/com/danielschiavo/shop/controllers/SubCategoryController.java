@@ -1,8 +1,8 @@
 package br.com.danielschiavo.shop.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,48 +15,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.danielschiavo.shop.models.subcategory.DetailingSubCategoryDTO;
-import br.com.danielschiavo.shop.models.subcategory.SubCategory;
-import br.com.danielschiavo.shop.models.subcategory.SubCategoryDTO;
-import br.com.danielschiavo.shop.services.SubCategoryService;
+import br.com.danielschiavo.shop.models.subcategoria.DetalhandoSubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
+import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.UpdateSubCategoryDTO;
+import br.com.danielschiavo.shop.services.SubCategoriaService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("sub-category")
+@RequestMapping("/shop")
 public class SubCategoryController {
 	
 	@Autowired
-	private SubCategoryService service;
+	private SubCategoriaService subCategoriaService;
 	
-	@PostMapping
-	@Transactional
-	public ResponseEntity<DetailingSubCategoryDTO> registerSubCategory(@RequestBody @Valid SubCategoryDTO dto, UriComponentsBuilder uriBuilder) {
-		var subCategory = new SubCategory(dto);
-		service.save(subCategory);
-		
-		var uri = uriBuilder.path("/sub-category/{id}").buildAndExpand(subCategory.getId()).toUri();
-		
-		return ResponseEntity.created(uri).body(new DetailingSubCategoryDTO(subCategory));
-	}
-	
-	@PutMapping("/{id}")
-	@Transactional
-	public ResponseEntity<DetailingSubCategoryDTO> updateById(@PathVariable Long id, @RequestBody @Valid UpdateSubCategoryDTO categoryDTO) {
-		var subCategory = service.getReferenceById(id);
-		subCategory.updateAttributes(categoryDTO);
-		
-		return ResponseEntity.ok(new DetailingSubCategoryDTO(subCategory));
-	}
-	
-	@GetMapping
-	public ResponseEntity<List<SubCategory>> listAll(){		
-		var list = service.findAll();
+	@GetMapping("/publico/sub-categoria")
+	public ResponseEntity<Page<SubCategoria>> listarSubCategorias(Pageable pageable){		
+		var list = subCategoriaService.findAll(pageable);
 		return ResponseEntity.ok(list);
 	}
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteById(@PathVariable Long id){		
-		service.deleteById(id);
+	@PostMapping("/admin/sub-categoria")
+	@Transactional
+	public ResponseEntity<DetalhandoSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid SubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
+		SubCategoria subCategoria = subCategoriaService.save(dto);
+		var uri = uriBuilder.path("/shop/admin/sub-categoria/{id}").buildAndExpand(subCategoria.getId()).toUri();
+		
+		return ResponseEntity.created(uri).body(new DetalhandoSubCategoriaDTO(subCategoria));
+	}
+	
+	@PutMapping("/admin/sub-categoria/{id}")
+	@Transactional
+	public ResponseEntity<DetalhandoSubCategoriaDTO> alterarSubCategoriaPorId(@PathVariable Long id, @RequestBody UpdateSubCategoryDTO categoryDTO) {
+		var subCategoria = subCategoriaService.updateSubCategory(id, categoryDTO);
+		
+		return ResponseEntity.ok(new DetalhandoSubCategoriaDTO(subCategoria));
+	}
+	
+	@DeleteMapping("/admin/sub-categoria/{id}")
+	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long id){		
+		subCategoriaService.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
 
