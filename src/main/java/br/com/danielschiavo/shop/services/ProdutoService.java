@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
 import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.AtualizarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.DetalharProdutoDTO;
@@ -25,6 +26,7 @@ import br.com.danielschiavo.shop.models.produto.MostrarProdutosDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.models.produto.ProdutoDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
+import br.com.danielschiavo.shop.repositories.ItemCarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
 
 @Service
@@ -39,15 +41,12 @@ public class ProdutoService {
 	@Autowired
 	private SubCategoriaService subCategoriaService;
 	
+	private ItemCarrinhoRepository itemCarrinhoRepository;
+	
 	private final int MAX_FILES = 10;
 
 	public void salvar(Produto product) {
 		produtoRepository.save(product);
-	}
-
-	public Produto getReferenceById(Long id) {
-		Produto product = produtoRepository.getReferenceById(id);
-		return product;
 	}
 
 	// public Page<ShowProductsDTO> findAllByActiveTrue(Pageable pageable) {
@@ -67,8 +66,15 @@ public class ProdutoService {
 		return null;
 	}
 
-	public void deleteById(Long id) {
+	public void deletarProdutoPorId(Long id) {
 		produtoRepository.deleteById(id);
+		List<Optional<ItemCarrinho>> optionalItemCarrinho = itemCarrinhoRepository.findAllByProdutoId(id);
+		
+		if (!optionalItemCarrinho.isEmpty()) {
+			optionalItemCarrinho.forEach(item -> {
+				itemCarrinhoRepository.delete(item.get());
+			});
+		}
 	}
 
 	public MostrarProdutosDTO criarNovoProduto(Produto product, MultipartFile[] files, int[] position) throws IOException {
@@ -145,8 +151,8 @@ public class ProdutoService {
 		List<MostrarProdutosDTO> list = new ArrayList<>();
 		
 		for (Produto produto : pageProdutos) {
-			MostrarProdutosDTO mostrarProdutos = new MostrarProdutosDTO(produto, 
-								pegarPrimeiraImagemProduto(produto.getArquivosProduto()));
+			byte[] imagem = pegarPrimeiraImagemProduto(produto.getArquivosProduto());
+			MostrarProdutosDTO mostrarProdutos = new MostrarProdutosDTO(produto, imagem);
 			list.add(mostrarProdutos);
 		    }
 		return new PageImpl<>(list, pageProdutos.getPageable(), pageProdutos.getTotalElements());
@@ -251,7 +257,7 @@ public class ProdutoService {
 	}
 
 	public Produto alterarProdutoPorId(Long id, String jsonProduto, MultipartFile[] multipartArquivos, String stringPosicoes) {
-		Produto produto = getReferenceById(id);
+		Produto produto = produtoRepository.getReferenceById(id);
 		int[] posicoes = transformarStringPosicaoEmArrayInt(stringPosicoes);
 
 		if (jsonProduto == null && multipartArquivos == null && posicoes == null) {
@@ -268,7 +274,7 @@ public class ProdutoService {
 	}
 
 	public DetalharProdutoDTO detalharProdutoPorId(Long id) {
-		Produto produto = getReferenceById(id);
+		Produto produto = produtoRepository.getReferenceById(id);
 		List<MostrarArquivosProdutoDTO> mostrarArquivosProdutoDTO;
 		DetalharProdutoDTO detalharProdutoDTO = null;
 		try {

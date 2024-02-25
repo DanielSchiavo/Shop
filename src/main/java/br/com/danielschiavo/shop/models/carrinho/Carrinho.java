@@ -3,15 +3,15 @@ package br.com.danielschiavo.shop.models.carrinho;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,18 +33,15 @@ public class Carrinho {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private Long clienteId;
+	@OneToOne
+	private Cliente cliente;
 
-	@ElementCollection
-	@CollectionTable(
-			name = "carrinhos_itens",
-			joinColumns = @JoinColumn(name = "carrinho_id")
-			)
+	@OneToMany(mappedBy = "carrinho" , cascade = CascadeType.ALL)
     private List<ItemCarrinho> itensCarrinho;
 	
-	public Carrinho(Long clienteId, Long produtoId, Integer quantidade) {
-		this.clienteId = clienteId;
+	public Carrinho(Cliente cliente, Long produtoId, Integer quantidade) {
+		this.cliente = cliente;
 		this.itensCarrinho = new ArrayList<>();
-		itensCarrinho.add(new ItemCarrinho(produtoId, quantidade));		
+		itensCarrinho.add(new ItemCarrinho(null, produtoId, quantidade, this));		
 	}
 }

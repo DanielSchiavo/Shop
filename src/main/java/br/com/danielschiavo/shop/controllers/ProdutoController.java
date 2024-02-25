@@ -78,7 +78,7 @@ public class ProdutoController {
 	@DeleteMapping("/admin/produto/{id}")
 	@Transactional
 	public ResponseEntity<?> deletarProdutoPorId(@PathVariable Long id) {
-		produtoService.deleteById(id);
+		produtoService.deletarProdutoPorId(id);
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -24,7 +24,7 @@ public record DetalharClienteDTO(
 			cliente.getCpf(),
 			cliente.getNome(),
 			cliente.getSobrenome(),
-			cliente.getData_nascimento(),
+			cliente.getDataNascimento(),
 			cliente.getEmail(),
 			cliente.getSenha(),
 			cliente.getCelular(),

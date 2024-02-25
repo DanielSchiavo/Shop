@@ -1,12 +1,10 @@
 package br.com.danielschiavo.shop.models.produto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
-
-import java.util.ArrayList;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -59,7 +57,7 @@ public class Produto {
 			joinColumns = @JoinColumn(name = "produto_id")
 			)
 	private List<ArquivosProduto> arquivosProduto = new ArrayList<>();
-
+	
 	public Produto(ProdutoDTO produtoDTO, SubCategoria subCategoria) {
 		this.nome = produtoDTO.nome();
 		this.descricao = produtoDTO.descricao();

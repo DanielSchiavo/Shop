@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
-import br.com.danielschiavo.shop.models.carrinho.ItemCarrinhoDTO;
+import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.ItemPedido;
@@ -46,7 +46,7 @@ public class PedidoService {
 	public void createOrder(Cliente cliente, Endereco enderecoDeEntrega, List<ItemCarrinhoDTO> itensCarrinhoDTO) {
 		Pedido pedido = new Pedido(cliente, enderecoDeEntrega);
 		itensCarrinhoDTO.forEach(itemCarrinhoDTO -> {
-			Produto produto = this.validarProduto(itemCarrinhoDTO.produto_id());
+			Produto produto = this.validarProduto(itemCarrinhoDTO.idProduto());
 			
 			ItemPedido itemPedido = new ItemPedido(produto, itemCarrinhoDTO);
 			pedido.getItemsPedido().add(itemPedido);
@@ -54,6 +54,7 @@ public class PedidoService {
 	}
 
 	public Page<MostrarPedidosAConfirmarDTO> pegarPedidosAConfirmar(Pageable pageable) {
+		Long idCliente = tokenJWTService.getClaimIdJWT();
 		Page<Pedido> pedidosAguardandoConfirmacao = pedidoRepository.findAllByStatusPedido(StatusPedido.A_CONFIRMAR, pageable);
 		
 		List<MostrarPedidosAConfirmarDTO> list = new ArrayList<>();

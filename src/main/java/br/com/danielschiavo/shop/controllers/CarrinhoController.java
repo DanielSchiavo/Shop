@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.danielschiavo.shop.models.carrinho.DeletarItemCarrinhoDTO;
-import br.com.danielschiavo.shop.models.carrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
+import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.DeletarItemCarrinhoDTO;
+import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.services.CarrinhoService;
 import jakarta.validation.Valid;
 

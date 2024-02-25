@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -44,8 +45,9 @@ public class Pedido {
 	@Column(name = "data_pedido")
 	private LocalDateTime dataPedido;
 	
-	@Column(name = "cliente_id")
-	private Long clienteId;
+	@ManyToOne
+	@JoinColumn(name = "cliente_id")
+	private Cliente cliente;
 	
 	@Column(name = "nome_cliente")
 	private String nomeCliente;
@@ -57,16 +59,16 @@ public class Pedido {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipo_entrega")
-	private TipoEntrega tipo_entrega;
+	private TipoEntrega tipoEntrega;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "metodo_pagamento")
-	private MetodoPagamento metodo_pagamento;
+	private MetodoPagamento metodoPagamento;
 	
-    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private DadosCartao dadosCartao;
 	
-    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private EnderecoPedido enderecoPedido;
 	
 	@ElementCollection
@@ -79,7 +81,7 @@ public class Pedido {
 	public Pedido(Cliente cliente, Endereco endereco) {
 		this.dataPedido = LocalDateTime.now();
 		
-		this.clienteId = cliente.getId();
+		this.cliente = cliente;
 		this.nomeCliente = cliente.getNome();
 		this.cpf = cliente.getCpf();
 		

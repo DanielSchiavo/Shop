@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import jakarta.persistence.CascadeType;
@@ -44,21 +44,24 @@ public class Cliente implements UserDetails {
 	
 	private String sobrenome;
 	
-	private LocalDate data_nascimento;
+	private LocalDate dataNascimento;
+	
+	private LocalDate dataCriacaoConta;
+	
 	private String email;
 	private String senha;
 	private String celular;
 	private String foto_perfil;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JsonManagedReference
+	@JsonIgnore
 	private List<Endereco> enderecos = new ArrayList<>();
 	
 	public Cliente(ClienteDTO clienteDTO) {
 		this.cpf = clienteDTO.cpf();
 		this.nome = clienteDTO.nome();
 		this.sobrenome = clienteDTO.sobrenome();
-		this.data_nascimento = clienteDTO.data_nascimento();
+		this.dataNascimento = clienteDTO.data_nascimento();
 		this.email = clienteDTO.email();
 		this.senha = clienteDTO.senha();
 		this.celular = clienteDTO.celular();
@@ -75,7 +78,7 @@ public class Cliente implements UserDetails {
 			this.sobrenome = atualizarClienteDTO.sobrenome();
 		}
 		if (atualizarClienteDTO.dataNascimento() != null) {
-			this.data_nascimento = atualizarClienteDTO.dataNascimento();
+			this.dataNascimento = atualizarClienteDTO.dataNascimento();
 		}
 		if (atualizarClienteDTO.email() != null) {
 			this.email = atualizarClienteDTO.email();

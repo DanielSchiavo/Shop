@@ -20,10 +20,10 @@ public record MostrarPedidosAConfirmarDTO(
         this(
                 pedido.getValorTotal(),
                 pedido.getDataPedido(),
-                pedido.getClienteId(),
+                pedido.getCliente().getId(),
                 pedido.getNomeCliente(),
-                pedido.getMetodo_pagamento(),
-                pedido.getTipo_entrega(),
+                pedido.getMetodoPagamento(),
+                pedido.getTipoEntrega(),
                 new MostrarEnderecoPedidosAConfirmarDTO(pedido.getEnderecoPedido()),
                 criarListaDeMostrarProdutosPedidosAConfirmarDTO(pedido)
         );
