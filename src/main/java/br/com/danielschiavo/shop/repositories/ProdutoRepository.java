@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shop.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -25,5 +26,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 	@Modifying
 	@Query("UPDATE Produto p SET p.arquivosProduto = NULL WHERE p.id = :produtoId")
 	void deleteArquivosProdutoByProdutoId(@Param("produtoId") Long produtoId);
+
+	@Query("SELECT p FROM Produto p WHERE p.id IN :ids AND p.ativo = true")
+	List<Produto> findAllByIdAndAtivoTrue(@Param("ids") List<Long> ids);
 
 }

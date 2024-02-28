@@ -16,7 +16,6 @@ import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.DeletarItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
-import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
@@ -41,15 +40,16 @@ public class CarrinhoService {
 	@Autowired
 	private CarrinhoRepository carrinhoRepository;
 	
-	private Long idCliente = tokenJWTService.getClaimIdJWT();
-	
-	private Cliente cliente = clienteRepository.getReferenceById(idCliente);
 
 	public void adicionarProdutosNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
 		if (itemCarrinhoDTO.quantidade() <= 0) {
 			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
 					+ itemCarrinhoDTO.quantidade());
 		}
+		
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		
+		var cliente = clienteRepository.getReferenceById(idCliente);
 
 		var produto = produtoRepository.getReferenceById(itemCarrinhoDTO.idProduto());
 
@@ -78,7 +78,8 @@ public class CarrinhoService {
 	}
 
 	public MostrarCarrinhoClienteDTO pegarCarrinhoCliente() {
-		
+		var idCliente = tokenJWTService.getClaimIdJWT();
+
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		
 		Carrinho carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
@@ -100,7 +101,6 @@ public class CarrinhoService {
 		List<MostrarItemCarrinhoClienteDTO> listaMostrarItensCarrinhoCliente = new ArrayList<MostrarItemCarrinhoClienteDTO>();
 
 		for (int i = 0; i < produtosOrdenados.size(); i++) {
-
 			var mostrarItemCarrinhoClienteDTO = new MostrarItemCarrinhoClienteDTO(
 												produtosOrdenados.get(i),
 												produtoService.pegarPrimeiraImagemProduto(produtosOrdenados.get(i).getArquivosProduto()),
@@ -112,7 +112,7 @@ public class CarrinhoService {
 					.multiply(produtosOrdenados.get(i).getPreco()));
 		}
 
-		return new MostrarCarrinhoClienteDTO(listaMostrarItensCarrinhoCliente, valorTotal);
+		return new MostrarCarrinhoClienteDTO(carrinho.getId(), listaMostrarItensCarrinhoCliente, valorTotal);
 
 	}
 
@@ -120,7 +120,11 @@ public class CarrinhoService {
 		if (!produtoRepository.existsById(itemCarrinhoDTO.idProduto())) {
 		    throw new RuntimeException("Produto não encontrado para o ID: " + itemCarrinhoDTO.idProduto());
 		}
+	
+		var idCliente = tokenJWTService.getClaimIdJWT();
 		
+		var cliente = clienteRepository.getReferenceById(idCliente);
+			
 		var carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
 
 		Iterator<ItemCarrinho> iterator = carrinho.getItensCarrinho().iterator();
@@ -134,7 +138,11 @@ public class CarrinhoService {
 		}
 	}
 
-	public void deletarProdutoNoCarrinho(@Valid DeletarItemCarrinhoDTO itemCarrinhoDTO) {
+	public void deletarProdutoNoCarrinho(@Valid DeletarItemCarrinhoDTO itemCarrinhoDTO) 
+		{
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		var cliente = clienteRepository.getReferenceById(idCliente);
+		
 		var carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
 
 		Iterator<ItemCarrinho> iterator = carrinho.getItensCarrinho().iterator();

@@ -15,8 +15,8 @@ import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.cliente.AtualizarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.ClientePaginaInicialDTO;
-import br.com.danielschiavo.shop.models.cliente.DetalharClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
+import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MensagemEFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.Pedido;
@@ -54,25 +54,25 @@ public class ClienteService {
 		return cliente;
 	}
 	
-	public Page<DetalharClienteDTO> pegarTodosClientes(Pageable pageable) {
+	public Page<MostrarClienteDTO> pegarTodosClientes(Pageable pageable) {
 		Page<Cliente> pageClientes = clientRepository.findAll(pageable);
 		return pageClientes.map(this::converterParaDetalharClienteDTO);
 	}
 
-	private DetalharClienteDTO converterParaDetalharClienteDTO(Cliente cliente) {
-	    return new DetalharClienteDTO(cliente);
+	private MostrarClienteDTO converterParaDetalharClienteDTO(Cliente cliente) {
+	    return new MostrarClienteDTO(cliente);
 	}
 
-	public DetalharClienteDTO detalharClientePorId() {
+	public MostrarClienteDTO detalharClientePorId() {
 		Long id = tokenJWTService.getClaimIdJWT();
 		Cliente cliente = clientRepository.findById(id).get();
-		return new DetalharClienteDTO(cliente);
+		return new MostrarClienteDTO(cliente);
 	}
 	
-	public DetalharClienteDTO detalharClientePorIdMaisTodosOsPedidos(Long id) {
+	public MostrarClienteDTO detalharClientePorIdMaisTodosOsPedidos(Long id) {
 		Cliente cliente = clientRepository.findById(id).get();
 		List<Pedido> listPedidos = pedidoService.pegarPedidosPeloIdDoCliente(id);
-		return new DetalharClienteDTO(cliente);
+		return new MostrarClienteDTO(cliente);
 	}
 
 	public Cliente atualizarClientePorId(Long id, AtualizarClienteDTO updateClientDTO) {
@@ -101,11 +101,11 @@ public class ClienteService {
 		}
 	}
 
-	public ClientePaginaInicialDTO pegarDadosParaExibirNaPaginaInicial(Long id) {
+	public MostrarClientePaginaInicialDTO pegarDadosParaExibirNaPaginaInicial(Long id) {
 		Cliente cliente = clientRepository.findById(id).get();
 		try {
 			byte[] bytesFotoPerfil = fileService.pegarFotoPerfil(cliente.getFoto_perfil());
-			return new ClientePaginaInicialDTO(cliente.getNome(), bytesFotoPerfil);
+			return new MostrarClientePaginaInicialDTO(cliente.getNome(), bytesFotoPerfil);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Erro ao recuperar foto do perfil");

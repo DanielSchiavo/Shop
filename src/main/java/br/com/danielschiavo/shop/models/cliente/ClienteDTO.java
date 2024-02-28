@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
+import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +24,6 @@ public record ClienteDTO(
 		String senha,
 		@NotBlank
 		String celular,
-		EnderecoDTO endereco	
+		MostrarEnderecoDTO endereco	
 		) {
 }

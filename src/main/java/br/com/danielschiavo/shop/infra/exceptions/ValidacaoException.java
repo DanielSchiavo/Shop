@@ -1,14 +1,14 @@
 package br.com.danielschiavo.shop.infra.exceptions;
 
-public class SubCategoryException extends RuntimeException {
+public class ValidacaoException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public SubCategoryException(String message) {
+	public ValidacaoException(String message) {
         super(message);
     }
 
-    public SubCategoryException(String message, Throwable cause) {
+    public ValidacaoException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
+import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 
-public record DetalharClienteDTO(
+public record MostrarClienteDTO(
 		Long id,
 		String cpf,
 		String nome,
@@ -15,10 +15,10 @@ public record DetalharClienteDTO(
 		String email,
 		String senha,
 		String celular,
-		List<EnderecoDTO> enderecos
+		List<MostrarEnderecoDTO> enderecos
 		) {
 
-	public DetalharClienteDTO(Cliente cliente) {
+	public MostrarClienteDTO(Cliente cliente) {
 		this(
 			cliente.getId(),
 			cliente.getCpf(),
@@ -29,7 +29,7 @@ public record DetalharClienteDTO(
 			cliente.getSenha(),
 			cliente.getCelular(),
 			cliente.getEnderecos().stream()
-	        .map(EnderecoDTO::converterParaEnderecoDTO)
+	        .map(MostrarEnderecoDTO::converterParaEnderecoDTO)
 	        .collect(Collectors.toList())
 				);
 	}

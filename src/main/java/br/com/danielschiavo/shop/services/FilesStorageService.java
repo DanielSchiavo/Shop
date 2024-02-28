@@ -2,7 +2,6 @@ package br.com.danielschiavo.shop.services;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,17 +10,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileUrlResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.danielschiavo.shop.infra.exceptions.FileStorageException;
 import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
+import br.com.danielschiavo.shop.models.produto.Produto;
+import br.com.danielschiavo.shop.repositories.ProdutoRepository;
 
 @Service
 public class FilesStorageService {
+	
+	@Autowired
+	private ProdutoRepository produtoRepository;
 
 	private final Path raizPerfil = Paths.get("imagens/perfil");
 
@@ -72,27 +75,39 @@ public class FilesStorageService {
 		}
 	}
 	
-	public List<InputStream> carregarArquivoProduto(List<ArquivosProduto> listaArquivosProduto) {
-		List<InputStream> inputStream = new ArrayList<>();
-		
-		listaArquivosProduto.forEach(arquivo -> {
-			try {
-				Resource resource = new UrlResource(raizProduto + "/" + arquivo.getNome());
-				if (resource.exists() && resource.isReadable()) {
-					inputStream.add(resource.getInputStream());
-				} else {
-					throw new RuntimeException("O produto não tem imagem e isso não deveria estar acontecendo");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-		return inputStream;
+//	public List<InputStream> carregarArquivoProduto(List<ArquivosProduto> listaArquivosProduto) {
+//		List<InputStream> inputStream = new ArrayList<>();
+//		
+//		listaArquivosProduto.forEach(arquivo -> {
+//			try {
+//				Resource resource = new UrlResource(raizProduto + "/" + arquivo.getNome());
+//				if (resource.exists() && resource.isReadable()) {
+//					inputStream.add(resource.getInputStream());
+//				} else {
+//					throw new RuntimeException("O produto não tem imagem e isso não deveria estar acontecendo");
+//				}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		});
+//		return inputStream;
+//	}
+	
+	public byte[] pegarBytesArquivoProduto(String nomeArquivoProduto) {
+		FileUrlResource fileUrlResource;
+		try {
+			fileUrlResource = new FileUrlResource(raizProduto + "/" + nomeArquivoProduto);
+			return fileUrlResource.getContentAsByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Não foi possivel recuperar os bytes da imagem, motivo: " + e);
+		}
 	}
 	
-	public byte[] pegarBytesArquivoProduto(String nomeArquivoProduto) throws IOException {
-		FileUrlResource fileUrlResource = new FileUrlResource(raizProduto + "/" + nomeArquivoProduto);
-		return fileUrlResource.getContentAsByteArray();
+	public byte[] pegarBytesPrimeiraImagemProduto(Long id) {
+		Produto produto = produtoRepository.findById(id).orElseThrow();
+		ArquivosProduto first = produto.getArquivosProduto().stream().filter(arquivoProduto -> arquivoProduto.getPosicao() == 0).findFirst().get();
+		return pegarBytesArquivoProduto(first.getNome());
 	}
 	
 	public String gerarNovoNomeFotoPerfil(Long clienteId, MultipartFile fotoPerfil) {

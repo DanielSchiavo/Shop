@@ -50,9 +50,9 @@ public class ProdutoController {
 	@Transactional
 	@ResponseBody
 	public ResponseEntity<MostrarProdutosDTO> cadastrarProduto(
-			@RequestParam(name = "produto") String jsonProduto,
-			@RequestPart(name = "arquivos") MultipartFile[] multipartArquivos,
-			@RequestParam(name = "posicoes") String stringPosicoes,
+			@RequestParam(name = "produto", required = true) String jsonProduto,
+			@RequestPart(name = "arquivos", required = true) MultipartFile[] multipartArquivos,
+			@RequestParam(name = "posicoes", required = true) String stringPosicoes,
 			UriComponentsBuilder uriBuilder
  			) {
 		var mostrarProdutosDTO = produtoService.cadastrarProduto(jsonProduto, multipartArquivos, stringPosicoes);
@@ -66,9 +66,9 @@ public class ProdutoController {
 	@Transactional
 	public ResponseEntity<?> alterarProdutoPorId(
 			@PathVariable Long id,
-			@RequestPart(name = "produto", required = false) String jsonProduto,
+			@RequestParam(name = "produto", required = false) String jsonProduto,
 			@RequestPart(name = "arquivos", required = false) MultipartFile[] multipartArquivos,
-			@RequestPart(name = "posicoes", required = false) String stringPosicoes
+			@RequestParam(name = "posicoes", required = false) String stringPosicoes
 			) {
 		Produto produto = produtoService.alterarProdutoPorId(id, jsonProduto, multipartArquivos, stringPosicoes);
 

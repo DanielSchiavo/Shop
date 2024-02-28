@@ -22,8 +22,8 @@ public class SecurityFilter extends OncePerRequestFilter{
 	private TokenJWTService tokenJWTService;
 	
 	@Autowired
-	private ClienteRepository clientRepository;
-
+	private ClienteRepository clienteRepository;
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response
 			, FilterChain filterChain) throws ServletException, IOException {
@@ -34,7 +34,7 @@ public class SecurityFilter extends OncePerRequestFilter{
 			tokenJWTService.setTokenJWT(token);
 			
 			String subject = tokenJWTService.getSubject(token);
-			UserDetails client = clientRepository.findByEmail(subject);
+			UserDetails client = clienteRepository.findByEmail(subject);
 			var authentication = new UsernamePasswordAuthenticationToken(client, null, client.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}

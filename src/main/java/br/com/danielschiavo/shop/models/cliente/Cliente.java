@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -53,9 +54,13 @@ public class Cliente implements UserDetails {
 	private String celular;
 	private String foto_perfil;
 	
-	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<Endereco> enderecos = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Cartao> cartoes = new ArrayList<>();
 	
 	public Cliente(ClienteDTO clienteDTO) {
 		this.cpf = clienteDTO.cpf();

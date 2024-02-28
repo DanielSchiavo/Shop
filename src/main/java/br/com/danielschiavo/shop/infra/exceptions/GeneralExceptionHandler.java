@@ -34,6 +34,12 @@ public class GeneralExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new SimpleMessage(message));
     }
     
+    @ExceptionHandler(ValidacaoException.class)
+    public ResponseEntity<SimpleMessage> fileNotFound(ValidacaoException ex) {
+    	String message = ex.getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleMessage(message));
+    }
+    
     private record ErrorDataValidationDTO(String field, String message) {
         public ErrorDataValidationDTO(FieldError erro) {
             this(erro.getField(), erro.getDefaultMessage());

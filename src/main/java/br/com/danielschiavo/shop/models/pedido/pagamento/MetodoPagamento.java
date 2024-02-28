@@ -1,4 +1,4 @@
-package br.com.danielschiavo.shop.models.pedido;
+package br.com.danielschiavo.shop.models.pedido.pagamento;
 
 public enum MetodoPagamento {
 	CARTAO_CREDITO,

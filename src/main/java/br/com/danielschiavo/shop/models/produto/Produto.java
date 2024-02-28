@@ -2,13 +2,18 @@ package br.com.danielschiavo.shop.models.produto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -50,6 +55,12 @@ public class Produto {
 	@JoinColumn(name = "sub_category_id")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private SubCategoria sub_categoria;
+	
+    @ElementCollection(targetClass = TipoEntrega.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "produtos_tipo_entrega", joinColumns = @JoinColumn(name = "produto_id"))
+    @Column(name = "tipo_entrega")
+    private Set<TipoEntrega> tiposEntrega = new HashSet<>();
 
 	@ElementCollection
 	@CollectionTable(

@@ -21,8 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.com.danielschiavo.shop.models.cliente.AtualizarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.ClientePaginaInicialDTO;
-import br.com.danielschiavo.shop.models.cliente.DetalharClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
+import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MensagemEFotoPerfilDTO;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.services.ClienteService;
@@ -40,33 +40,33 @@ public class ClienteController {
 
 	@PostMapping("/registrar/cliente")
 	@Transactional
-	public ResponseEntity<DetalharClienteDTO> cadastrarCliente(@RequestBody @Valid ClienteDTO clientDTO,
+	public ResponseEntity<MostrarClienteDTO> cadastrarCliente(@RequestBody @Valid ClienteDTO clientDTO,
 			UriComponentsBuilder uriBuilder) {
 		Cliente cliente = clienteService.cadastrarCliente(clientDTO);
 		
 		var uri = uriBuilder.path("/shop/cliente/{id}").buildAndExpand(cliente.getId()).toUri();
-		return ResponseEntity.created(uri).body(new DetalharClienteDTO(cliente));
+		return ResponseEntity.created(uri).body(new MostrarClienteDTO(cliente));
 	}
 	
 	@PutMapping("/cliente/{id}")
 	@Transactional
-	public ResponseEntity<DetalharClienteDTO> atualizarClientePorId(@PathVariable Long id,
+	public ResponseEntity<MostrarClienteDTO> atualizarClientePorId(@PathVariable Long id,
 			@RequestBody AtualizarClienteDTO updateClientDTO) {
 		Cliente cliente = clienteService.atualizarClientePorId(id, updateClientDTO);
 
-		return ResponseEntity.ok(new DetalharClienteDTO(cliente));
+		return ResponseEntity.ok(new MostrarClienteDTO(cliente));
 	}
 	
 	@GetMapping("/cliente")
 	public ResponseEntity<?> detalharCliente() {
-		DetalharClienteDTO detalharClienteDTO = clienteService.detalharClientePorId();
+		MostrarClienteDTO detalharClienteDTO = clienteService.detalharClientePorId();
 		
 		return ResponseEntity.ok(detalharClienteDTO);
 	}
 
 	@GetMapping("/admin/cliente/{id}")
 	public ResponseEntity<?> detalharClientePorIdMaisTodosOsPedidos(@PathVariable Long id) {
-		DetalharClienteDTO detalharClientePorIdMaisTodosOsPedidos = clienteService.detalharClientePorIdMaisTodosOsPedidos(id);
+		MostrarClienteDTO detalharClientePorIdMaisTodosOsPedidos = clienteService.detalharClientePorIdMaisTodosOsPedidos(id);
 		
 		return ResponseEntity.ok(detalharClientePorIdMaisTodosOsPedidos);
 	}
@@ -88,12 +88,12 @@ public class ClienteController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/cliente/{id}/pagina-inicial")
-	public ResponseEntity<ClientePaginaInicialDTO> pegarDadosParaExibirNaPaginaInicial(@PathVariable Long id) {
-		ClientePaginaInicialDTO clientePaginaInicialDTO = clienteService.pegarDadosParaExibirNaPaginaInicial(id);
-		
-		return ResponseEntity.ok(clientePaginaInicialDTO);
-	}
+//	@GetMapping("/cliente/{id}/pagina-inicial")
+//	public ResponseEntity<MostrarClientePaginaInicialDTO> pegarDadosParaExibirNaPaginaInicial(@PathVariable Long id) {
+//		MostrarClientePaginaInicialDTO clientePaginaInicialDTO = clienteService.pegarDadosParaExibirNaPaginaInicial(id);
+//		
+//		return ResponseEntity.ok(clientePaginaInicialDTO);
+//	}
 	
 	@DeleteMapping("/admin/cliente/{id}")
 	public ResponseEntity<?> deletarClientePorId(@PathVariable Long id) {
@@ -102,7 +102,7 @@ public class ClienteController {
 	}
 	
 	@GetMapping("/admin/cliente")
-	public ResponseEntity<Page<DetalharClienteDTO>> detalharTodosClientes(Pageable pageable) {
+	public ResponseEntity<Page<MostrarClienteDTO>> detalharTodosClientes(Pageable pageable) {
 		var client = clienteService.pegarTodosClientes(pageable);
 		return ResponseEntity.ok(client);
 	}

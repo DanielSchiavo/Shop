@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.danielschiavo.shop.models.subcategoria.DetalhandoSubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.UpdateSubCategoryDTO;
@@ -37,19 +37,19 @@ public class SubCategoryController {
 	
 	@PostMapping("/admin/sub-categoria")
 	@Transactional
-	public ResponseEntity<DetalhandoSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid SubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<MostrarSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid SubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
 		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
 		
 		var uri = uriBuilder.path("/shop/admin/sub-categoria/{id}").buildAndExpand(subCategoria.getId()).toUri();
-		return ResponseEntity.created(uri).body(new DetalhandoSubCategoriaDTO(subCategoria));
+		return ResponseEntity.created(uri).body(new MostrarSubCategoriaDTO(subCategoria));
 	}
 	
 	@PutMapping("/admin/sub-categoria/{id}")
 	@Transactional
-	public ResponseEntity<DetalhandoSubCategoriaDTO> alterarSubCategoriaPorId(@PathVariable Long id, @RequestBody UpdateSubCategoryDTO categoryDTO) {
+	public ResponseEntity<MostrarSubCategoriaDTO> alterarSubCategoriaPorId(@PathVariable Long id, @RequestBody UpdateSubCategoryDTO categoryDTO) {
 		var subCategoria = subCategoriaService.alterarSubCategoriaPorId(id, categoryDTO);
 		
-		return ResponseEntity.ok(new DetalhandoSubCategoriaDTO(subCategoria));
+		return ResponseEntity.ok(new MostrarSubCategoriaDTO(subCategoria));
 	}
 	
 	@DeleteMapping("/admin/sub-categoria/{id}")

@@ -56,11 +56,7 @@ public class ProdutoService {
 	public byte[] pegarPrimeiraImagemProduto(List<ArquivosProduto> listaArquivosProduto) {
 	    for (ArquivosProduto arquivosProduto : listaArquivosProduto) {
 	        if (arquivosProduto.getPosicao() == 0) {
-				try {
-					return fileService.pegarBytesArquivoProduto(arquivosProduto.getNome());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				return fileService.pegarBytesArquivoProduto(arquivosProduto.getNome());
 	        }
 	    }
 		return null;
@@ -126,12 +122,7 @@ public class ProdutoService {
 		arquivosProduto.forEach(arquivo -> {			
 				String nome = arquivo.getNome();
 				byte[] arquivoProduto = null;
-				try {
-					arquivoProduto = fileService.pegarBytesArquivoProduto(nome);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				arquivoProduto = fileService.pegarBytesArquivoProduto(nome);
 				String tipo = null;
 				if (nome.endsWith("jpg") || nome.endsWith("jpeg")) {
 					tipo = "image";
