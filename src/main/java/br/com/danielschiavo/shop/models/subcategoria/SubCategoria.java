@@ -1,6 +1,9 @@
 package br.com.danielschiavo.shop.models.subcategoria;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import br.com.danielschiavo.shop.models.categoria.Categoria;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,8 +35,9 @@ public class SubCategoria {
 	@Column(length = 80, unique = true)
 	private String nome;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "categoria_id", nullable = false, referencedColumnName = "id")
+	@JsonBackReference
 	private Categoria categoria;
 
 }

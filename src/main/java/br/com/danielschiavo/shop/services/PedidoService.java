@@ -2,8 +2,6 @@ package br.com.danielschiavo.shop.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
+import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoDTO;
+import br.com.danielschiavo.shop.models.cartao.Cartao;
+import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.MostrarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.MostrarProdutoDoPedidoDTO;
@@ -21,9 +22,11 @@ import br.com.danielschiavo.shop.models.pedido.entrega.EnderecoPedido;
 import br.com.danielschiavo.shop.models.pedido.entrega.Entrega;
 import br.com.danielschiavo.shop.models.pedido.itempedido.AdicionarItemPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.itempedido.ItemPedido;
+import br.com.danielschiavo.shop.models.pedido.pagamento.CartaoPedido;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
 import br.com.danielschiavo.shop.models.pedido.pagamento.Pagamento;
 import br.com.danielschiavo.shop.models.pedido.pagamento.StatusPagamento;
+import br.com.danielschiavo.shop.models.pedido.validacoes.ValidadorCriarNovoPedido;
 import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
@@ -52,6 +55,21 @@ public class PedidoService {
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
+	
+	@Autowired
+	private ProdutoService produtoService;
+	
+	@Autowired
+	private EnderecoService enderecoService;
+	
+	@Autowired
+	private CartaoService cartaoService;
+	
+	@Autowired
+	private CarrinhoService carrinhoService;
+	
+	@Autowired
+	private List<ValidadorCriarNovoPedido> validador;
 
 	public Page<MostrarPedidoDTO> pegarPedidosUsuario(Pageable pageable) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
@@ -81,18 +99,37 @@ public class PedidoService {
 	}
 
 	@Transactional
-	public void criarPedido(CriarPedidoDTO pedidoDTO) {
-		List<Long> ids = pedidoDTO.items().stream().map(AdicionarItemPedidoDTO::idProduto).collect(Collectors.toList());
+	public MostrarPedidoDTO criarPedidoBotaoComprarAgoraEComprarDoCarrinho(CriarPedidoDTO pedidoDTO) {
+		validador.forEach(v -> v.validar(pedidoDTO));
 
-		List<Produto> produtos = produtoRepository.findAllByIdAndAtivoTrue(ids);
-
-		verificarSeEstaFaltandoProduto(ids, produtos);
+		Pedido pedido = null;
+		if (pedidoDTO.item() != null) {
+			Long idProduto = pedidoDTO.item().idProduto();
+			produtoService.verificarSeProdutoExistePorIdEAtivoTrue(idProduto);
+			
+			pedido = criarEntidadePedidoERelacionamentos(pedidoDTO, null);
+		}
+		else {
+			List<MostrarItemCarrinhoDTO> produtosCarrinho = carrinhoService.pegarItensNoCarrinhoCliente();
+			
+			pedido = criarEntidadePedidoERelacionamentos(pedidoDTO, produtosCarrinho);
+		}
 		
-		criarEntidadePedidoESalvar(pedidoDTO);
-
+		List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = new ArrayList<>();
+		pedido.getItemsPedido().forEach(itemPedido -> {
+			byte[] primeiraImagem = filesStorageService.pegarBytesPrimeiraImagemProduto(itemPedido.getIdProduto());
+			
+			listaMostrarProdutoDoPedidoDTO.add(new MostrarProdutoDoPedidoDTO(itemPedido, primeiraImagem));
+		});
+		
 		processarPagamento(pedidoDTO);
-
+		
 		processarEntrega(pedidoDTO);
+		
+		pedidoRepository.save(pedido);
+		
+		
+		return new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
 	}
 
 	private void processarEntrega(CriarPedidoDTO pedidoDTO) {
@@ -140,24 +177,17 @@ public class PedidoService {
 			System.out.println("Gerar QR Code Píx");
 			break;
 		}
-
-		case TRANSFERENCIA_BANCARIA: {
-			System.out.println("Transferencia bancária");
-			break;
-		}
 		}
 	}
 
-	private Pedido criarEntidadePedidoESalvar(CriarPedidoDTO pedidoDTO) {
+	private Pedido criarEntidadePedidoERelacionamentos(CriarPedidoDTO pedidoDTO, List<MostrarItemCarrinhoDTO> produtosCarrinho) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		
-		var idEndereco = pedidoDTO.entrega().idEndereco();
-
+		Long idEndereco = pedidoDTO.entrega().idEndereco();
 		EnderecoPedido enderecoPedido = null;
-		
 		if (idEndereco != null) {
-			var endereco = enderecoRepository.findById(idEndereco).get();
+			Endereco endereco = enderecoService.verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
 
 			enderecoPedido = new EnderecoPedido(endereco.getCep(), 
 												endereco.getRua(), 
@@ -168,37 +198,50 @@ public class PedidoService {
 												endereco.getEstado());
 		}
 		
+		Long idCartao = pedidoDTO.pagamento().idCartao();
+		CartaoPedido cartaoPedido = null;
+		if (idCartao != null) {
+			Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao);
+			
+			cartaoPedido = new CartaoPedido(cartao.getNomeBanco(),
+											cartao.getNumeroCartao(),
+											cartao.getNomeNoCartao(),
+											cartao.getValidadeCartao(),
+											pedidoDTO.pagamento().numeroParcelas(),
+											cartao.getTipoCartao());
+		}
+		
+		MetodoPagamento metodoPagamentoDTO = pedidoDTO.pagamento().metodoPagamento();
 		var pedido = new Pedido(cliente, cliente.getNome(), cliente.getCpf(), StatusPedido.A_PAGAR);
-		var pagamento = new Pagamento(MetodoPagamento.BOLETO, StatusPagamento.EM_PROCESSAMENTO, pedido);
+		var pagamento = new Pagamento(metodoPagamentoDTO, StatusPagamento.EM_PROCESSAMENTO, cartaoPedido, pedido);
 		var entrega = new Entrega(pedido, pedidoDTO.entrega().tipoEntrega(), enderecoPedido);
 		
-		List<ItemPedido> itemsPedido = pedido.getItemsPedido();
-		pedidoDTO.items().forEach(adicionarItemPedidoDTO -> {
-			Produto produto = produtoRepository.findById(adicionarItemPedidoDTO.idProduto()).orElseThrow();
+		if (pedidoDTO.item() != null) {
+			AdicionarItemPedidoDTO adicionarItemPedidoDTO = pedidoDTO.item();
+			Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(adicionarItemPedidoDTO.idProduto());
 			ArquivosProduto first = produto.getArquivosProduto().stream().filter(arquivoProduto -> arquivoProduto.getPosicao() == 0).findFirst().get();
-			
-			itemsPedido.add(new ItemPedido(produto, adicionarItemPedidoDTO.quantidade(), first.getNome()));
-		});
-		
+			ItemPedido itemPedido = new ItemPedido(produto.getPreco(), 
+									    adicionarItemPedidoDTO.quantidade(), 
+									    produto.getId(), 
+									    produto.getNome(),
+									    first.getNome());
+			pedido.getItemsPedido().add(itemPedido);
+		}
+		else {
+			produtosCarrinho.forEach(p -> {
+				Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(p.idProduto());
+				ItemPedido itemPedido = new ItemPedido(produto.getPreco(),
+												   	   produto.getQuantidade(),
+												   	   produto.getId(),
+												   	   produto.getNome(),
+												   	   produto.pegarPrimeiraImagem(produto.getArquivosProduto()));
+				pedido.getItemsPedido().add(itemPedido);
+			});
+		}
 		pedido.setPagamento(pagamento);
 		pedido.setEntrega(entrega);
 
-		pedidoRepository.save(pedido);
-		
 		return pedido;
-		
-	}
-
-	private void verificarSeEstaFaltandoProduto(List<Long> ids, List<Produto> produtos) {
-		Set<Long> idsEncontrados = produtos.stream().map(Produto::getId).collect(Collectors.toSet());
-
-		List<Long> idsNaoEncontrados = ids.stream().filter(id -> !idsEncontrados.contains(id))
-				.collect(Collectors.toList());
-
-		if (!idsNaoEncontrados.isEmpty()) {
-			throw new RuntimeException("Produtos não encontrados para os IDs: " + idsNaoEncontrados);
-		}
-
 	}
 
 }

@@ -3,7 +3,7 @@ package br.com.danielschiavo.shop.models.produto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
+import br.com.danielschiavo.shop.models.categoria.MostrarCategoriaComSubCategoriaDTO;
 
 public record DetalharProdutoDTO(
 		Long id, 
@@ -12,7 +12,7 @@ public record DetalharProdutoDTO(
 		BigDecimal preco,
 		Integer quantidade,
 		Boolean ativo,
-		SubCategoria subCategoria,
+		MostrarCategoriaComSubCategoriaDTO categoria,
 		List<MostrarArquivosProdutoDTO> arquivos
 		) {
 	
@@ -24,7 +24,7 @@ public record DetalharProdutoDTO(
 			produto.getPreco(),
 			produto.getQuantidade(),
 			produto.getAtivo(),
-			produto.getSub_categoria(),
+			new MostrarCategoriaComSubCategoriaDTO(produto.getSubCategoria(), produto.getCategoria()),
 			arquivos
 			);
 	}

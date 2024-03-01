@@ -59,7 +59,7 @@ public class CartaoService {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		
-		var pageCartao = cartaoRepository.findAllByCliente(cliente, pageable);
+		 Page<Cartao> pageCartao = cartaoRepository.findAllByCliente(cliente, pageable);
 		return pageCartao.map(MostrarCartaoDTO::converterParaMostrarCartaoDTO);
 	}
 	
@@ -91,6 +91,20 @@ public class CartaoService {
 			throw new ValidacaoException("ID do cartão de número: " + id + " não existe");
 		}
 		
+	}
+
+	public Cartao verificarSeCartaoExistePorIdCartaoECliente(Long idCartao) {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		var cliente = clienteRepository.getReferenceById(idCliente);
+		
+		Optional<Cartao> optionalCartao = cartaoRepository.findByIdAndCliente(idCartao, cliente);
+		
+		if (optionalCartao.isPresent()) {
+			return optionalCartao.get();
+		}
+		else {
+			throw new ValidacaoException("Não existe o cartão de ID número " + idCartao + " para o cliente de ID número " + idCliente);
+		}
 	}
 	
 }

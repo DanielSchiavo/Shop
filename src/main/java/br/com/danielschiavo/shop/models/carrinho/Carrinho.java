@@ -5,12 +5,13 @@ import java.util.List;
 
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -36,12 +37,16 @@ public class Carrinho {
 	@OneToOne
 	private Cliente cliente;
 
-	@OneToMany(mappedBy = "carrinho" , cascade = CascadeType.ALL)
-    private List<ItemCarrinho> itensCarrinho;
+	@ElementCollection
+	@CollectionTable(
+			name = "carrinhos_items",
+			joinColumns = @JoinColumn(name = "carrinho_id")
+			)
+    private List<ItemCarrinho> itemsCarrinho;
 	
 	public Carrinho(Cliente cliente, Long produtoId, Integer quantidade) {
 		this.cliente = cliente;
-		this.itensCarrinho = new ArrayList<>();
-		itensCarrinho.add(new ItemCarrinho(null, produtoId, quantidade, this));		
+		this.itemsCarrinho = new ArrayList<>();
+		itemsCarrinho.add(new ItemCarrinho(produtoId, quantidade));		
 	}
 }

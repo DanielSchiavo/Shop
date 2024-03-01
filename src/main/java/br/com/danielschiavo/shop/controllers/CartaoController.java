@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.danielschiavo.shop.models.cartao.CartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.MostrarCartaoDTO;
 import br.com.danielschiavo.shop.services.CartaoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
+@SecurityRequirement(name = "bearer-key")
 public class CartaoController {
 
 	@Autowired

@@ -26,10 +26,12 @@ import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MensagemEFotoPerfilDTO;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.services.ClienteService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
+@SecurityRequirement(name = "bearer-key")
 public class ClienteController {
 
 	@Autowired
@@ -39,7 +41,6 @@ public class ClienteController {
 	private ClienteRepository clientRepository;
 
 	@PostMapping("/registrar/cliente")
-	@Transactional
 	public ResponseEntity<MostrarClienteDTO> cadastrarCliente(@RequestBody @Valid ClienteDTO clientDTO,
 			UriComponentsBuilder uriBuilder) {
 		Cliente cliente = clienteService.cadastrarCliente(clientDTO);
@@ -49,7 +50,6 @@ public class ClienteController {
 	}
 	
 	@PutMapping("/cliente/{id}")
-	@Transactional
 	public ResponseEntity<MostrarClienteDTO> atualizarClientePorId(@PathVariable Long id,
 			@RequestBody AtualizarClienteDTO updateClientDTO) {
 		Cliente cliente = clienteService.atualizarClientePorId(id, updateClientDTO);
@@ -73,7 +73,6 @@ public class ClienteController {
 
 
 	@PutMapping("/cliente/{id}/foto-perfil")
-	@Transactional
 	public ResponseEntity<MensagemEFotoPerfilDTO> atualizarFotoPerfil(@PathVariable Long id,
 			@RequestParam("foto_perfil") MultipartFile novaImagem) {
 		MensagemEFotoPerfilDTO mensagemEFotoPerfilDTO = clienteService.atualizarFotoPerfil(id, novaImagem);

@@ -13,21 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.MostrarPedidoDTO;
 import br.com.danielschiavo.shop.services.PedidoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
+@SecurityRequirement(name = "bearer-key")
 public class PedidoController {
 
 	@Autowired
 	private PedidoService pedidoService;
 	
 	@PostMapping("/pedido")
-	public ResponseEntity<?> criarPedido(@RequestBody @Valid CriarPedidoDTO pedidoDTO) {
-		pedidoService.criarPedido(pedidoDTO);
+	public ResponseEntity<?> criarPedidoBotaoComprarAgoraEComprarDoCarrinho(@RequestBody @Valid CriarPedidoDTO pedidoDTO) {
+		pedidoService.criarPedidoBotaoComprarAgoraEComprarDoCarrinho(pedidoDTO);
 		
 		return ResponseEntity.ok().build();
-	}
+	}	
 	
 	@GetMapping("/pedido")
 	public ResponseEntity<Page<MostrarPedidoDTO>> pegarPedidosUsuario(Pageable pageable) {

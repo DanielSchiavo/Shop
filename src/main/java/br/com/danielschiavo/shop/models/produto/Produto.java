@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import br.com.danielschiavo.shop.models.categoria.Categoria;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import jakarta.persistence.CollectionTable;
@@ -52,9 +53,13 @@ public class Produto {
 	@Column(nullable = false, columnDefinition = "BOOLEAN")
 	private Boolean ativo;
 
-	@JoinColumn(name = "sub_category_id")
+	@JoinColumn(name = "sub_categoria_id")
 	@ManyToOne(fetch = FetchType.EAGER)
-	private SubCategoria sub_categoria;
+	private SubCategoria subCategoria;
+	
+	@JoinColumn(name = "categoria_id")
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Categoria categoria;
 	
     @ElementCollection(targetClass = TipoEntrega.class)
     @Enumerated(EnumType.STRING)
@@ -75,7 +80,7 @@ public class Produto {
 		this.preco = produtoDTO.preco();
 		this.quantidade = produtoDTO.quantidade();
 		this.ativo = produtoDTO.ativo();
-		this.sub_categoria = subCategoria;
+		this.subCategoria = subCategoria;
 	}
 
 	public void atualizarAtributos(AtualizarProdutoDTO atualizarProdutoDTO) {

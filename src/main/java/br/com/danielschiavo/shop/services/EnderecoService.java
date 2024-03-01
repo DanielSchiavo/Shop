@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
@@ -93,6 +94,18 @@ public class EnderecoService {
 		
 		var pageEndereco = enderecoRepository.findAllByCliente(cliente);
 		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaEnderecoDTO).toList();
+	}
+
+	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco) {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		var cliente = clienteRepository.getReferenceById(idCliente);
+		Optional<Endereco> optionalEndereco = enderecoRepository.findByIdAndCliente(idEndereco, cliente);
+		if (optionalEndereco.isPresent()) {
+			return optionalEndereco.get();
+		}
+		else {
+			throw new ValidacaoException("Não existe Endereço com o ID " + idEndereco + " cadastrado para o Cliente ID " + cliente.getId());
+		}
 	}
 	
 }

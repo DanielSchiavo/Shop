@@ -1,8 +1,6 @@
 package br.com.danielschiavo.shop.infra.exceptions;
 
 
-import jakarta.persistence.EntityNotFoundException;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -13,13 +11,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @RestControllerAdvice
 public class GeneralExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<SimpleMessage> tratarErro404(EntityNotFoundException ex) {
+    public ResponseEntity<?> tratarErro404(EntityNotFoundException ex) {
     	String message = ex.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new SimpleMessage(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -29,15 +29,15 @@ public class GeneralExceptionHandler {
     }
     
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<SimpleMessage> fileNotFound(FileNotFoundException ex) {
+    public ResponseEntity<?> fileNotFound(FileNotFoundException ex) {
     	String message = ex.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new SimpleMessage(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
     
     @ExceptionHandler(ValidacaoException.class)
-    public ResponseEntity<SimpleMessage> fileNotFound(ValidacaoException ex) {
+    public ResponseEntity<?> fileNotFound(ValidacaoException ex) {
     	String message = ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleMessage(message));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
     
     private record ErrorDataValidationDTO(String field, String message) {
@@ -46,10 +46,10 @@ public class GeneralExceptionHandler {
         }
     }
     
-    private record SimpleMessage(String message) {
-    	public SimpleMessage(String message) {
-    		this.message = message;
-    	}
-    }
+//    private record SimpleMessage(String message) {
+//    	public SimpleMessage(String message) {
+//    		this.message = message;
+//    	}
+//    }
 
 }

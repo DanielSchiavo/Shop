@@ -14,10 +14,12 @@ import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.DeletarItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.services.CarrinhoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
+@SecurityRequirement(name = "bearer-key")
 public class CarrinhoController {
 	
 	@Autowired

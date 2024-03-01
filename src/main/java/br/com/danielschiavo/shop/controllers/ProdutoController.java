@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +23,7 @@ import br.com.danielschiavo.shop.models.produto.DetalharProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.MostrarProdutosDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.services.ProdutoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/shop")
@@ -47,8 +47,8 @@ public class ProdutoController {
 	}
 	
 	@PostMapping(path = "/admin/produto" , consumes = "multipart/form-data")
-	@Transactional
 	@ResponseBody
+	@SecurityRequirement(name = "bearer-key")
 	public ResponseEntity<MostrarProdutosDTO> cadastrarProduto(
 			@RequestParam(name = "produto", required = true) String jsonProduto,
 			@RequestPart(name = "arquivos", required = true) MultipartFile[] multipartArquivos,
@@ -63,7 +63,7 @@ public class ProdutoController {
 	}
 
 	@PutMapping("/admin/produto/{id}")
-	@Transactional
+	@SecurityRequirement(name = "bearer-key")
 	public ResponseEntity<?> alterarProdutoPorId(
 			@PathVariable Long id,
 			@RequestParam(name = "produto", required = false) String jsonProduto,
@@ -76,7 +76,7 @@ public class ProdutoController {
 	}
 
 	@DeleteMapping("/admin/produto/{id}")
-	@Transactional
+	@SecurityRequirement(name = "bearer-key")
 	public ResponseEntity<?> deletarProdutoPorId(@PathVariable Long id) {
 		produtoService.deletarProdutoPorId(id);
 		return ResponseEntity.noContent().build();

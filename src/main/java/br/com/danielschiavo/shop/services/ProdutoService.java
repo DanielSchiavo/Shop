@@ -13,11 +13,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
+import br.com.danielschiavo.shop.models.carrinho.Carrinho;
 import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.AtualizarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.DetalharProdutoDTO;
@@ -26,7 +28,7 @@ import br.com.danielschiavo.shop.models.produto.MostrarProdutosDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.models.produto.ProdutoDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
-import br.com.danielschiavo.shop.repositories.ItemCarrinhoRepository;
+import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
 
 @Service
@@ -41,7 +43,7 @@ public class ProdutoService {
 	@Autowired
 	private SubCategoriaService subCategoriaService;
 	
-	private ItemCarrinhoRepository itemCarrinhoRepository;
+	private CarrinhoRepository carrinhoRepository;
 	
 	private final int MAX_FILES = 10;
 
@@ -62,19 +64,23 @@ public class ProdutoService {
 		return null;
 	}
 
+	@Transactional
 	public void deletarProdutoPorId(Long id) {
-		produtoRepository.deleteById(id);
-		List<Optional<ItemCarrinho>> optionalItemCarrinho = itemCarrinhoRepository.findAllByProdutoId(id);
-		
-		if (!optionalItemCarrinho.isEmpty()) {
-			optionalItemCarrinho.forEach(item -> {
-				itemCarrinhoRepository.delete(item.get());
-			});
-		}
+	    produtoRepository.deleteById(id);
+
+	    List<Carrinho> carrinhos = carrinhoRepository.findCarrinhosByProdutoId(id);
+
+	    if (carrinhos.isEmpty()) {
+		    carrinhos.forEach(carrinho -> {
+		        carrinho.getItemsCarrinho().removeIf(item -> item.getProdutoId().equals(id));
+		        carrinhoRepository.save(carrinho);
+	    });
+	    }
 	}
 
-	public MostrarProdutosDTO criarNovoProduto(Produto product, MultipartFile[] files, int[] position) throws IOException {
-		Produto productFlush = produtoRepository.saveAndFlush(product);
+	@Transactional
+	public MostrarProdutosDTO criarNovoProduto(Produto produto, MultipartFile[] files, int[] position) {
+		Produto productFlush = produtoRepository.saveAndFlush(produto);
 
 		List<String> productFileName = fileService.pegarNomeArquivoProduto(files, position, productFlush.getId());
 		fileService.salvarNoDiscoArquivosProduto(files, productFileName);
@@ -84,9 +90,10 @@ public class ProdutoService {
 		produtoRepository.save(productFlush);
 
 		byte[] productFirstImage = fileService.pegarBytesArquivoProduto(productFileName.get(0)); // ESTÁ ERRADO!
-		return new MostrarProdutosDTO(product, productFirstImage);
+		return new MostrarProdutosDTO(produto, productFirstImage);
 	}
 
+	@Transactional
 	public void atualizarArquivos(MultipartFile[] arquivos, int[] posicoes, Produto product) {
 		List<ArquivosProduto> productFiles = product.getArquivosProduto();
 		Iterator<ArquivosProduto> iterator = productFiles.iterator();
@@ -206,8 +213,8 @@ public class ProdutoService {
 			AtualizarProdutoDTO atualizarProdutoDTO = transformarStringJsonParaAtualizarProdutoDTO(produtoJson);
 			
 			if (atualizarProdutoDTO.subCategoriaId() != null) {
-				SubCategoria subCategory = subCategoriaService.verificarId(atualizarProdutoDTO.subCategoriaId());
-				produto.setSub_categoria(subCategory);
+				SubCategoria subCategory = subCategoriaService.verificarSeExisteIdSubCategoria(atualizarProdutoDTO.subCategoriaId());
+				produto.setSubCategoria(subCategory);
 			}
 			
 			produto.atualizarAtributos(atualizarProdutoDTO);
@@ -219,6 +226,7 @@ public class ProdutoService {
 		}
 	}
 
+	@Transactional
 	public MostrarProdutosDTO cadastrarProduto(String jsonProduto, MultipartFile[] multipartArquivos, String stringPosicoes) {
 		ProdutoDTO produtoDTO = transformarStringJsonEmProdutoDTO(jsonProduto);
 		int[] posicoes = transformarStringPosicaoEmArrayInt(stringPosicoes);
@@ -235,18 +243,16 @@ public class ProdutoService {
 			throw new RuntimeException("O número máximo de imagens e vídeos é " + MAX_FILES + "!");
 		}
 		
-		SubCategoria subCategoria = subCategoriaService.verificarId(produtoDTO.subCategoriaId());
+		SubCategoria subCategoria = subCategoriaService.verificarSeExisteIdSubCategoria(produtoDTO.subCategoriaId());
 		
 		Produto produto = new Produto(produtoDTO, subCategoria);
-		MostrarProdutosDTO mostrarProdutosDTO = null;
-		try {
-			mostrarProdutosDTO = criarNovoProduto(produto, multipartArquivos, posicoes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		MostrarProdutosDTO mostrarProdutosDTO = criarNovoProduto(produto, multipartArquivos, posicoes);
+		
 		return mostrarProdutosDTO;
 	}
 
+	@Transactional
 	public Produto alterarProdutoPorId(Long id, String jsonProduto, MultipartFile[] multipartArquivos, String stringPosicoes) {
 		Produto produto = produtoRepository.getReferenceById(id);
 		int[] posicoes = transformarStringPosicaoEmArrayInt(stringPosicoes);
@@ -275,5 +281,15 @@ public class ProdutoService {
 			e.printStackTrace();
 		}
 		return detalharProdutoDTO;
+	}
+
+	public Produto verificarSeProdutoExistePorIdEAtivoTrue(Long id) {
+		Optional<Produto> optionalProduto = produtoRepository.findByIdAndAtivoTrue(id);
+		if (!optionalProduto.isPresent()) {
+			return optionalProduto.get();
+		}
+		else {
+			throw new ValidacaoException("Não existe um produto ativo com o id " + id);
+		}
 	}
 }

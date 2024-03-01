@@ -2,12 +2,11 @@ package br.com.danielschiavo.shop.models.subcategoria;
 
 public record MostrarSubCategoriaDTO(
 			Long id,
-			String nomeSubCategoria,
-			String nomeCategoria
+			String nomeSubCategoria
 		) {
 
 	public MostrarSubCategoriaDTO(SubCategoria subCategoria) {
-		this(subCategoria.getId(), subCategoria.getNome(), subCategoria.getCategoria().getNome());
+		this(subCategoria.getId(), subCategoria.getNome());
 	}
-
+	
 }

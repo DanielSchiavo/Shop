@@ -48,9 +48,10 @@ public class Pagamento {
 	@OneToOne(mappedBy = "pagamento")
 	private Pedido pedido;
 	
-	public Pagamento(MetodoPagamento metodoPagamento, StatusPagamento statusPagamento, Pedido pedido) {
+	public Pagamento(MetodoPagamento metodoPagamento, StatusPagamento statusPagamento, CartaoPedido cartaoPedido, Pedido pedido) {
 		this.metodoPagamento = metodoPagamento;
 		this.statusPagamento = statusPagamento;
+		this.cartaoPedido = cartaoPedido;
 		this.pedido = pedido;
 	}
 }

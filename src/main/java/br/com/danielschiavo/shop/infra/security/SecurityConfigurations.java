@@ -11,6 +11,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
@@ -24,10 +28,10 @@ public class SecurityConfigurations {
 	            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	            .authorizeHttpRequests(req -> {
         			req.requestMatchers("/shop/admin/**").hasRole("ADMIN");
-        			req.requestMatchers("/shop/cliente/**").hasAnyRole("USER", "ADMIN");
+        			req.requestMatchers("/shop/cliente/**").hasRole("USER");
         			req.requestMatchers("/shop/publico/**").permitAll();
-        			req.requestMatchers("/shop/login").anonymous();
-        			req.requestMatchers("/shop/registrar/cliente").anonymous();
+        			req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
+        			req.requestMatchers("/shop/login", "/shop/registrar/cliente").anonymous();
 	                req.anyRequest().authenticated();
 	            })
 	            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

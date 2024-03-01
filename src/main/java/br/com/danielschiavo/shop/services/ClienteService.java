@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
@@ -39,6 +40,7 @@ public class ClienteService {
 	
 	private TokenJWTService tokenJWTService;
 
+	@Transactional
 	public Cliente cadastrarCliente(ClienteDTO clientDTO) {
 		Endereco endereco = null;
 		var cliente = new Cliente(clientDTO);
@@ -75,12 +77,14 @@ public class ClienteService {
 		return new MostrarClienteDTO(cliente);
 	}
 
+	@Transactional
 	public Cliente atualizarClientePorId(Long id, AtualizarClienteDTO updateClientDTO) {
 		Cliente cliente = clientRepository.getReferenceById(id);
 		cliente.atualizarAtributos(updateClientDTO);
 		return cliente;
 	}
 
+	@Transactional
 	public MensagemEFotoPerfilDTO atualizarFotoPerfil(Long id, MultipartFile novaImagem) {
 		Cliente cliente = clientRepository.getReferenceById(id);
 		
@@ -112,6 +116,7 @@ public class ClienteService {
 		}
 	}
 	
+	@Transactional
 	public void deletarFotoPerfil(Long id) {
 		Cliente cliente = clientRepository.findById(id).get();
 

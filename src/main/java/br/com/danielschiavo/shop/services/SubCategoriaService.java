@@ -3,15 +3,20 @@ package br.com.danielschiavo.shop.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.categoria.Categoria;
+import br.com.danielschiavo.shop.models.subcategoria.AlterarSubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaComCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
-import br.com.danielschiavo.shop.models.subcategoria.UpdateSubCategoryDTO;
-import br.com.danielschiavo.shop.repositories.CategoriaRepository;
 import br.com.danielschiavo.shop.repositories.SubCategoriaRepository;
 import jakarta.validation.Valid;
 
@@ -20,59 +25,67 @@ public class SubCategoriaService {
 
 	@Autowired
 	private SubCategoriaRepository subCategoriaRepository;
-
+	
 	@Autowired
-	private CategoriaRepository categoriaRepository;
+	private CategoriaService categoriaService;
 
-	public SubCategoria save(SubCategoriaDTO dto) {
-		var subCategory = new SubCategoria();
-		subCategory.setNome(dto.nome());
-		subCategory.setCategoria(categoriaRepository.getReferenceById(dto.categoria_id()));
-		subCategoriaRepository.save(subCategory);
-		return subCategory;
+	public Page<MostrarSubCategoriaComCategoriaDTO> listarSubCategorias(Pageable pageable) {
+		Page<SubCategoria> pageSubCategoria = subCategoriaRepository.findAll(pageable);
+		return pageSubCategoria.map(MostrarSubCategoriaComCategoriaDTO::converterSubCategoriaParaMostrarSubCategoriaComCategoriaDTO);
 	}
 
-	public SubCategoria getReferenceById(Long id) {
-		return subCategoriaRepository.getReferenceById(id);
-	}
-
-	public Page<SubCategoria> findAll(Pageable pageable) {
-		return subCategoriaRepository.findAll(pageable);
-	}
-
-	public void deleteById(Long id) {
-		subCategoriaRepository.deleteById(id);
-	}
-
-	public SubCategoria alterarSubCategoriaPorId(Long subCategoryId, UpdateSubCategoryDTO categoryDTO) {
-		SubCategoria subCategory = this.verificarId(subCategoryId);
-		if (categoryDTO.name() != null) {
-			subCategory.setNome(categoryDTO.name());
+	@Transactional
+	public MostrarSubCategoriaDTO alterarSubCategoriaPorId(Long idSubCategoria, AlterarSubCategoriaDTO alterarSubCategoriaDTO) {
+		SubCategoria subCategoria = this.verificarSeExisteIdSubCategoria(idSubCategoria);
+		if (alterarSubCategoriaDTO.nome() != null) {
+			subCategoria.setNome(alterarSubCategoriaDTO.nome());
 		}
-		if (categoryDTO.category_id() != null) {
-			Optional<Categoria> categoryOptional = categoriaRepository.findById(categoryDTO.category_id());
-			if (categoryOptional.isEmpty()) {
-				throw new RuntimeException("Não existe Categoria com esse ID");
-			}
-			subCategory.setCategoria(categoryOptional.get());
+		if (alterarSubCategoriaDTO.idCategoria() != null) {
+			Categoria categoria = categoriaService.verificarSeExisteIdCategoria(alterarSubCategoriaDTO.idCategoria());
+			subCategoria.setCategoria(categoria);
 		}
 		
-		return subCategoriaRepository.save(subCategory);
+		subCategoriaRepository.save(subCategoria);
+		
+		return new MostrarSubCategoriaDTO(subCategoria);
 	}
 
-	public SubCategoria verificarId(Long subcategoryid) {
-		Optional<SubCategoria> subCategoryOptional = subCategoriaRepository.findById(subcategoryid);
-	    if (subCategoryOptional.isPresent()) {
-	        SubCategoria subCategory = subCategoryOptional.get();
-	        return subCategory;
-	    } else {
-	    	throw new RuntimeException("Não existe Sub Categoria com esse ID");
-	    }
-	}
-
-	public SubCategoria cadastrarSubCategoria(@Valid SubCategoriaDTO dto) {
-		SubCategoria subCategoria = save(dto);
+	@Transactional
+	public SubCategoria cadastrarSubCategoria(@Valid SubCategoriaDTO subCategoriaDTO) {
+		Long idCategoria = subCategoriaDTO.categoria_id();
+		Categoria categoria = categoriaService.verificarSeExisteIdCategoria(idCategoria);
+		SubCategoria subCategoria = new SubCategoria(subCategoriaDTO.categoria_id(), subCategoriaDTO.nome(), categoria);
+		verificarSeNomeSubCategoriaJaExiste(subCategoria);
+//		categoria.getSubCategoria().add(subCategoria);
+		
+		subCategoriaRepository.save(subCategoria);
 		return subCategoria;
+	}
+	
+	@Transactional
+	public void deletarSubCategoriaPorId(Long id) {
+		SubCategoria subCategoria = verificarSeExisteIdSubCategoria(id);
+		subCategoriaRepository.delete(subCategoria);
+	}
+	
+	private void verificarSeNomeSubCategoriaJaExiste(SubCategoria subCategoria) {
+	    ExampleMatcher caseInsensitiveMatcher = ExampleMatcher.matchingAll()
+	            .withIgnoreCase("nome")
+	            .withIgnorePaths("id", "categoria.nome", "categoria.subCategoria")
+	            .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
+		Example<SubCategoria> example = Example.of(subCategoria, caseInsensitiveMatcher);
+		
+		if (subCategoriaRepository.exists(example)) {
+			throw new ValidacaoException("O nome da Sub Categoria de nome " + subCategoria.getNome() + " já existe para a Categoria de nome " + subCategoria.getCategoria().getNome());
+		}
+	}
+	
+	public SubCategoria verificarSeExisteIdSubCategoria(Long idSubCategoria) {
+		Optional<SubCategoria> optionalSubCategoria = subCategoriaRepository.findById(idSubCategoria);
+		if (!optionalSubCategoria.isPresent()) {
+			throw new ValidacaoException("Não existe categoria com o id " + idSubCategoria);
+		}
+		return optionalSubCategoria.get();
 	}
 
 }

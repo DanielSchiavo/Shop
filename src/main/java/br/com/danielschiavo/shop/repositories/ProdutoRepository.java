@@ -29,5 +29,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
 	@Query("SELECT p FROM Produto p WHERE p.id IN :ids AND p.ativo = true")
 	List<Produto> findAllByIdAndAtivoTrue(@Param("ids") List<Long> ids);
+	
+	Optional<Produto> findByIdAndAtivoTrue(Long id);
 
 }

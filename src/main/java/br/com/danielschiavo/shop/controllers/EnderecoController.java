@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import br.com.danielschiavo.shop.services.EnderecoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
+@SecurityRequirement(name = "bearer-key")
 public class EnderecoController {
 
 	@Autowired
@@ -29,16 +31,16 @@ public class EnderecoController {
 
 	@PostMapping("/cliente/endereco")
 	public ResponseEntity<MostrarEnderecoDTO> cadastrarNovoEndereco(@RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
-		MostrarEnderecoDTO detalharEnderecoDTO = enderecoService.cadastrarNovoEndereco(novoEnderecoDTO);
+		MostrarEnderecoDTO mostrarEnderecoDTO = enderecoService.cadastrarNovoEndereco(novoEnderecoDTO);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(detalharEnderecoDTO);
+		return ResponseEntity.status(HttpStatus.CREATED).body(mostrarEnderecoDTO);
 	}
 	
 	@GetMapping("/cliente/endereco")
 	public ResponseEntity<List<MostrarEnderecoDTO>> pegarEnderecosCliente() {
-		List<MostrarEnderecoDTO> detalharEnderecoDTO = enderecoService.pegarEnderecosCliente();
+		List<MostrarEnderecoDTO> mostrarEnderecoDTO = enderecoService.pegarEnderecosCliente();
 		
-		return ResponseEntity.status(HttpStatus.OK).body(detalharEnderecoDTO);
+		return ResponseEntity.status(HttpStatus.OK).body(mostrarEnderecoDTO);
 	}
 	
 	@PutMapping("/cliente/endereco/{id}")
