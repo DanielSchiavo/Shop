@@ -26,7 +26,7 @@ public record MostrarEnderecoDTO(
 				);
 	}
 
-	public static MostrarEnderecoDTO converterParaEnderecoDTO(Endereco endereco) {
+	public static MostrarEnderecoDTO converterParaMostrarEnderecoDTO(Endereco endereco) {
 		MostrarEnderecoDTO enderecoDTO = new MostrarEnderecoDTO(
 												endereco.getId(),
 												endereco.getCep(),

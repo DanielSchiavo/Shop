@@ -29,7 +29,7 @@ public class ItemPedido {
 		this.quantidade = quantidade;
 		this.idProduto = produto.getId();
 		this.nomeProduto = produto.getNome();
-		this.primeiraImagem = produto.pegarPrimeiraImagem(produto.getArquivosProduto());
+		this.primeiraImagem = produto.pegarNomePrimeiraImagem();
 		this.primeiraImagem = nomePrimeiraImagem;
 	}
 

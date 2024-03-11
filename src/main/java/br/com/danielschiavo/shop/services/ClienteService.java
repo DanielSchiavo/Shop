@@ -1,63 +1,58 @@
 package br.com.danielschiavo.shop.services;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
+import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.cliente.AtualizarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.MensagemEFotoPerfilDTO;
+import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
-import br.com.danielschiavo.shop.models.pedido.Pedido;
+import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
 
 @Service
 public class ClienteService {
 	
 	@Autowired
-	private ClienteRepository clientRepository;
+	private ClienteRepository clienteRepository;
 	
 	@Autowired
 	private EnderecoService enderecoService;
 	
 	@Autowired
-	private PedidoService pedidoService;
+	private FileStorageService fileService;
 	
 	@Autowired
-	private FilesStorageService fileService;
-	
 	private TokenJWTService tokenJWTService;
 
 	@Transactional
 	public Cliente cadastrarCliente(ClienteDTO clientDTO) {
-		Endereco endereco = null;
 		var cliente = new Cliente(clientDTO);
-		
+		System.out.println(" TESTE ");
 		if (clientDTO.endereco() != null) {
-			endereco = new Endereco(clientDTO, cliente);
+			Endereco endereco = new Endereco(clientDTO, cliente);
 			enderecoService.save(endereco);
 			cliente.getEnderecos().add(endereco);
+			System.out.println(" TESTE ");
 		}
 
-		clientRepository.save(cliente);
+		clienteRepository.save(cliente);
 		
 		return cliente;
 	}
 	
 	public Page<MostrarClienteDTO> pegarTodosClientes(Pageable pageable) {
-		Page<Cliente> pageClientes = clientRepository.findAll(pageable);
+		Page<Cliente> pageClientes = clienteRepository.findAll(pageable);
 		return pageClientes.map(this::converterParaDetalharClienteDTO);
 	}
 
@@ -67,60 +62,60 @@ public class ClienteService {
 
 	public MostrarClienteDTO detalharClientePorId() {
 		Long id = tokenJWTService.getClaimIdJWT();
-		Cliente cliente = clientRepository.findById(id).get();
-		return new MostrarClienteDTO(cliente);
-	}
-	
-	public MostrarClienteDTO detalharClientePorIdMaisTodosOsPedidos(Long id) {
-		Cliente cliente = clientRepository.findById(id).get();
-		List<Pedido> listPedidos = pedidoService.pegarPedidosPeloIdDoCliente(id);
+		Cliente cliente = clienteRepository.findById(id).get();
 		return new MostrarClienteDTO(cliente);
 	}
 
 	@Transactional
-	public Cliente atualizarClientePorId(Long id, AtualizarClienteDTO updateClientDTO) {
-		Cliente cliente = clientRepository.getReferenceById(id);
+	public Cliente atualizarClientePorId(AtualizarClienteDTO updateClientDTO) {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		var cliente = clienteRepository.getReferenceById(idCliente);
 		cliente.atualizarAtributos(updateClientDTO);
 		return cliente;
 	}
 
 	@Transactional
-	public MensagemEFotoPerfilDTO atualizarFotoPerfil(Long id, MultipartFile novaImagem) {
-		Cliente cliente = clientRepository.getReferenceById(id);
+	public ArquivoInfoDTO alterarFotoPerfil(AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		Cliente cliente = verificarSeClienteExistePorId(idCliente);
 		
-		String nomeFotoPerfil = fileService.gerarNovoNomeFotoPerfil(cliente.getId(), novaImagem);
-
-		cliente.setFoto_perfil(nomeFotoPerfil);
-		clientRepository.save(cliente);
+		String nomeNovaFotoPerfil = alterarFotoPerfilDTO.nomeNovaFotoPerfil();
 		
-		fileService.salvarNoDiscoFotoPerfil(nomeFotoPerfil, novaImagem);
+		fileService.verificarSeExisteFotoPerfilPorNome(nomeNovaFotoPerfil);
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(nomeNovaFotoPerfil);
 		
-		try {
-			byte[] bytesImagemPerfil = fileService.pegarFotoPerfil(nomeFotoPerfil);
-			String mensagem = "Alterou a imagem de perfil com sucesso! ";
-			return new MensagemEFotoPerfilDTO(mensagem, bytesImagemPerfil);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Erro ao recuperar foto do perfil");
-		}
+		cliente.setFotoPerfil(nomeNovaFotoPerfil);
+		clienteRepository.save(cliente);
+		
+		return arquivoInfoDTO;
 	}
 
 	public MostrarClientePaginaInicialDTO pegarDadosParaExibirNaPaginaInicial(Long id) {
-		Cliente cliente = clientRepository.findById(id).get();
-		try {
-			byte[] bytesFotoPerfil = fileService.pegarFotoPerfil(cliente.getFoto_perfil());
-			return new MostrarClientePaginaInicialDTO(cliente.getNome(), bytesFotoPerfil);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Erro ao recuperar foto do perfil");
-		}
+		Cliente cliente = clienteRepository.findById(id).get();
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+		return new MostrarClientePaginaInicialDTO(cliente.getNome(), arquivoInfoDTO.bytesArquivo());
 	}
 	
 	@Transactional
-	public void deletarFotoPerfil(Long id) {
-		Cliente cliente = clientRepository.findById(id).get();
-
-		fileService.deletarFotoPerfilNoDisco(cliente.getFoto_perfil());
+	public void deletarFotoPerfil() {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		Cliente cliente = verificarSeClienteExistePorId(idCliente);
+		if (cliente.getFotoPerfil().equals("Padrao.jpeg")) {
+			throw new ValidacaoException("O cliente não tem foto de perfil, ele já está com a foto padrão, portanto, não é possível deletar");
+		}
+		fileService.deletarFotoPerfilNoDisco(cliente.getFotoPerfil());
+		cliente.setFotoPerfil("Padrao.jpeg");
+		
+		clienteRepository.save(cliente);
+	}
+	
+	public Cliente verificarSeClienteExistePorId(Long id) {
+		Optional<Cliente> optionalCliente = clienteRepository.findById(id);
+		if (optionalCliente.isPresent()) {
+			return optionalCliente.get();
+		} else {
+			throw new ValidacaoException("Não existe um cliente com o id " + id);
+		}
 	}
 
 }

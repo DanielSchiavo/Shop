@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.danielschiavo.shop.models.categoria.MostrarCategoriaComSubCategoriaDTO;
+import br.com.danielschiavo.shop.models.produto.arquivosproduto.MostrarArquivosProdutoDTO;
 
 public record DetalharProdutoDTO(
 		Long id, 

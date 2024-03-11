@@ -13,6 +13,7 @@ import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
+import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.MostrarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.MostrarProdutoDoPedidoDTO;
@@ -27,12 +28,10 @@ import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
 import br.com.danielschiavo.shop.models.pedido.pagamento.Pagamento;
 import br.com.danielschiavo.shop.models.pedido.pagamento.StatusPagamento;
 import br.com.danielschiavo.shop.models.pedido.validacoes.ValidadorCriarNovoPedido;
-import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.Produto;
+import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
-import br.com.danielschiavo.shop.repositories.EnderecoRepository;
 import br.com.danielschiavo.shop.repositories.PedidoRepository;
-import br.com.danielschiavo.shop.repositories.ProdutoRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -45,17 +44,11 @@ public class PedidoService {
 	private TokenJWTService tokenJWTService;
 	
 	@Autowired
-	private FilesStorageService filesStorageService;
+	private FileStorageService fileService;
 
 	@Autowired
 	private ClienteRepository clienteRepository;
 
-	@Autowired
-	private EnderecoRepository enderecoRepository;
-
-	@Autowired
-	private ProdutoRepository produtoRepository;
-	
 	@Autowired
 	private ProdutoService produtoService;
 	
@@ -71,7 +64,7 @@ public class PedidoService {
 	@Autowired
 	private List<ValidadorCriarNovoPedido> validador;
 
-	public Page<MostrarPedidoDTO> pegarPedidosUsuario(Pageable pageable) {
+	public Page<MostrarPedidoDTO> pegarPedidosCliente(Pageable pageable) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 
@@ -80,13 +73,8 @@ public class PedidoService {
 		List<MostrarPedidoDTO> list = new ArrayList<>();
 
 		for (Pedido pedido : pagePedidos) {
-			List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = new ArrayList<>();
-			pedido.getItemsPedido().forEach(itemPedido -> {
-				System.out.println("AQUI " + itemPedido.getIdProduto() + " - " + itemPedido.getNomeProduto());
-				byte[] primeiraImagem = filesStorageService.pegarBytesPrimeiraImagemProduto(itemPedido.getIdProduto());
-				
-				listaMostrarProdutoDoPedidoDTO.add(new MostrarProdutoDoPedidoDTO(itemPedido, primeiraImagem));
-			});
+			List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = montarMostrarProdutoDoPedidoDTO(pedido);
+
 			var mostrarPedidoDTO = new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
 			list.add(mostrarPedidoDTO);
 		}
@@ -94,8 +82,21 @@ public class PedidoService {
 				pagePedidos.getTotalElements());
 	}
 
-	public List<Pedido> pegarPedidosPeloIdDoCliente(Long id) {
-		return pedidoRepository.findAllByClienteIdOrderByDataPedidoAsc(id);
+	public Page<MostrarPedidoDTO> pegarPedidosClientePorId(Long id, Pageable pageable) {
+		var cliente = clienteRepository.getReferenceById(id);
+
+		Page<Pedido> pagePedidos = pedidoRepository.findAllByCliente(cliente, pageable);
+
+		List<MostrarPedidoDTO> list = new ArrayList<>();
+
+		for (Pedido pedido : pagePedidos) {
+			List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = montarMostrarProdutoDoPedidoDTO(pedido);
+
+			var mostrarPedidoDTO = new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
+			list.add(mostrarPedidoDTO);
+		}
+		return new PageImpl<>(list, pagePedidos.getPageable(),
+				pagePedidos.getTotalElements());
 	}
 
 	@Transactional
@@ -103,24 +104,21 @@ public class PedidoService {
 		validador.forEach(v -> v.validar(pedidoDTO));
 
 		Pedido pedido = null;
+		//SE NÃO É PELO CARRINHO FAZ ISSO
 		if (pedidoDTO.item() != null) {
 			Long idProduto = pedidoDTO.item().idProduto();
 			produtoService.verificarSeProdutoExistePorIdEAtivoTrue(idProduto);
 			
 			pedido = criarEntidadePedidoERelacionamentos(pedidoDTO, null);
 		}
+		//SE É PELO CARRINHO FAZ ISSO
 		else {
 			List<MostrarItemCarrinhoDTO> produtosCarrinho = carrinhoService.pegarItensNoCarrinhoCliente();
 			
 			pedido = criarEntidadePedidoERelacionamentos(pedidoDTO, produtosCarrinho);
 		}
 		
-		List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = new ArrayList<>();
-		pedido.getItemsPedido().forEach(itemPedido -> {
-			byte[] primeiraImagem = filesStorageService.pegarBytesPrimeiraImagemProduto(itemPedido.getIdProduto());
-			
-			listaMostrarProdutoDoPedidoDTO.add(new MostrarProdutoDoPedidoDTO(itemPedido, primeiraImagem));
-		});
+		List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = montarMostrarProdutoDoPedidoDTO(pedido);
 		
 		processarPagamento(pedidoDTO);
 		
@@ -130,6 +128,17 @@ public class PedidoService {
 		
 		
 		return new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
+	}
+
+	private List<MostrarProdutoDoPedidoDTO> montarMostrarProdutoDoPedidoDTO(Pedido pedido) {
+		List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = new ArrayList<>();
+		pedido.getItemsPedido().forEach(itemPedido -> {
+			
+			ArquivoInfoDTO arquivoInfoDTO = fileService.pegarImagemPedidoPorNome(itemPedido.getPrimeiraImagem());
+			
+			listaMostrarProdutoDoPedidoDTO.add(new MostrarProdutoDoPedidoDTO(itemPedido, arquivoInfoDTO.bytesArquivo()));
+		});
+		return listaMostrarProdutoDoPedidoDTO;
 	}
 
 	private void processarEntrega(CriarPedidoDTO pedidoDTO) {
@@ -220,21 +229,24 @@ public class PedidoService {
 			AdicionarItemPedidoDTO adicionarItemPedidoDTO = pedidoDTO.item();
 			Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(adicionarItemPedidoDTO.idProduto());
 			ArquivosProduto first = produto.getArquivosProduto().stream().filter(arquivoProduto -> arquivoProduto.getPosicao() == 0).findFirst().get();
+			String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first.getNome(), produto.getId());
 			ItemPedido itemPedido = new ItemPedido(produto.getPreco(), 
 									    adicionarItemPedidoDTO.quantidade(), 
 									    produto.getId(), 
 									    produto.getNome(),
-									    first.getNome());
+									    nomeImagemPedido);
 			pedido.getItemsPedido().add(itemPedido);
 		}
 		else {
 			produtosCarrinho.forEach(p -> {
 				Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(p.idProduto());
+				String first = produto.pegarNomePrimeiraImagem();
+				String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first, produto.getId());
 				ItemPedido itemPedido = new ItemPedido(produto.getPreco(),
 												   	   produto.getQuantidade(),
 												   	   produto.getId(),
 												   	   produto.getNome(),
-												   	   produto.pegarPrimeiraImagem(produto.getArquivosProduto()));
+												   	   nomeImagemPedido);
 				pedido.getItemsPedido().add(itemPedido);
 			});
 		}

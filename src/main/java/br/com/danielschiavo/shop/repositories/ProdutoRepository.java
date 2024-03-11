@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.Produto;
+import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 

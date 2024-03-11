@@ -19,8 +19,8 @@ import br.com.danielschiavo.shop.models.categoria.Categoria;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
-import br.com.danielschiavo.shop.models.produto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.produto.Produto;
+import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.CategoriaRepository;
@@ -51,7 +51,7 @@ public class InserirDadosMock implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		Cliente usuario = new Cliente(null, "14330283794", "Daniel", "Schiavo Rosseto", LocalDate.of(2000, 3, 3), LocalDate.now(), "daniel.schiavo35@gmail.com", "{noop}123456", "27996101055", null, null, null);
 		Endereco endereco = new Endereco(null, "29142298", "Divinopolis", "15", "Sem complemento", "Bela vista", "Cariacica", "ES", true, usuario);
-		Endereco endereco3 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", true, usuario);
+		Endereco endereco3 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", false, usuario);
 		Cartao cartao = new Cartao(null, "Santander", "1123444255591132", "Daniel schiavo rosseto", "03/25", true, TipoCartao.CREDITO, usuario);
 		usuario.setEnderecos(Arrays.asList(endereco, endereco3));
 		usuario.setCartoes(Arrays.asList(cartao));
@@ -90,14 +90,14 @@ public class InserirDadosMock implements CommandLineRunner {
 		ArquivosProduto arquivosProduto2 = new ArquivosProduto("APID1POS1.jpeg", 1);
 		List<ArquivosProduto> listArquivosProduto = Arrays.asList(arquivosProduto, arquivosProduto2);
 		Set<TipoEntrega> tipoEntrega = Set.of(TipoEntrega.CORREIOS, TipoEntrega.ENTREGA_EXPRESSA, TipoEntrega.RETIRADA_NA_LOJA);
-		Produto produto = new Produto(null, "Teclado RedDragon switch vermelho", "Teclado reddragon, switch vermelho, sem teclado numérico pt-br, com leds, teclas macro, switch óptico, teclas anti-desgaste", BigDecimal.valueOf(200.00), 5, true, subCategoria, categoria, tipoEntrega, listArquivosProduto);
+		Produto produto = new Produto(null, "Teclado RedDragon switch vermelho", "Teclado reddragon, switch vermelho, sem teclado numérico pt-br, com leds, teclas macro, switch óptico, teclas anti-desgaste", BigDecimal.valueOf(200.00), 5, true, categoria, subCategoria, tipoEntrega, listArquivosProduto);
 	
 		ArquivosProduto arquivosProduto3 = new ArquivosProduto("APID2POS0.jpeg", 0);
 		ArquivosProduto arquivosProduto4 = new ArquivosProduto("APID2POS1.jpeg", 1);
 		ArquivosProduto arquivosProduto5 = new ArquivosProduto("APID3POS2.jpeg", 2);
 		List<ArquivosProduto> listArquivosProduto2 = Arrays.asList(arquivosProduto3, arquivosProduto4, arquivosProduto5);
 		Set<TipoEntrega> tipoEntrega2 = Set.of(TipoEntrega.ENTREGA_DIGITAL);
-		Produto produto2 = new Produto(null, "Sistema Digisat Administrador", "Sistema administrativo para empresas, completo", BigDecimal.valueOf(1000.00), 999, true, subCategoria8, categoria3, tipoEntrega2, listArquivosProduto2);
+		Produto produto2 = new Produto(null, "Sistema Digisat Administrador", "Sistema administrativo para empresas, completo", BigDecimal.valueOf(1000.00), 999, true, categoria3, subCategoria8, tipoEntrega2, listArquivosProduto2);
 
 		produtoRepository.saveAll(Arrays.asList(produto, produto2));
 		

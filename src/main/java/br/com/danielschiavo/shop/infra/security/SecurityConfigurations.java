@@ -31,7 +31,7 @@ public class SecurityConfigurations {
         			req.requestMatchers("/shop/cliente/**").hasRole("USER");
         			req.requestMatchers("/shop/publico/**").permitAll();
         			req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
-        			req.requestMatchers("/shop/login", "/shop/registrar/cliente").anonymous();
+        			req.requestMatchers("/shop/login", "/shop/cadastrar/cliente").anonymous();
 	                req.anyRequest().authenticated();
 	            })
 	            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

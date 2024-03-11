@@ -21,17 +21,21 @@ import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
 import br.com.danielschiavo.shop.services.SubCategoriaService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
+@Tag(name = "Sub Categorias", description = "Todos endpoints relacionados com as subcategorias, uma subcategoria é dependente de uma categoria")
 public class SubCategoriaController {
 	
 	@Autowired
 	private SubCategoriaService subCategoriaService;
 	
 	@GetMapping("/publico/sub-categoria")
+	@Operation(summary = "Lista todas as subcategorias existentes")
 	public ResponseEntity<Page<MostrarSubCategoriaComCategoriaDTO>> listarSubCategorias(Pageable pageable){		
 		Page<MostrarSubCategoriaComCategoriaDTO> listaSubCategorias = subCategoriaService.listarSubCategorias(pageable);
 		return ResponseEntity.ok(listaSubCategorias);
@@ -39,24 +43,27 @@ public class SubCategoriaController {
 	
 	@PostMapping("/admin/sub-categoria")
 	@SecurityRequirement(name = "bearer-key")
+	@Operation(summary = "Cria uma nova subcategoria, uma subcategoria tem que ter uma categoria a qual ela está relacionada")
 	public ResponseEntity<MostrarSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid SubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
 		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(new MostrarSubCategoriaDTO(subCategoria));
 	}
 	
-	@PutMapping("/admin/sub-categoria/{id}")
+	@PutMapping("/admin/sub-categoria/{idSubCategoria}")
 	@SecurityRequirement(name = "bearer-key")
-	public ResponseEntity<MostrarSubCategoriaDTO> alterarSubCategoriaPorId(@PathVariable Long id, @RequestBody AlterarSubCategoriaDTO categoryDTO) {
-		var subCategoriaDTO = subCategoriaService.alterarSubCategoriaPorId(id, categoryDTO);
+	@Operation(summary = "Altera o nome de uma subcategoria com o id fornecido no parametro da requisição")
+	public ResponseEntity<MostrarSubCategoriaDTO> alterarSubCategoriaPorId(@PathVariable Long idSubCategoria, @RequestBody AlterarSubCategoriaDTO categoryDTO) {
+		var subCategoriaDTO = subCategoriaService.alterarSubCategoriaPorId(idSubCategoria, categoryDTO);
 		
 		return ResponseEntity.ok(subCategoriaDTO);
 	}
 	
-	@DeleteMapping("/admin/sub-categoria/{id}")
+	@DeleteMapping("/admin/sub-categoria/{idSubCategoria}")
 	@SecurityRequirement(name = "bearer-key")
-	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long id){		
-		subCategoriaService.deletarSubCategoriaPorId(id);
+	@Operation(summary = "Deleta uma subcategoria com o id fornecido no parametro da requisição")
+	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long idSubCategoria){		
+		subCategoriaService.deletarSubCategoriaPorId(idSubCategoria);
 		return ResponseEntity.noContent().build();
 	}
 

@@ -17,7 +17,6 @@ import br.com.danielschiavo.shop.models.carrinho.Carrinho;
 import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoDTO;
-import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.DeletarItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
@@ -25,16 +24,12 @@ import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
-import jakarta.validation.Valid;
 
 @Service
 public class CarrinhoService {
 
 	@Autowired
 	private TokenJWTService tokenJWTService;
-
-	@Autowired
-	private ProdutoService produtoService;
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
@@ -44,6 +39,9 @@ public class CarrinhoService {
 
 	@Autowired
 	private CarrinhoRepository carrinhoRepository;
+	
+	@Autowired
+	private FileStorageService fileService;
 	
 	@Transactional
 	public void adicionarProdutosNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
@@ -106,9 +104,11 @@ public class CarrinhoService {
 		List<MostrarItemCarrinhoClienteDTO> listaMostrarItensCarrinhoCliente = new ArrayList<MostrarItemCarrinhoClienteDTO>();
 
 		for (int i = 0; i < produtosOrdenados.size(); i++) {
+			String nomePrimeiraImagem = produtosOrdenados.get(i).pegarNomePrimeiraImagem();
+			fileService.pegarArquivoProdutoPorNome(nomePrimeiraImagem);
 			var mostrarItemCarrinhoClienteDTO = new MostrarItemCarrinhoClienteDTO(
 												produtosOrdenados.get(i),
-												produtoService.pegarPrimeiraImagemProduto(produtosOrdenados.get(i).getArquivosProduto()),
+												fileService.pegarArquivoProdutoPorNome(nomePrimeiraImagem).bytesArquivo(),
 												carrinho.getItemsCarrinho().get(i).getQuantidade());
 			
 			listaMostrarItensCarrinhoCliente.add(mostrarItemCarrinhoClienteDTO);
@@ -122,7 +122,7 @@ public class CarrinhoService {
 	}
 
 	@Transactional
-	public void alterarQuantidadeProdutoNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
+	public void setarQuantidadeProdutoNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
 		if (!produtoRepository.existsById(itemCarrinhoDTO.idProduto())) {
 		    throw new RuntimeException("Produto não encontrado para o ID: " + itemCarrinhoDTO.idProduto());
 		}
@@ -145,7 +145,7 @@ public class CarrinhoService {
 	}
 
 	@Transactional
-	public void deletarProdutoNoCarrinho(@Valid DeletarItemCarrinhoDTO itemCarrinhoDTO) 
+	public void deletarProdutoNoCarrinho(Long idProduto) 
 		{
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
@@ -155,7 +155,7 @@ public class CarrinhoService {
 		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
 		while (iterator.hasNext()) {
 			ItemCarrinho itemCarrinho = iterator.next();
-			if (itemCarrinho.getProdutoId() == itemCarrinhoDTO.produtoId()) {
+			if (itemCarrinho.getProdutoId() == idProduto) {
 				iterator.remove();
 				carrinhoRepository.save(carrinho);
 				return;

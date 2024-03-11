@@ -8,6 +8,7 @@ import java.util.Set;
 
 import br.com.danielschiavo.shop.models.categoria.Categoria;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
+import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -53,13 +54,13 @@ public class Produto {
 	@Column(nullable = false, columnDefinition = "BOOLEAN")
 	private Boolean ativo;
 
-	@JoinColumn(name = "sub_categoria_id")
-	@ManyToOne(fetch = FetchType.EAGER)
-	private SubCategoria subCategoria;
-	
 	@JoinColumn(name = "categoria_id")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Categoria categoria;
+	
+	@JoinColumn(name = "sub_categoria_id")
+	@ManyToOne(fetch = FetchType.EAGER)
+	private SubCategoria subCategoria;
 	
     @ElementCollection(targetClass = TipoEntrega.class)
     @Enumerated(EnumType.STRING)
@@ -74,7 +75,7 @@ public class Produto {
 			)
 	private List<ArquivosProduto> arquivosProduto = new ArrayList<>();
 	
-	public Produto(ProdutoDTO produtoDTO, SubCategoria subCategoria) {
+	public Produto(CadastrarProdutoDTO produtoDTO, SubCategoria subCategoria) {
 		this.nome = produtoDTO.nome();
 		this.descricao = produtoDTO.descricao();
 		this.preco = produtoDTO.preco();
@@ -83,21 +84,31 @@ public class Produto {
 		this.subCategoria = subCategoria;
 	}
 
-	public void atualizarAtributos(AtualizarProdutoDTO atualizarProdutoDTO) {
-		if (atualizarProdutoDTO.nome() != null) {
-			this.nome = atualizarProdutoDTO.nome();
+	public void atualizarAtributos(AlterarProdutoDTO alterarProdutoDTO) {
+		if (alterarProdutoDTO.nome() != null) {
+			this.nome = alterarProdutoDTO.nome();
 		}
-		if (atualizarProdutoDTO.descricao() != null) {
-			this.descricao = atualizarProdutoDTO.descricao();
+		if (alterarProdutoDTO.descricao() != null) {
+			this.descricao = alterarProdutoDTO.descricao();
 		}
-		if (atualizarProdutoDTO.preco() != null) {
-			this.preco = atualizarProdutoDTO.preco();
+		if (alterarProdutoDTO.preco() != null) {
+			this.preco = alterarProdutoDTO.preco();
 		}
-		if (atualizarProdutoDTO.quantidade() != null) {
-			this.quantidade = atualizarProdutoDTO.quantidade();
+		if (alterarProdutoDTO.quantidade() != null) {
+			this.quantidade = alterarProdutoDTO.quantidade();
 		}
-		if (atualizarProdutoDTO.ativo() != null) {
-			this.ativo = atualizarProdutoDTO.ativo();
+		if (alterarProdutoDTO.ativo() != null) {
+			this.ativo = alterarProdutoDTO.ativo();
+		}
+		if (alterarProdutoDTO.tipoEntrega() != null) {
+			this.tiposEntrega = alterarProdutoDTO.tipoEntrega();
+		}
+		if (alterarProdutoDTO.arquivos() != null) {
+			List<ArquivosProduto> novaListaArquivosProduto = new ArrayList<>();
+			alterarProdutoDTO.arquivos().forEach(arquivoProdutoDTO -> {
+				novaListaArquivosProduto.add(new ArquivosProduto(arquivoProdutoDTO.nome(), arquivoProdutoDTO.posicao()));
+			});
+			this.arquivosProduto = novaListaArquivosProduto;
 		}
 	}
 
@@ -117,8 +128,27 @@ public class Produto {
 		this.arquivosProduto.add(arquivo);
 	}
 	
-	public String pegarPrimeiraImagem(List<ArquivosProduto> arquivosProduto) {
-		ArquivosProduto arquivoProduto = arquivosProduto.stream().filter(ap -> ap.getPosicao() == 0).findFirst().get();
+//	public String pegarNomePrimeiraImagem(List<ArquivosProduto> arquivosProduto) {
+//		ArquivosProduto arquivoProduto = arquivosProduto.stream().filter(ap -> ap.getPosicao() == 0).findFirst().get();
+//		return arquivoProduto.getNome();
+//	}
+	
+	public String pegarNomePrimeiraImagem() {
+		ArquivosProduto arquivoProduto = this.arquivosProduto.stream().filter(ap -> ap.getPosicao() == 0).findFirst().get();
 		return arquivoProduto.getNome();
+	}
+
+	public Produto(CadastrarProdutoDTO cadastrarProdutoDTO, Categoria categoria, SubCategoria subCategoria) {
+		this.nome = cadastrarProdutoDTO.nome();
+		this.descricao = cadastrarProdutoDTO.descricao();
+		this.preco = cadastrarProdutoDTO.preco();
+		this.quantidade = cadastrarProdutoDTO.quantidade();
+		this.ativo = cadastrarProdutoDTO.ativo();
+		this.categoria = categoria;
+		this.subCategoria = subCategoria;
+		this.tiposEntrega = cadastrarProdutoDTO.tipoEntrega();
+		cadastrarProdutoDTO.arquivos().forEach(a -> {
+			this.arquivosProduto.add(new ArquivosProduto(a.nome(), a.posicao()));
+		});
 	}
 }

@@ -1,4 +1,4 @@
-package br.com.danielschiavo.shop.models.produto;
+package br.com.danielschiavo.shop.models.produto.arquivosproduto;
 
 public record MostrarArquivosProdutoDTO(
 		String tipo,

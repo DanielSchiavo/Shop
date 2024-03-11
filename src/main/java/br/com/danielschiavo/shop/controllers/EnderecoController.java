@@ -18,41 +18,48 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import br.com.danielschiavo.shop.services.EnderecoService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
+@Tag(name = "Endereço", description = "Todos endpoints relacionados com os endereços do usuário")
 public class EnderecoController {
 
 	@Autowired
 	private EnderecoService enderecoService;
-
-	@PostMapping("/cliente/endereco")
-	public ResponseEntity<MostrarEnderecoDTO> cadastrarNovoEndereco(@RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
-		MostrarEnderecoDTO mostrarEnderecoDTO = enderecoService.cadastrarNovoEndereco(novoEnderecoDTO);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(mostrarEnderecoDTO);
-	}
 	
 	@GetMapping("/cliente/endereco")
+	@Operation(summary = "Pegar todos endereços do cliente")
 	public ResponseEntity<List<MostrarEnderecoDTO>> pegarEnderecosCliente() {
 		List<MostrarEnderecoDTO> mostrarEnderecoDTO = enderecoService.pegarEnderecosCliente();
 		
 		return ResponseEntity.status(HttpStatus.OK).body(mostrarEnderecoDTO);
 	}
 	
-	@PutMapping("/cliente/endereco/{id}")
-	public ResponseEntity<MostrarEnderecoDTO> alterarEndereco(@PathVariable Long id, @RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
-		MostrarEnderecoDTO enderecoDTO = enderecoService.alterarEndereco(novoEnderecoDTO, id);
+	@PutMapping("/cliente/endereco/{idEndereco}")
+	@Operation(summary = "Alterar um endereço por id")
+	public ResponseEntity<MostrarEnderecoDTO> alterarEndereco(@PathVariable Long idEndereco, @RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
+		MostrarEnderecoDTO enderecoDTO = enderecoService.alterarEndereco(novoEnderecoDTO, idEndereco);
 		
 		return ResponseEntity.ok().body(enderecoDTO);
 	}
+
+	@PostMapping("/cliente/endereco")
+	@Operation(summary = "Cadastrar novo endereço para o cliente")
+	public ResponseEntity<MostrarEnderecoDTO> cadastrarNovoEndereco(@RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
+		MostrarEnderecoDTO mostrarEnderecoDTO = enderecoService.cadastrarNovoEndereco(novoEnderecoDTO);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(mostrarEnderecoDTO);
+	}
 	
-	@DeleteMapping("/cliente/endereco/{id}")
-	public ResponseEntity<?> deletarEndereco(@PathVariable Long id) {
-		enderecoService.deletarEndereco(id);
+	@DeleteMapping("/cliente/endereco/{idEndereco}")
+	@Operation(summary = "Deletar um endereço por id")
+	public ResponseEntity<?> deletarEndereco(@PathVariable Long idEndereco) {
+		enderecoService.deletarEndereco(idEndereco);
 		
 		return ResponseEntity.noContent().build();
 	}

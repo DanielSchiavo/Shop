@@ -24,6 +24,7 @@ public record ClienteDTO(
 		String senha,
 		@NotBlank
 		String celular,
+		String fotoPerfil,
 		MostrarEnderecoDTO endereco	
 		) {
 }

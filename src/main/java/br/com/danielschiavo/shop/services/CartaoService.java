@@ -83,7 +83,7 @@ public class CartaoService {
 				cartao.setCartaoPadrao(true);
 			}
 			else {
-				throw new ValidacaoException("O cartão não pode ser definido como cartaoPadrao = false porque não existe outro cartão definido como cartão padrão (cartaoPadrao = true). Por favor, defina pelo menos um cartão já cadastrado como cartaoPadrao = true ou cadastre esse como cartaoPadrao = true.");
+				throw new ValidacaoException("O cartão não pode ser definido como cartaoPadrao = false porque não existe outro cartão definido como cartão padrão (cartaoPadrao = true). Por favor, defina pelo menos um cartão já cadastrado como cartaoPadrao = true ou deixe esse cartão como cartaoPadrao = true.");
 			}
 			cartaoRepository.save(cartao);
 		}

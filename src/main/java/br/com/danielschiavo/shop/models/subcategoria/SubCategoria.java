@@ -35,7 +35,7 @@ public class SubCategoria {
 	@Column(length = 80, unique = true)
 	private String nome;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "categoria_id", nullable = false, referencedColumnName = "id")
 	@JsonBackReference
 	private Categoria categoria;

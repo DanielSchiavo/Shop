@@ -79,11 +79,8 @@ public class EnderecoService {
 	}
 
 	@Transactional
-	public void deletarEndereco(Long id) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
-		
-		var endereco = enderecoRepository.findByCliente(cliente);
+	public void deletarEndereco(Long idEndereco) {
+		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
 		
 		enderecoRepository.delete(endereco);
 	}
@@ -93,7 +90,7 @@ public class EnderecoService {
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		
 		var pageEndereco = enderecoRepository.findAllByCliente(cliente);
-		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaEnderecoDTO).toList();
+		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaMostrarEnderecoDTO).toList();
 	}
 
 	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco) {

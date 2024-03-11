@@ -27,6 +27,10 @@ public class TokenJWTService {
 		this.token = tokenJWT;
 	}
 	
+	public String getTokenJWT() {
+		return this.token;
+	}
+	
 	public String generateToken(Cliente client) {
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256(secret);

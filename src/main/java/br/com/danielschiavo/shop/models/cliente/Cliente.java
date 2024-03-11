@@ -54,7 +54,7 @@ public class Cliente implements UserDetails {
 	private String email;
 	private String senha;
 	private String celular;
-	private String foto_perfil;
+	private String fotoPerfil;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JsonIgnore
@@ -72,6 +72,12 @@ public class Cliente implements UserDetails {
 		this.email = clienteDTO.email();
 		this.senha = clienteDTO.senha();
 		this.celular = clienteDTO.celular();
+		if (clienteDTO.fotoPerfil() != null) {
+			this.fotoPerfil = clienteDTO.fotoPerfil();
+		}
+		else {
+			this.fotoPerfil = "Padrao.jpeg";
+		}
 	}
 
 	public void atualizarAtributos(AtualizarClienteDTO atualizarClienteDTO) {
