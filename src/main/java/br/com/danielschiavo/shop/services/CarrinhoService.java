@@ -51,7 +51,6 @@ public class CarrinhoService {
 		}
 		
 		var idCliente = tokenJWTService.getClaimIdJWT();
-		
 		var cliente = clienteRepository.getReferenceById(idCliente);
 
 		var produto = produtoRepository.getReferenceById(itemCarrinhoDTO.idProduto());
@@ -64,18 +63,18 @@ public class CarrinhoService {
 			List<ItemCarrinho> itensCarrinho = carrinho.getItemsCarrinho();
 	
 			for (ItemCarrinho itemCarrinho : itensCarrinho) {
-				if (itemCarrinho.getProdutoId() == itemCarrinhoDTO.idProduto()) {
+				if (itemCarrinho.getProduto().getId() == itemCarrinhoDTO.idProduto()) {
 					itemCarrinho.setQuantidade(itemCarrinho.getQuantidade() + itemCarrinhoDTO.quantidade());
 					carrinhoRepository.save(carrinho);
 					return;
 				}
 			}
-			carrinho.getItemsCarrinho().add(new ItemCarrinho(produto.getId(), itemCarrinhoDTO.quantidade()));
+			carrinho.getItemsCarrinho().add(new ItemCarrinho(null, itemCarrinhoDTO.quantidade(), produto, carrinho));
 	
 			carrinhoRepository.save(carrinho);
 		}
 		else {
-			Carrinho carrinho = new Carrinho(cliente, produto.getId(), itemCarrinhoDTO.quantidade());
+			Carrinho carrinho = new Carrinho(cliente, produto, itemCarrinhoDTO.quantidade());
 			carrinhoRepository.save(carrinho);
 		}
 	}
@@ -88,7 +87,7 @@ public class CarrinhoService {
 		Carrinho carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
 
 		List<Long> ids = carrinho.getItemsCarrinho().stream()
-				.map(ItemCarrinho::getProdutoId)
+				.map(ic -> ic.getProduto().getId())
 				.collect(Collectors.toList());
 
 		List<Produto> produtosDesordenados = produtoRepository.findAllById(ids);
@@ -136,7 +135,7 @@ public class CarrinhoService {
 		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
 		while (iterator.hasNext()) {
 			ItemCarrinho itemCarrinho = iterator.next();
-			if (itemCarrinho.getProdutoId() == itemCarrinhoDTO.idProduto()) {
+			if (itemCarrinho.getProduto().getId() == itemCarrinhoDTO.idProduto()) {
 				itemCarrinho.setQuantidade(itemCarrinhoDTO.quantidade());
 				carrinhoRepository.save(carrinho);
 				return;
@@ -155,7 +154,7 @@ public class CarrinhoService {
 		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
 		while (iterator.hasNext()) {
 			ItemCarrinho itemCarrinho = iterator.next();
-			if (itemCarrinho.getProdutoId() == idProduto) {
+			if (itemCarrinho.getProduto().getId() == idProduto) {
 				iterator.remove();
 				carrinhoRepository.save(carrinho);
 				return;

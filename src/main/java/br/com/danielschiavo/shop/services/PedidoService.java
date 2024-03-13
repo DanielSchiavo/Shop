@@ -230,11 +230,13 @@ public class PedidoService {
 			Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(adicionarItemPedidoDTO.idProduto());
 			ArquivosProduto first = produto.getArquivosProduto().stream().filter(arquivoProduto -> arquivoProduto.getPosicao() == 0).findFirst().get();
 			String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first.getNome(), produto.getId());
-			ItemPedido itemPedido = new ItemPedido(produto.getPreco(), 
-									    adicionarItemPedidoDTO.quantidade(), 
-									    produto.getId(), 
-									    produto.getNome(),
-									    nomeImagemPedido);
+			ItemPedido itemPedido = new ItemPedido(null,
+												   produto.getPreco(), 
+												   adicionarItemPedidoDTO.quantidade(), 
+												   produto.getNome(),
+												   nomeImagemPedido,
+												   produto,
+												   pedido);
 			pedido.getItemsPedido().add(itemPedido);
 		}
 		else {
@@ -242,11 +244,13 @@ public class PedidoService {
 				Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(p.idProduto());
 				String first = produto.pegarNomePrimeiraImagem();
 				String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first, produto.getId());
-				ItemPedido itemPedido = new ItemPedido(produto.getPreco(),
+				ItemPedido itemPedido = new ItemPedido(null,
+													   produto.getPreco(),
 												   	   produto.getQuantidade(),
-												   	   produto.getId(),
 												   	   produto.getNome(),
-												   	   nomeImagemPedido);
+												   	   nomeImagemPedido,
+												   	   produto,
+												   	   pedido);
 				pedido.getItemsPedido().add(itemPedido);
 			});
 		}

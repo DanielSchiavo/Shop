@@ -58,7 +58,7 @@ public class ProdutoService {
 
 		if (optionalCarrinho.isPresent()) {
 			optionalCarrinho.get().forEach(carrinho -> {
-				carrinho.getItemsCarrinho().removeIf(item -> item.getProdutoId().equals(id));
+				carrinho.getItemsCarrinho().removeIf(item -> item.getProduto().getId().equals(id));
 				carrinhoRepository.save(carrinho);
 			});
 		}
@@ -230,7 +230,7 @@ public class ProdutoService {
 			produto.setCategoria(subCategory);
 		}
 
-		produto.atualizarAtributos(alterarProdutoDTO);
+		produto.alterarAtributos(alterarProdutoDTO, produto);
 		
 		produtoRepository.save(produto);
 

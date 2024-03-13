@@ -8,6 +8,6 @@ public record MostrarItemCarrinhoDTO(
 		) {
 	
 	public static MostrarItemCarrinhoDTO converterItemCarrinhoEmMostrarItemCarrinhoDTO(ItemCarrinho itemCarrinho) {
-    	return new MostrarItemCarrinhoDTO(itemCarrinho.getProdutoId(), itemCarrinho.getQuantidade());
+    	return new MostrarItemCarrinhoDTO(itemCarrinho.getProduto().getId(), itemCarrinho.getQuantidade());
     }
 }

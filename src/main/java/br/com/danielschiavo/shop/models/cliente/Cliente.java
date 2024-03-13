@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.danielschiavo.shop.models.carrinho.Carrinho;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import jakarta.persistence.CascadeType;
@@ -20,6 +21,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -43,6 +45,7 @@ public class Cliente implements UserDetails {
 	private Long id;
 	
 	private String cpf;
+	
 	private String nome;
 	
 	private String sobrenome;
@@ -52,17 +55,23 @@ public class Cliente implements UserDetails {
 	private LocalDate dataCriacaoConta;
 	
 	private String email;
+	
 	private String senha;
+	
 	private String celular;
+	
 	private String fotoPerfil;
 	
-	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<Endereco> enderecos = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<Cartao> cartoes = new ArrayList<>();
+	
+	@OneToOne(mappedBy = "cliente")
+	private Carrinho carrinho;
 	
 	public Cliente(ClienteDTO clienteDTO) {
 		this.cpf = clienteDTO.cpf();

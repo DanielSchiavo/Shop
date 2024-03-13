@@ -3,18 +3,9 @@ package br.com.danielschiavo.shop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import br.com.danielschiavo.shop.models.cartao.Cartao;
-import br.com.danielschiavo.shop.models.cartao.TipoCartao;
-import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.endereco.Endereco;
 
 @SpringBootApplication
 public class ShopApplication {

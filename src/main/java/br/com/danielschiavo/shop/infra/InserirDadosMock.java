@@ -21,6 +21,7 @@ import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
+import br.com.danielschiavo.shop.models.produto.tipoentregaproduto.TipoEntregaProduto;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.CategoriaRepository;
@@ -49,20 +50,20 @@ public class InserirDadosMock implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-		Cliente usuario = new Cliente(null, "14330283794", "Daniel", "Schiavo Rosseto", LocalDate.of(2000, 3, 3), LocalDate.now(), "daniel.schiavo35@gmail.com", "{noop}123456", "27996101055", null, null, null);
-		Endereco endereco = new Endereco(null, "29142298", "Divinopolis", "15", "Sem complemento", "Bela vista", "Cariacica", "ES", true, usuario);
-		Endereco endereco3 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", false, usuario);
-		Cartao cartao = new Cartao(null, "Santander", "1123444255591132", "Daniel schiavo rosseto", "03/25", true, TipoCartao.CREDITO, usuario);
-		usuario.setEnderecos(Arrays.asList(endereco, endereco3));
-		usuario.setCartoes(Arrays.asList(cartao));
+		Cliente cliente = new Cliente(null, "14330283794", "Daniel", "Schiavo Rosseto", LocalDate.of(2000, 3, 3), LocalDate.now(), "daniel.schiavo35@gmail.com", "{noop}123456", "27996101055", null, null, null, null);
+		Endereco endereco = new Endereco(null, "29142298", "Divinopolis", "15", "Sem complemento", "Bela vista", "Cariacica", "ES", true, cliente);
+		Endereco endereco3 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", false, cliente);
+		Cartao cartao = new Cartao(null, "Santander", "1123444255591132", "Daniel schiavo rosseto", "03/25", true, TipoCartao.CREDITO, cliente);
+		cliente.setEnderecos(Arrays.asList(endereco, endereco3));
+		cliente.setCartoes(Arrays.asList(cartao));
 		
-		Cliente usuario2 = new Cliente(null, "12345678994", "Silvana", "Pereira da silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "silvana.dasilva@gmail.com", "{noop}123456", "27999833653", null, null, null);
-		Endereco endereco2 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", true, usuario2);
-		Cartao cartao2 = new Cartao(null, "Santander", "1111222244445555", "Silvana pereira da silva", "03/28", true, TipoCartao.CREDITO, usuario2);
-		usuario2.setEnderecos(Arrays.asList(endereco2));
-		usuario2.setCartoes(Arrays.asList(cartao2));
+		Cliente cliente2 = new Cliente(null, "12345678994", "Silvana", "Pereira da silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "silvana.dasilva@gmail.com", "{noop}123456", "27999833653", null, null, null, null);
+		Endereco endereco2 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", true, cliente2);
+		Cartao cartao2 = new Cartao(null, "Santander", "1111222244445555", "Silvana pereira da silva", "03/28", true, TipoCartao.CREDITO, cliente2);
+		cliente2.setEnderecos(Arrays.asList(endereco2));
+		cliente2.setCartoes(Arrays.asList(cartao2));
 		
-		List<Cliente> listUsuarios = Arrays.asList(usuario, usuario2);
+		List<Cliente> listUsuarios = Arrays.asList(cliente, cliente2);
 		clienteRepository.saveAll(listUsuarios);
 		
 		
@@ -86,24 +87,61 @@ public class InserirDadosMock implements CommandLineRunner {
 		subCategoriaRepository.saveAll(Arrays.asList(subCategoria, subCategoria2, subCategoria3,subCategoria4,subCategoria5,subCategoria6,subCategoria7,subCategoria8,subCategoria9));
 		
 		
-		ArquivosProduto arquivosProduto = new ArquivosProduto("APID1POS0.jpeg", 0);
-		ArquivosProduto arquivosProduto2 = new ArquivosProduto("APID1POS1.jpeg", 1);
+		Produto produto = new Produto(null, 
+				"Teclado RedDragon switch vermelho", 
+				"Teclado reddragon, switch vermelho, sem teclado numérico pt-br, com leds, teclas macro, switch óptico, teclas anti-desgaste", 
+				BigDecimal.valueOf(200.00), 
+				5, 
+				true, 
+				null,
+				null,
+				categoria, 
+				subCategoria);
+		ArquivosProduto arquivosProduto = new ArquivosProduto(null, "APID1POS0.jpeg", (byte) 0, produto);
+		ArquivosProduto arquivosProduto2 = new ArquivosProduto(null, "APID1POS1.jpeg", (byte) 1, produto);
 		List<ArquivosProduto> listArquivosProduto = Arrays.asList(arquivosProduto, arquivosProduto2);
-		Set<TipoEntrega> tipoEntrega = Set.of(TipoEntrega.CORREIOS, TipoEntrega.ENTREGA_EXPRESSA, TipoEntrega.RETIRADA_NA_LOJA);
-		Produto produto = new Produto(null, "Teclado RedDragon switch vermelho", "Teclado reddragon, switch vermelho, sem teclado numérico pt-br, com leds, teclas macro, switch óptico, teclas anti-desgaste", BigDecimal.valueOf(200.00), 5, true, categoria, subCategoria, tipoEntrega, listArquivosProduto);
+		
+		TipoEntregaProduto tipoEntregaProduto = new TipoEntregaProduto(null, TipoEntrega.CORREIOS, produto);
+		TipoEntregaProduto tipoEntregaProduto2 = new TipoEntregaProduto(null, TipoEntrega.ENTREGA_EXPRESSA, produto);
+		TipoEntregaProduto tipoEntregaProduto3 = new TipoEntregaProduto(null, TipoEntrega.RETIRADA_NA_LOJA, produto);
+		Set<TipoEntregaProduto> tiposEntrega = Set.of(tipoEntregaProduto, tipoEntregaProduto2, tipoEntregaProduto3);
+		
+		produto.setArquivosProduto(listArquivosProduto);
+		produto.setTiposEntrega(tiposEntrega);
 	
-		ArquivosProduto arquivosProduto3 = new ArquivosProduto("APID2POS0.jpeg", 0);
-		ArquivosProduto arquivosProduto4 = new ArquivosProduto("APID2POS1.jpeg", 1);
-		ArquivosProduto arquivosProduto5 = new ArquivosProduto("APID3POS2.jpeg", 2);
+		
+		Produto produto2 = new Produto(null, 
+				"Sistema Digisat Administrador", 
+				"Sistema administrativo para empresas, completo", 
+				BigDecimal.valueOf(1000.00), 
+				999, 
+				true, 
+				null, 
+				null,
+				categoria3, 
+				subCategoria8);
+		ArquivosProduto arquivosProduto3 = new ArquivosProduto(null, "APID2POS0.jpeg", (byte) 0, produto2);
+		ArquivosProduto arquivosProduto4 = new ArquivosProduto(null, "APID2POS1.jpeg", (byte) 1, produto2);
+		ArquivosProduto arquivosProduto5 = new ArquivosProduto(null, "APID3POS2.jpeg", (byte) 2, produto2);
 		List<ArquivosProduto> listArquivosProduto2 = Arrays.asList(arquivosProduto3, arquivosProduto4, arquivosProduto5);
-		Set<TipoEntrega> tipoEntrega2 = Set.of(TipoEntrega.ENTREGA_DIGITAL);
-		Produto produto2 = new Produto(null, "Sistema Digisat Administrador", "Sistema administrativo para empresas, completo", BigDecimal.valueOf(1000.00), 999, true, categoria3, subCategoria8, tipoEntrega2, listArquivosProduto2);
+		
+		TipoEntregaProduto tipoEntregaProduto4 = new TipoEntregaProduto(null, TipoEntrega.RETIRADA_NA_LOJA, produto2);
+		TipoEntregaProduto tipoEntregaProduto5 = new TipoEntregaProduto(null, TipoEntrega.CORREIOS, produto2);
+		TipoEntregaProduto tipoEntregaProduto6 = new TipoEntregaProduto(null, TipoEntrega.ENTREGA_EXPRESSA, produto2);
+		Set<TipoEntregaProduto> tipoEntrega2 = Set.of(tipoEntregaProduto4, tipoEntregaProduto5, tipoEntregaProduto6);
+		
+		produto2.setArquivosProduto(listArquivosProduto2);
+		produto2.setTiposEntrega(tipoEntrega2);
 
 		produtoRepository.saveAll(Arrays.asList(produto, produto2));
 		
-		ItemCarrinho itemCarrinho = new ItemCarrinho(produto.getId(), 3);
-		ItemCarrinho itemCarrinho2 = new ItemCarrinho(produto2.getId(), 1);
-		Carrinho carrinho = new Carrinho(null, usuario, Arrays.asList(itemCarrinho, itemCarrinho2));
+		
+		Carrinho carrinho = new Carrinho(null, null, cliente);
+		
+		ItemCarrinho itemCarrinho = new ItemCarrinho(null, 3, produto, carrinho);
+		ItemCarrinho itemCarrinho2 = new ItemCarrinho(null, 1, produto2, carrinho);
+		
+		carrinho.setItemsCarrinho(Arrays.asList(itemCarrinho, itemCarrinho2));
 		
 		carrinhoRepository.save(carrinho);
 	}

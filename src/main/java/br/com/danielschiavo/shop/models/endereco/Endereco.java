@@ -6,12 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,15 +32,11 @@ public class Endereco {
 	private String bairro;
 	private String cidade;
 	
-    @NotBlank(message = "O estado não pode estar vazio.")
-    @Size(min = 2, max = 2, message = "O estado deve conter exatamente 2 letras.")
-    @Pattern(regexp = "^[A-Za-z]{2}$", message = "O estado deve conter apenas letras.")
 	private String estado;
 	
 	private Boolean enderecoPadrao;
 	
 	@ManyToOne
-	@JoinColumn(name = "cliente_id")
 	private Cliente cliente;
 	
 	public Endereco(ClienteDTO clienteDTO, Cliente cliente) {

@@ -2,7 +2,6 @@ package br.com.danielschiavo.shop.models.carrinho;
 
 import java.math.BigDecimal;
 
-import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinho;
 import br.com.danielschiavo.shop.models.produto.Produto;
 
 public record MostrarItemCarrinhoClienteDTO(

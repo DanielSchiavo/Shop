@@ -13,7 +13,6 @@ import br.com.danielschiavo.shop.infra.security.DadosAutenticacaoDTO;
 import br.com.danielschiavo.shop.infra.security.TokenDTO;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.services.AutenticacaoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 

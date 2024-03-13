@@ -1,7 +1,6 @@
 package br.com.danielschiavo.shop.models.pedido.pagamento;
 
 import br.com.danielschiavo.shop.models.cartao.TipoCartao;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,7 +25,6 @@ public class CartaoPedido {
 	private String numeroDeParcelas;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "tipo_cartao")
 	private TipoCartao tipoCartao;
 	
 }
