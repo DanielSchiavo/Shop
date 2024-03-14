@@ -1,7 +1,6 @@
 package br.com.danielschiavo.shop.infra.exceptions;
 
 
-import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -10,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -28,12 +28,6 @@ public class GeneralExceptionHandler {
         return ResponseEntity.badRequest().body(erros.stream().map(ErrorDataValidationDTO::new).toList());
     }
     
-    @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<?> fileNotFound(FileNotFoundException ex) {
-    	String message = ex.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
-    }
-    
     @ExceptionHandler(ValidacaoException.class)
     public ResponseEntity<?> fileNotFound(ValidacaoException ex) {
     	String message = ex.getMessage();
@@ -45,11 +39,4 @@ public class GeneralExceptionHandler {
             this(erro.getField(), erro.getDefaultMessage());
         }
     }
-    
-//    private record SimpleMessage(String message) {
-//    	public SimpleMessage(String message) {
-//    		this.message = message;
-//    	}
-//    }
-
 }

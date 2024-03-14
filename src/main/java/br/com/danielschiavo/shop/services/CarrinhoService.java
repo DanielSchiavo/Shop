@@ -44,7 +44,7 @@ public class CarrinhoService {
 	private FileStorageService fileService;
 	
 	@Transactional
-	public void adicionarProdutosNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
+	public void adicionarProdutosNoCarrinhoPorIdToken(ItemCarrinhoDTO itemCarrinhoDTO) {
 		if (itemCarrinhoDTO.quantidade() <= 0) {
 			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
 					+ itemCarrinhoDTO.quantidade());
@@ -79,7 +79,7 @@ public class CarrinhoService {
 		}
 	}
 
-	public MostrarCarrinhoClienteDTO pegarCarrinhoCliente() {
+	public MostrarCarrinhoClienteDTO pegarCarrinhoClientePorIdToken() {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 
 		var cliente = clienteRepository.getReferenceById(idCliente);
@@ -121,7 +121,7 @@ public class CarrinhoService {
 	}
 
 	@Transactional
-	public void setarQuantidadeProdutoNoCarrinho(ItemCarrinhoDTO itemCarrinhoDTO) {
+	public void setarQuantidadeProdutoNoCarrinhoPorIdToken(ItemCarrinhoDTO itemCarrinhoDTO) {
 		if (!produtoRepository.existsById(itemCarrinhoDTO.idProduto())) {
 		    throw new RuntimeException("Produto não encontrado para o ID: " + itemCarrinhoDTO.idProduto());
 		}
@@ -136,6 +136,11 @@ public class CarrinhoService {
 		while (iterator.hasNext()) {
 			ItemCarrinho itemCarrinho = iterator.next();
 			if (itemCarrinho.getProduto().getId() == itemCarrinhoDTO.idProduto()) {
+				if (itemCarrinhoDTO.quantidade() == 0) {
+					iterator.remove();
+					carrinhoRepository.save(carrinho);
+					return;
+				}
 				itemCarrinho.setQuantidade(itemCarrinhoDTO.quantidade());
 				carrinhoRepository.save(carrinho);
 				return;
@@ -144,13 +149,16 @@ public class CarrinhoService {
 	}
 
 	@Transactional
-	public void deletarProdutoNoCarrinho(Long idProduto) 
+	public void deletarProdutoNoCarrinhoPorIdToken(Long idProduto) 
 		{
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
+		Carrinho carrinho = cliente.getCarrinho();
 		
-		var carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
-
+		if (carrinho.getId() == null) {
+			throw new ValidacaoException("Não existe um carrinho para o cliente de id número " + cliente.getId());
+		}
+		
 		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
 		while (iterator.hasNext()) {
 			ItemCarrinho itemCarrinho = iterator.next();

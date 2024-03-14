@@ -17,6 +17,5 @@ public record MostrarItemCarrinhoClienteDTO(
     public MostrarItemCarrinhoClienteDTO(Produto produto, byte[] imagemProduto, Integer quantidade) {
         this(produto.getId(), produto.getNome(), quantidade, produto.getPreco(), imagemProduto);
     }
-    
 
 }

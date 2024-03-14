@@ -150,7 +150,14 @@ public class InserirDadosMock implements CommandLineRunner {
 		
 		carrinho.setItemsCarrinho(Arrays.asList(itemCarrinho, itemCarrinho2));
 		
-		carrinhoRepository.save(carrinho);
+		Carrinho carrinho2 = new Carrinho(null, null, cliente2);
+		
+		ItemCarrinho itemCarrinho3 = new ItemCarrinho(null, 3, produto, carrinho2);
+		ItemCarrinho itemCarrinho4 = new ItemCarrinho(null, 1, produto2, carrinho2);
+		
+		carrinho2.setItemsCarrinho(Arrays.asList(itemCarrinho3, itemCarrinho4));
+		
+		carrinhoRepository.saveAll(Arrays.asList(carrinho, carrinho2));
 	}
 
 }
