@@ -1,7 +1,7 @@
 package br.com.danielschiavo.shop.models.endereco;
 
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,7 +39,7 @@ public class Endereco {
 	@ManyToOne
 	private Cliente cliente;
 	
-	public Endereco(ClienteDTO clienteDTO, Cliente cliente) {
+	public Endereco(CadastrarClienteDTO clienteDTO, Cliente cliente) {
 		this.cep = clienteDTO.endereco().cep();
 		this.rua = clienteDTO.endereco().rua();
 		this.numero = clienteDTO.endereco().numero();
@@ -50,7 +50,7 @@ public class Endereco {
 		this.cliente = cliente;
 	}
 
-	public Endereco(EnderecoDTO novoEnderecoDTO) {
+	public Endereco(CadastrarEnderecoDTO novoEnderecoDTO) {
 		this.cep = novoEnderecoDTO.cep();
 		this.rua = novoEnderecoDTO.rua();
 		this.numero = novoEnderecoDTO.numero();
@@ -65,7 +65,7 @@ public class Endereco {
 		}
 	}
 
-	public void alterarEndereco(EnderecoDTO enderecoDTO) {
+	public void alterarEndereco(CadastrarEnderecoDTO enderecoDTO) {
 		if (enderecoDTO.cep() != null) {
 			this.cep = enderecoDTO.cep();
 		}

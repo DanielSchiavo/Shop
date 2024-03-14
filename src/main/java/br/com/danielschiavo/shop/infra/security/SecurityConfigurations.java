@@ -11,10 +11,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
@@ -22,16 +18,21 @@ public class SecurityConfigurations {
 	@Autowired
 	private SecurityFilter securityFilter;
 	
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    return http.csrf(csrf -> csrf.disable())
+	            .exceptionHandling(exceptionHandling -> 
+                	exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint))
 	            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	            .authorizeHttpRequests(req -> {
         			req.requestMatchers("/shop/admin/**").hasRole("ADMIN");
         			req.requestMatchers("/shop/cliente/**").hasRole("USER");
         			req.requestMatchers("/shop/publico/**").permitAll();
         			req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
-        			req.requestMatchers("/shop/login", "/shop/cadastrar/cliente").anonymous();
+        			req.requestMatchers("/shop/login", "/shop/publico/cadastrar/cliente").anonymous();
 	                req.anyRequest().authenticated();
 	            })
 	            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

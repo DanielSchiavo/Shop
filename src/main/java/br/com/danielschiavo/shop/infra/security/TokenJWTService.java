@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -14,30 +17,26 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import br.com.danielschiavo.shop.models.cliente.Cliente;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
+@Getter
+@Setter
 public class TokenJWTService {
 	
 	@Value("${api.security.token.secret}")
 	private String secret;
 	
 	private String token;
-
-	public void setTokenJWT(String tokenJWT) {
-		this.token = tokenJWT;
-	}
 	
-	public String getTokenJWT() {
-		return this.token;
-	}
-	
-	public String generateToken(Cliente client) {
+	public String generateToken(Cliente cliente) {
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256(secret);
 		    return JWT.create()
 		        .withIssuer("API Shop")
-		        .withSubject(client.getEmail())
-		        .withClaim("id", client.getId())
+		        .withSubject(cliente.getEmail())
+		        .withClaim("id", cliente.getId())
 //		        .withClaim("email", client.getEmail())
 		        .withExpiresAt(expirationDate())
 		        .sign(algorithm);
@@ -48,6 +47,10 @@ public class TokenJWTService {
 	
 	
 	public Long getClaimIdJWT() {
+		return decodeJWT(token).getClaim("id").asLong();
+	}
+	
+	public Long getClaimIdJWT(String token) {
 		return decodeJWT(token).getClaim("id").asLong();
 	}
 	
@@ -74,4 +77,14 @@ public class TokenJWTService {
 	private Instant expirationDate() {
 		return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
 	}
+	
+    public static UserDetails getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+            return (UserDetails) authentication.getPrincipal();
+        }
+
+        return null;
+    }
 }

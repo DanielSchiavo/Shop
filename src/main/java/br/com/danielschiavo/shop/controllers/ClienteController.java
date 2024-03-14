@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
-import br.com.danielschiavo.shop.models.cliente.AtualizarClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
+import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,68 +39,74 @@ public class ClienteController {
 	
 	@Autowired
 	private ClienteRepository clientRepository;
+	
+	@DeleteMapping("/cliente/foto-perfil")
+	@Operation(summary = "Deleta foto do perfil do cliente")
+	public ResponseEntity<?> deletarFotoPerfilClientePorIdToken() {
+		clienteService.deletarFotoPerfilPorIdToken();
+
+		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/cliente/pagina-inicial")
+	public ResponseEntity<MostrarClientePaginaInicialDTO> detalharClientePaginaInicialPorIdToken() {
+		MostrarClientePaginaInicialDTO clientePaginaInicialDTO = clienteService.detalharClientePorIdTokenPaginaInicial();
+		
+		return ResponseEntity.ok(clientePaginaInicialDTO);
+	}
 
 	@GetMapping("/cliente")
 	@Operation(summary = "Mostra todos os dados do cliente")
-	public ResponseEntity<?> detalharCliente() {
-		MostrarClienteDTO detalharClienteDTO = clienteService.detalharClientePorId();
+	public ResponseEntity<?> detalharClientePorIdToken() {
+		MostrarClienteDTO detalharClienteDTO = clienteService.detalharClientePorIdToken();
 		
 		return ResponseEntity.ok(detalharClienteDTO);
 	}
 	
+	@PostMapping("/publico/cadastrar/cliente")
+	@Operation(summary = "Cadastro de cliente")
+	public ResponseEntity<MostrarClienteDTO> cadastrarCliente(@RequestBody @Valid CadastrarClienteDTO cadastrarClienteDTO,
+			UriComponentsBuilder uriBuilder) {
+		MostrarClienteDTO mostrarClienteDTO = clienteService.cadastrarCliente(cadastrarClienteDTO);
+		
+		var uri = uriBuilder.path("/shop/cliente/{id}").buildAndExpand(mostrarClienteDTO.id()).toUri();
+		return ResponseEntity.created(uri).body(mostrarClienteDTO);
+	}
+	
 	@PutMapping("/cliente")
 	@Operation(summary = "Cliente altera seus próprios dados")
-	public ResponseEntity<MostrarClienteDTO> alterarClientePorId(@RequestBody AtualizarClienteDTO updateClientDTO) {
-		Cliente cliente = clienteService.atualizarClientePorId(updateClientDTO);
+	public ResponseEntity<MostrarClienteDTO> alterarClientePorIdToken(@RequestBody AlterarClienteDTO alterarClienteDTO) {
+		MostrarClienteDTO mostrarClienteDTO = clienteService.alterarClientePorIdToken(alterarClienteDTO);
 
-		return ResponseEntity.ok(new MostrarClienteDTO(cliente));
+		return ResponseEntity.ok(mostrarClienteDTO);
 	}
 	
 	@PutMapping("/cliente/foto-perfil")
 	@Operation(summary = "Alterar a foto do perfil do cliente")
-	public ResponseEntity<?> atualizarFotoPerfil(@RequestBody AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
-		var mensagemEFotoPerfilDTO = clienteService.alterarFotoPerfil(alterarFotoPerfilDTO);
+	public ResponseEntity<?> alterarFotoPerfilPorIdToken(@RequestBody @Valid AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
+		ArquivoInfoDTO arquivoInfoDTO = clienteService.alterarFotoPerfilPorIdToken(alterarFotoPerfilDTO);
 		
-		return ResponseEntity.ok(mensagemEFotoPerfilDTO);
-	}
-	
-	@PostMapping("/cadastrar/cliente")
-	@Operation(summary = "Cadastro de cliente")
-	public ResponseEntity<MostrarClienteDTO> cadastrarCliente(@RequestBody @Valid ClienteDTO clientDTO,
-			UriComponentsBuilder uriBuilder) {
-		System.out.println(" TESTE ");
-		Cliente cliente = clienteService.cadastrarCliente(clientDTO);
-		
-		var uri = uriBuilder.path("/shop/cliente/{id}").buildAndExpand(cliente.getId()).toUri();
-		return ResponseEntity.created(uri).body(new MostrarClienteDTO(cliente));
+		return ResponseEntity.ok(arquivoInfoDTO);
 	}
 
-	@DeleteMapping("/cliente/foto-perfil")
-	@Operation(summary = "Deleta foto do perfil do cliente")
-	public ResponseEntity<?> deletarFotoPerfil() {
-		clienteService.deletarFotoPerfil();
 
-		return ResponseEntity.noContent().build();
-	}
-
-//	@GetMapping("/cliente/{id}/pagina-inicial")
-//	public ResponseEntity<MostrarClientePaginaInicialDTO> pegarDadosParaExibirNaPaginaInicial(@PathVariable Long id) {
-//		MostrarClientePaginaInicialDTO clientePaginaInicialDTO = clienteService.pegarDadosParaExibirNaPaginaInicial(id);
-//		
-//		return ResponseEntity.ok(clientePaginaInicialDTO);
-//	}
-	
-	@GetMapping("/admin/cliente")
-	@Operation(summary = "Mostra todos os clientes cadastrados")
-	public ResponseEntity<Page<MostrarClienteDTO>> detalharTodosClientes(Pageable pageable) {
-		var client = clienteService.pegarTodosClientes(pageable);
-		return ResponseEntity.ok(client);
-	}
+//	------------------------------
+//	------------------------------
+//	ENDPOINTS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
 	
 	@DeleteMapping("/admin/cliente/{idCliente}")
 	@Operation(summary = "Deleta o cliente pelo id fornecido no parametro da requisição")
-	public ResponseEntity<?> deletarClientePorId(@PathVariable Long idCliente) {
-		clientRepository.deleteById(idCliente);
+	public ResponseEntity<?> adminDeletarClientePorId(@PathVariable Long idCliente) {
+		clienteService.adminDeletarClientePorId(idCliente);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/admin/cliente")
+	@Operation(summary = "Mostra todos os clientes cadastrados")
+	public ResponseEntity<Page<MostrarClienteDTO>> adminDetalharTodosClientes(Pageable pageable) {
+		var client = clienteService.adminDetalharTodosClientes(pageable);
+		return ResponseEntity.ok(client);
 	}
 }

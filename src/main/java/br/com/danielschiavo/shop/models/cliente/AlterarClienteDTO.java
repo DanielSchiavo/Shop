@@ -2,7 +2,7 @@ package br.com.danielschiavo.shop.models.cliente;
 
 import java.time.LocalDate;
 
-public record AtualizarClienteDTO(
+public record AlterarClienteDTO(
 		String cpf,
 		String nome,
 		String sobrenome,

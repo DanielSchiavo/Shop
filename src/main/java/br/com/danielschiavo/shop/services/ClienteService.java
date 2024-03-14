@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
-import br.com.danielschiavo.shop.models.cliente.AtualizarClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.cliente.ClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
@@ -36,7 +36,7 @@ public class ClienteService {
 	private TokenJWTService tokenJWTService;
 
 	@Transactional
-	public Cliente cadastrarCliente(ClienteDTO clientDTO) {
+	public MostrarClienteDTO cadastrarCliente(CadastrarClienteDTO clientDTO) {
 		var cliente = new Cliente(clientDTO);
 		System.out.println(" TESTE ");
 		if (clientDTO.endereco() != null) {
@@ -48,34 +48,39 @@ public class ClienteService {
 
 		clienteRepository.save(cliente);
 		
-		return cliente;
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+		
+		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
 	
-	public Page<MostrarClienteDTO> pegarTodosClientes(Pageable pageable) {
+	public Page<MostrarClienteDTO> adminDetalharTodosClientes(Pageable pageable) {
 		Page<Cliente> pageClientes = clienteRepository.findAll(pageable);
 		return pageClientes.map(this::converterParaDetalharClienteDTO);
 	}
 
 	private MostrarClienteDTO converterParaDetalharClienteDTO(Cliente cliente) {
-	    return new MostrarClienteDTO(cliente);
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+	    return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
 
-	public MostrarClienteDTO detalharClientePorId() {
+	public MostrarClienteDTO detalharClientePorIdToken() {
 		Long id = tokenJWTService.getClaimIdJWT();
 		Cliente cliente = clienteRepository.findById(id).get();
-		return new MostrarClienteDTO(cliente);
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
 
 	@Transactional
-	public Cliente atualizarClientePorId(AtualizarClienteDTO updateClientDTO) {
+	public MostrarClienteDTO alterarClientePorIdToken(AlterarClienteDTO updateClientDTO) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		cliente.atualizarAtributos(updateClientDTO);
-		return cliente;
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
 
 	@Transactional
-	public ArquivoInfoDTO alterarFotoPerfil(AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
+	public ArquivoInfoDTO alterarFotoPerfilPorIdToken(AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		Cliente cliente = verificarSeClienteExistePorId(idCliente);
 		
@@ -90,14 +95,15 @@ public class ClienteService {
 		return arquivoInfoDTO;
 	}
 
-	public MostrarClientePaginaInicialDTO pegarDadosParaExibirNaPaginaInicial(Long id) {
-		Cliente cliente = clienteRepository.findById(id).get();
+	public MostrarClientePaginaInicialDTO detalharClientePorIdTokenPaginaInicial() {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		Cliente cliente = verificarSeClienteExistePorId(idCliente);
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
-		return new MostrarClientePaginaInicialDTO(cliente.getNome(), arquivoInfoDTO.bytesArquivo());
+		return new MostrarClientePaginaInicialDTO(cliente.getNome(), arquivoInfoDTO);
 	}
 	
 	@Transactional
-	public void deletarFotoPerfil() {
+	public void deletarFotoPerfilPorIdToken() {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		Cliente cliente = verificarSeClienteExistePorId(idCliente);
 		if (cliente.getFotoPerfil().equals("Padrao.jpeg")) {
@@ -116,6 +122,17 @@ public class ClienteService {
 		} else {
 			throw new ValidacaoException("Não existe um cliente com o id " + id);
 		}
+	}
+
+	
+//	------------------------------
+//	------------------------------
+//	ENDPOINTS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
+	
+	public void adminDeletarClientePorId(Long idCliente) {
+		clienteRepository.deleteById(idCliente);
 	}
 
 }

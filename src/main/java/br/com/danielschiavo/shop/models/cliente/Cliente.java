@@ -73,11 +73,12 @@ public class Cliente implements UserDetails {
 	@OneToOne(mappedBy = "cliente")
 	private Carrinho carrinho;
 	
-	public Cliente(ClienteDTO clienteDTO) {
+	public Cliente(CadastrarClienteDTO clienteDTO) {
 		this.cpf = clienteDTO.cpf();
 		this.nome = clienteDTO.nome();
 		this.sobrenome = clienteDTO.sobrenome();
-		this.dataNascimento = clienteDTO.data_nascimento();
+		this.dataNascimento = clienteDTO.dataNascimento();
+		this.dataCriacaoConta = LocalDate.now();
 		this.email = clienteDTO.email();
 		this.senha = clienteDTO.senha();
 		this.celular = clienteDTO.celular();
@@ -89,7 +90,7 @@ public class Cliente implements UserDetails {
 		}
 	}
 
-	public void atualizarAtributos(AtualizarClienteDTO atualizarClienteDTO) {
+	public void atualizarAtributos(AlterarClienteDTO atualizarClienteDTO) {
 		if (atualizarClienteDTO.cpf() != null) {
 			this.cpf = atualizarClienteDTO.cpf();
 		}

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
 import br.com.danielschiavo.shop.repositories.SubCategoriaRepository;
 
+@Profile("dev")
 @Component
 public class InserirDadosMock implements CommandLineRunner {
 	
@@ -46,10 +48,15 @@ public class InserirDadosMock implements CommandLineRunner {
 	
 	@Autowired
 	private CarrinhoRepository carrinhoRepository;
+	
+	@Autowired
+	private LimpadorBancoDeDados limpadorBancoDeDados;
 
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
+		limpadorBancoDeDados.limpar();
+		
 		Cliente cliente = new Cliente(null, "14330283794", "Daniel", "Schiavo Rosseto", LocalDate.of(2000, 3, 3), LocalDate.now(), "daniel.schiavo35@gmail.com", "{noop}123456", "27996101055", null, null, null, null);
 		Endereco endereco = new Endereco(null, "29142298", "Divinopolis", "15", "Sem complemento", "Bela vista", "Cariacica", "ES", true, cliente);
 		Endereco endereco3 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", false, cliente);

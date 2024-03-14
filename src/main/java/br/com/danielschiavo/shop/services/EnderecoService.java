@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
-import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
+import br.com.danielschiavo.shop.models.endereco.CadastrarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.repositories.EnderecoRepository;
@@ -42,7 +42,7 @@ public class EnderecoService {
 	}
 
 	@Transactional
-	public MostrarEnderecoDTO cadastrarNovoEndereco(EnderecoDTO novoEnderecoDTO) {
+	public MostrarEnderecoDTO cadastrarNovoEndereco(CadastrarEnderecoDTO novoEnderecoDTO) {
 		var novoEndereco = new Endereco(novoEnderecoDTO);
 		
 		var idCliente = tokenJWTService.getClaimIdJWT();
@@ -68,7 +68,7 @@ public class EnderecoService {
 	}
 
 	@Transactional
-	public MostrarEnderecoDTO alterarEndereco(EnderecoDTO enderecoDTO, Long idEndereco) {
+	public MostrarEnderecoDTO alterarEndereco(CadastrarEnderecoDTO enderecoDTO, Long idEndereco) {
 		var endereco = enderecoRepository.findById(idEndereco).get();
 		
 		endereco.alterarEndereco(enderecoDTO);

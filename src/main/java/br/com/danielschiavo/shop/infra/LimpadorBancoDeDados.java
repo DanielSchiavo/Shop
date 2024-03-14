@@ -1,23 +1,16 @@
 package br.com.danielschiavo.shop.infra;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PreDestroy;
-
-@Profile("dev")
 @Component
 public class LimpadorBancoDeDados {
 
-    private final JdbcTemplate jdbcTemplate;
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    public LimpadorBancoDeDados(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @PreDestroy
-    public void cleanupDatabase() {
+    public void limpar() {
         String[] tables = new String[]{"pedidos_items", "pedidos", "pedidos_entrega", "pedidos_pagamento", "carrinhos_items", "carrinhos", "produtos_tipo_entrega", "produtos_arquivos", "produtos", "sub_categorias", "categorias", "clientes_enderecos", "clientes_cartoes", "clientes"};
         
         for (String table : tables) {

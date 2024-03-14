@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.danielschiavo.shop.models.endereco.EnderecoDTO;
+import br.com.danielschiavo.shop.models.endereco.CadastrarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import br.com.danielschiavo.shop.services.EnderecoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +42,7 @@ public class EnderecoController {
 	
 	@PutMapping("/cliente/endereco/{idEndereco}")
 	@Operation(summary = "Alterar um endereço por id")
-	public ResponseEntity<MostrarEnderecoDTO> alterarEndereco(@PathVariable Long idEndereco, @RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
+	public ResponseEntity<MostrarEnderecoDTO> alterarEndereco(@PathVariable Long idEndereco, @RequestBody @Valid CadastrarEnderecoDTO novoEnderecoDTO) {
 		MostrarEnderecoDTO enderecoDTO = enderecoService.alterarEndereco(novoEnderecoDTO, idEndereco);
 		
 		return ResponseEntity.ok().body(enderecoDTO);
@@ -50,7 +50,7 @@ public class EnderecoController {
 
 	@PostMapping("/cliente/endereco")
 	@Operation(summary = "Cadastrar novo endereço para o cliente")
-	public ResponseEntity<MostrarEnderecoDTO> cadastrarNovoEndereco(@RequestBody @Valid EnderecoDTO novoEnderecoDTO) {
+	public ResponseEntity<MostrarEnderecoDTO> cadastrarNovoEndereco(@RequestBody @Valid CadastrarEnderecoDTO novoEnderecoDTO) {
 		MostrarEnderecoDTO mostrarEnderecoDTO = enderecoService.cadastrarNovoEndereco(novoEnderecoDTO);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(mostrarEnderecoDTO);

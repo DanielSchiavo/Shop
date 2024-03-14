@@ -1,13 +1,10 @@
 package br.com.danielschiavo.shop.models.cliente;
 
+import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
+
 public record MostrarClientePaginaInicialDTO(
 		String nome,
-		byte[] fotoPerfil
+		ArquivoInfoDTO fotoPerfil
 		) {
-
-	public MostrarClientePaginaInicialDTO(String nome, byte[] fotoPerfil) {
-		this.nome = nome;
-		this.fotoPerfil = fotoPerfil;
-	}
 
 }
