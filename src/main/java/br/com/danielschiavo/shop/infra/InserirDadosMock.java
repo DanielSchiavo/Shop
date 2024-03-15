@@ -66,7 +66,7 @@ public class InserirDadosMock implements CommandLineRunner {
 		
 		Cliente cliente2 = new Cliente(null, "12345678994", "Silvana", "Pereira da silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "silvana.dasilva@gmail.com", "{noop}123456", "27999833653", null, null, null, null);
 		Endereco endereco2 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", true, cliente2);
-		Cartao cartao2 = new Cartao(null, "Santander", "1111222244445555", "Silvana pereira da silva", "03/28", true, TipoCartao.CREDITO, cliente2);
+		Cartao cartao2 = new Cartao(null, "Santander", "1111222244445555", "Silvana pereira da silva", "03/28", false, TipoCartao.CREDITO, cliente2);
 		cliente2.setEnderecos(Arrays.asList(endereco2));
 		cliente2.setCartoes(Arrays.asList(cartao2));
 		

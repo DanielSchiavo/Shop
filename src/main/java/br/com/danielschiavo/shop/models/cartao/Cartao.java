@@ -42,7 +42,7 @@ public class Cartao {
 	@ManyToOne
 	private Cliente cliente;
 
-	public Cartao(CartaoDTO cartaoDTO) {
+	public Cartao(CadastrarCartaoDTO cartaoDTO) {
 		this.numeroCartao = cartaoDTO.numeroCartao();
 		this.nomeNoCartao = cartaoDTO.nomeNoCartao();
 		this.validadeCartao = cartaoDTO.validadeCartao();

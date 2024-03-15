@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
-import br.com.danielschiavo.shop.models.cartao.CartaoDTO;
+import br.com.danielschiavo.shop.models.cartao.CadastrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.repositories.CartaoRepository;
 
@@ -18,7 +18,7 @@ public class ValidadorVerificarCartaoJaCadastrado implements ValidadorCadastrarN
 	private CartaoRepository cartaoRepository;
 	
 	@Override
-	public void validar(CartaoDTO cartaoDTO, Cliente cliente) {
+	public void validar(CadastrarCartaoDTO cartaoDTO, Cliente cliente) {
 		String numeroCartao = cartaoDTO.numeroCartao();
 		
 		Optional<Cartao> optionalCartao = cartaoRepository.findByNumeroCartao(numeroCartao);

@@ -70,8 +70,8 @@ class CarrinhoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar produto no carrinho deve retornar http 401 quando token inválido é enviado")
-	void deletarProdutoNoCarrinhoPorIdToken_TokenInvalido_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Deletar produto no carrinho deve retornar http 401 quando token não é enviado")
+	void deletarProdutoNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
 		Long idProduto = 1L;
 		var response = mvc.perform(delete("/shop/cliente/carrinho/{idProduto}", idProduto))
 								  .andReturn().getResponse();
@@ -109,7 +109,7 @@ class CarrinhoControllerTest {
 	
 	@Test
 	@DisplayName("Pegar carrinho cliente por id token deve retornar codigo http 401 quando token não é enviado")
-	void pegarCarrinhoClientePorIdToken_TokenInvalido_DeveRetornarUnauthorized() throws IOException, Exception {
+	void pegarCarrinhoClientePorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente/carrinho"))
 								  .andReturn().getResponse();
 		
@@ -132,7 +132,7 @@ class CarrinhoControllerTest {
 	
 	@Test
 	@DisplayName("Adicionar produtos no carrinho por id token deve retornar http 401 quando token não é enviado")
-	void adicionarProdutosNoCarrinhoPorIdToken_TokenInvalido_DeveRetornarUnauthorized() throws IOException, Exception {
+	void adicionarProdutosNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/cliente/carrinho"))
 						.andReturn().getResponse();
 		
@@ -157,7 +157,7 @@ class CarrinhoControllerTest {
 	
 	@Test
 	@DisplayName("Setar quantidade produto no carrinho por id token deve retornar http 401 quando token não é informado")
-	void setarQuantidadeProdutoNoCarrinhoPorIdToken_TokenInvalido_DeveRetornarUnauthorized() throws IOException, Exception {
+	void setarQuantidadeProdutoNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
 		var response = mvc.perform(put("/shop/cliente/carrinho"))
 								.andReturn().getResponse();
 		

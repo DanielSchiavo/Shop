@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
-import br.com.danielschiavo.shop.models.cartao.CartaoDTO;
+import br.com.danielschiavo.shop.models.cartao.CadastrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.MostrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.validacoes.ValidadorCadastrarNovoCartao;
 import br.com.danielschiavo.shop.repositories.CartaoRepository;
@@ -34,7 +34,7 @@ public class CartaoService {
 	private List<ValidadorCadastrarNovoCartao> validadores;
 
 	@Transactional
-	public MostrarCartaoDTO cadastrarNovoCartao(CartaoDTO cartaoDTO) {
+	public MostrarCartaoDTO cadastrarNovoCartaoPorIdToken(CadastrarCartaoDTO cartaoDTO) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		
@@ -55,7 +55,7 @@ public class CartaoService {
 		return new MostrarCartaoDTO(novoCartao);
 	}
 	
-	public Page<MostrarCartaoDTO> pegarCartoesCliente(Pageable pageable) {
+	public Page<MostrarCartaoDTO> pegarCartoesClientePorIdToken(Pageable pageable) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		
@@ -64,28 +64,48 @@ public class CartaoService {
 	}
 	
 	@Transactional
-	public void deletarCartao(Long id) {
+	public void deletarCartaoPorIdToken(Long id) {
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		var cliente = clienteRepository.getReferenceById(idCliente);
+		
 		var cartao = cartaoRepository.findById(id).orElseThrow();
 		
-		cartaoRepository.delete(cartao);
+		cliente.getCartoes().forEach(c -> {
+			if (c.getId() == id) {
+				cartaoRepository.delete(cartao);
+				return;
+			}
+		});
+		
+		throw new ValidacaoException("O Cartão de id número " + id + " não é do cliente logado");
+		
 	}
 
 	@Transactional
-	public void alterarCartaoPadrao(Long id) {
+	public void alterarCartaoPadraoPorIdToken(Long id) {
 		Optional<Cartao> optionalCartao = cartaoRepository.findById(id);
+		var idCliente = tokenJWTService.getClaimIdJWT();
+		var cliente = clienteRepository.getReferenceById(idCliente);
 		
 		if (optionalCartao.isPresent()) {
 			var cartao = optionalCartao.get();
-			if (cartao.getCartaoPadrao() == false) {
-				Cartao cartaoTrue = cartaoRepository.findByCartaoPadraoTrue().orElseThrow();
-				cartaoTrue.setCartaoPadrao(false);
-				cartaoRepository.save(cartaoTrue);
-				cartao.setCartaoPadrao(true);
-			}
-			else {
-				throw new ValidacaoException("O cartão não pode ser definido como cartaoPadrao = false porque não existe outro cartão definido como cartão padrão (cartaoPadrao = true). Por favor, defina pelo menos um cartão já cadastrado como cartaoPadrao = true ou deixe esse cartão como cartaoPadrao = true.");
-			}
-			cartaoRepository.save(cartao);
+			cliente.getCartoes().forEach(c -> {
+				if (c.getId() == id) { //verifica se o cartão é do cliente mesmo
+					if (cartao.getCartaoPadrao() == false) {
+						Optional<Cartao> optionalCartaoTrue = cartaoRepository.findByCartaoPadraoTrue();
+						if (optionalCartaoTrue.isPresent()) {
+							Cartao cartaoTrue = optionalCartaoTrue.get();
+							cartaoTrue.setCartaoPadrao(false);
+							cartaoRepository.save(cartaoTrue);
+						}
+						cartao.setCartaoPadrao(true);
+					}
+					else {
+						cartao.setCartaoPadrao(false);
+					}
+					cartaoRepository.save(cartao);
+				}
+			});
 		}
 		else {
 			throw new ValidacaoException("ID do cartão de número: " + id + " não existe");
