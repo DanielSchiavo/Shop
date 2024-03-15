@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.categoria.Categoria;
-import br.com.danielschiavo.shop.models.categoria.CategoriaDTO;
+import br.com.danielschiavo.shop.models.categoria.CriarCategoriaDTO;
 import br.com.danielschiavo.shop.models.categoria.MostrarCategoriaDTO;
 import br.com.danielschiavo.shop.repositories.CategoriaRepository;
 import br.com.danielschiavo.shop.services.CategoriaService;
@@ -39,36 +39,18 @@ public class CategoriaController {
 	private CategoriaRepository categoriaRepository;
 	
 	@GetMapping("/publico/categoria")
-	@Operation(summary = "Lista todas as categorias existentes", 
-	   		   operationId = "01_listarCategorias")
+	@Operation(summary = "Lista todas as categorias existentes")
 	public ResponseEntity<Page<Categoria>> listarCategorias(Pageable pageable){		
-		var lista = categoriaRepository.findAll(pageable);
+		Page<Categoria> lista = categoriaService.listarCategorias(pageable);
 		return ResponseEntity.ok(lista);
 	}
 	
-	@PutMapping("/admin/categoria/{idCategoria}")
-	@SecurityRequirement(name = "bearer-key")
-	@Operation(summary = "Altera o nome da categoria", 
-	   		   operationId = "02_alterarNomeCategoriaPorId")
-	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long idCategoria, @RequestBody @NotNull CategoriaDTO categoriaDTO) {
-		MostrarCategoriaDTO mostrarCategoriaDTO = categoriaService.alterarNomeCategoriaPorId(idCategoria, categoriaDTO);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(mostrarCategoriaDTO);
-	}
 	
-	@PostMapping("/admin/categoria")
-	@SecurityRequirement(name = "bearer-key")
-	@Operation(summary = "Cria uma categoria", 
-	   		   operationId = "03_criarCategoria")
-	public ResponseEntity<?> criarCategoria(@RequestBody @Valid CategoriaDTO categoriaDTO) {
-		try {
-			MostrarCategoriaDTO mostrarCategoriaDTO = categoriaService.criarCategoria(categoriaDTO.nome());
-			return ResponseEntity.status(HttpStatus.CREATED).body(mostrarCategoriaDTO);
-		} catch (ValidacaoException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-		}
-		
-	}
+//	------------------------------
+//	------------------------------
+//	ENDPOINTS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
 	
 	@DeleteMapping("/admin/categoria/{idCategoria}")
 	@SecurityRequirement(name = "bearer-key")
@@ -83,5 +65,28 @@ public class CategoriaController {
 	        return ResponseEntity.internalServerError().body("Erro ao deletar categoria.");
 	    }
 	}
-
+	
+	@PostMapping("/admin/categoria")
+	@SecurityRequirement(name = "bearer-key")
+	@Operation(summary = "Cria uma categoria", 
+	   		   operationId = "03_criarCategoria")
+	public ResponseEntity<?> criarCategoria(@RequestBody @Valid CriarCategoriaDTO categoriaDTO) {
+		try {
+			MostrarCategoriaDTO mostrarCategoriaDTO = categoriaService.criarCategoria(categoriaDTO.nome());
+			return ResponseEntity.status(HttpStatus.CREATED).body(mostrarCategoriaDTO);
+		} catch (ValidacaoException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+		}
+		
+	}
+	
+	@PutMapping("/admin/categoria/{idCategoria}")
+	@SecurityRequirement(name = "bearer-key")
+	@Operation(summary = "Altera o nome da categoria", 
+	   		   operationId = "02_alterarNomeCategoriaPorId")
+	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long idCategoria, @RequestBody @NotNull CriarCategoriaDTO categoriaDTO) {
+		MostrarCategoriaDTO mostrarCategoriaDTO = categoriaService.alterarNomeCategoriaPorId(idCategoria, categoriaDTO);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(mostrarCategoriaDTO);
+	}
 }

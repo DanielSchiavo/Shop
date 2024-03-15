@@ -1,7 +1,6 @@
 package br.com.danielschiavo.shop.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -11,8 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -33,14 +30,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.danielschiavo.shop.JwtUtilTest;
-import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.cartao.CadastrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.MostrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.TipoCartao;
-import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
-import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import br.com.danielschiavo.shop.services.CartaoService;
 
 @SpringBootTest

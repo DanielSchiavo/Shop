@@ -3,12 +3,14 @@ package br.com.danielschiavo.shop.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.categoria.Categoria;
-import br.com.danielschiavo.shop.models.categoria.CategoriaDTO;
+import br.com.danielschiavo.shop.models.categoria.CriarCategoriaDTO;
 import br.com.danielschiavo.shop.models.categoria.MostrarCategoriaDTO;
 import br.com.danielschiavo.shop.repositories.CategoriaRepository;
 
@@ -32,7 +34,7 @@ public class CategoriaService {
 	}
 
 	@Transactional
-	public MostrarCategoriaDTO alterarNomeCategoriaPorId(Long id, CategoriaDTO categoriaDTO) {
+	public MostrarCategoriaDTO alterarNomeCategoriaPorId(Long id, CriarCategoriaDTO categoriaDTO) {
 		Categoria categoria = verificarSeExisteCategoriaPorId(id);
 		String novoNome = categoriaDTO.nome();
 		Optional<Categoria> optionalCategoria = categoriaRepository.findByNome(novoNome);
@@ -56,6 +58,10 @@ public class CategoriaService {
 			throw new ValidacaoException("Não existe categoria com o id " + idCategoria);
 		}
 		return optionalCategoria.get();
+	}
+
+	public Page<Categoria> listarCategorias(Pageable pageable) {
+		return categoriaRepository.findAll(pageable);
 	}
 
 }
