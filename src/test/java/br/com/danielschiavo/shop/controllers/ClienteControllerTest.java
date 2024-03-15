@@ -163,7 +163,6 @@ class ClienteControllerTest {
 		when(clienteService.cadastrarCliente(any())).thenReturn(mostrarClienteDTO);
 		
 		var response = mvc.perform(post("/shop/publico/cadastrar/cliente")
-//								  .header("Authorization", "Bearer " + token)
 								  .contentType(MediaType.APPLICATION_JSON)
 								  .content(cadastrarClienteDTOJson.write(
 										  new CadastrarClienteDTO("12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), "juniordasilva@gmail.com", "123456", "27996101055", "Padrao.jpeg", null))

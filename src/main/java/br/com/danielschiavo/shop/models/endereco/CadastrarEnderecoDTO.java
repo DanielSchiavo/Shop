@@ -1,6 +1,7 @@
 package br.com.danielschiavo.shop.models.endereco;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CadastrarEnderecoDTO(
 		@NotBlank
@@ -16,7 +17,7 @@ public record CadastrarEnderecoDTO(
 		String cidade,
 		@NotBlank
 		String estado,
-		@NotBlank
+		@NotNull
 		Boolean enderecoPadrao
 		) {
 

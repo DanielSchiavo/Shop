@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
+import br.com.danielschiavo.shop.models.endereco.AlterarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.CadastrarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
 import br.com.danielschiavo.shop.repositories.ClienteRepository;
@@ -42,7 +43,7 @@ public class EnderecoService {
 	}
 
 	@Transactional
-	public MostrarEnderecoDTO cadastrarNovoEndereco(CadastrarEnderecoDTO novoEnderecoDTO) {
+	public MostrarEnderecoDTO cadastrarNovoEnderecoPorIdToken(CadastrarEnderecoDTO novoEnderecoDTO) {
 		var novoEndereco = new Endereco(novoEnderecoDTO);
 		
 		var idCliente = tokenJWTService.getClaimIdJWT();
@@ -68,7 +69,7 @@ public class EnderecoService {
 	}
 
 	@Transactional
-	public MostrarEnderecoDTO alterarEndereco(CadastrarEnderecoDTO enderecoDTO, Long idEndereco) {
+	public MostrarEnderecoDTO alterarEnderecoPorIdToken(AlterarEnderecoDTO enderecoDTO, Long idEndereco) {
 		var endereco = enderecoRepository.findById(idEndereco).get();
 		
 		endereco.alterarEndereco(enderecoDTO);
@@ -79,13 +80,13 @@ public class EnderecoService {
 	}
 
 	@Transactional
-	public void deletarEndereco(Long idEndereco) {
+	public void deletarEnderecoPorIdToken(Long idEndereco) {
 		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
 		
 		enderecoRepository.delete(endereco);
 	}
 
-	public List<MostrarEnderecoDTO> pegarEnderecosCliente() {
+	public List<MostrarEnderecoDTO> pegarEnderecosClientePorIdToken() {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 		

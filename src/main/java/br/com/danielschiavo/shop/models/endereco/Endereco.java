@@ -65,7 +65,7 @@ public class Endereco {
 		}
 	}
 
-	public void alterarEndereco(CadastrarEnderecoDTO enderecoDTO) {
+	public void alterarEndereco(AlterarEnderecoDTO enderecoDTO) {
 		if (enderecoDTO.cep() != null) {
 			this.cep = enderecoDTO.cep();
 		}
