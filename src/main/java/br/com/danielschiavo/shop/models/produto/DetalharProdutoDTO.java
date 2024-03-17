@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.danielschiavo.shop.models.categoria.MostrarCategoriaComSubCategoriaDTO;
-import br.com.danielschiavo.shop.models.produto.arquivosproduto.MostrarArquivosProdutoDTO;
+import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 
 public record DetalharProdutoDTO(
 		Long id, 
@@ -14,10 +14,10 @@ public record DetalharProdutoDTO(
 		Integer quantidade,
 		Boolean ativo,
 		MostrarCategoriaComSubCategoriaDTO categoria,
-		List<MostrarArquivosProdutoDTO> arquivos
+		List<ArquivoInfoDTO> arquivos
 		) {
 	
-	public DetalharProdutoDTO(Produto produto, List<MostrarArquivosProdutoDTO> arquivos) {
+	public DetalharProdutoDTO(Produto produto, List<ArquivoInfoDTO> arquivos) {
 		this(
 			produto.getId(),
 			produto.getNome(),

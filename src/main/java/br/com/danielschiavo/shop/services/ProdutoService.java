@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,6 @@ import br.com.danielschiavo.shop.models.produto.DetalharProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.MostrarProdutosDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
-import br.com.danielschiavo.shop.models.produto.arquivosproduto.MostrarArquivosProdutoDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
@@ -110,25 +110,11 @@ public class ProdutoService {
 //		produtoRepository.save(product);
 //	}
 
-	public List<MostrarArquivosProdutoDTO> carregarArquivosProduto(List<ArquivosProduto> arquivosProduto) {
-		List<MostrarArquivosProdutoDTO> mostrarArquivosProdutoDTO = new ArrayList<>();
+	public List<ArquivoInfoDTO> carregarArquivosProduto(List<ArquivosProduto> arquivosProduto) {
+		List<String> listaDeNomes = arquivosProduto.stream().map(ap -> ap.getNome()).collect(Collectors.toList());
+		List<ArquivoInfoDTO> listaArquivoInfoDTO = fileService.mostrarArquivoProdutoPorListaDeNomes(listaDeNomes);
 
-		arquivosProduto.forEach(arquivo -> {
-			String nome = arquivo.getNome();
-			ArquivoInfoDTO arquivoInfoDTO = fileService.pegarArquivoProdutoPorNome(nome);
-			String tipo = null;
-			if (nome.endsWith("jpg") || nome.endsWith("jpeg")) {
-				tipo = "image";
-			}
-			if (nome.endsWith("mp4") || nome.endsWith("avi")) {
-				tipo = "video";
-			}
-			var novo = new MostrarArquivosProdutoDTO(tipo, arquivoInfoDTO.bytesArquivo().length, 
-											arquivo.getPosicao(), arquivoInfoDTO.bytesArquivo());
-			mostrarArquivosProdutoDTO.add(novo);
-		});
-
-		return mostrarArquivosProdutoDTO;
+		return listaArquivoInfoDTO;
 	}
 
 	public Page<MostrarProdutosDTO> listarProdutos(Pageable pageable) {
@@ -239,7 +225,7 @@ public class ProdutoService {
 
 	public DetalharProdutoDTO detalharProdutoPorId(Long id) {
 		Produto produto = produtoRepository.getReferenceById(id);
-		List<MostrarArquivosProdutoDTO> mostrarArquivosProdutoDTO = carregarArquivosProduto(produto.getArquivosProduto());
+		List<ArquivoInfoDTO> mostrarArquivosProdutoDTO = carregarArquivosProduto(produto.getArquivosProduto());
 		DetalharProdutoDTO detalharProdutoDTO = new DetalharProdutoDTO(produto, mostrarArquivosProdutoDTO);
 		return detalharProdutoDTO;
 	}
