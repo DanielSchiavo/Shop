@@ -6,7 +6,6 @@ import java.util.Set;
 
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProdutoDTO;
-import jakarta.validation.constraints.NotNull;
 
 public record AlterarProdutoDTO(
 		String nome,
@@ -17,7 +16,6 @@ public record AlterarProdutoDTO(
 		Long idCategoria,
 		Long idSubCategoria,
 		Set<TipoEntrega> tipoEntrega,
-		@NotNull
 		List<ArquivoProdutoDTO> arquivos
 		) {
 

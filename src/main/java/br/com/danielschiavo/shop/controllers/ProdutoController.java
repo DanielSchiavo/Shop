@@ -25,6 +25,8 @@ import br.com.danielschiavo.shop.services.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/shop")
@@ -50,12 +52,27 @@ public class ProdutoController {
 		return ResponseEntity.ok(detalharProdutoDTO);
 	}
 	
+	
+//	------------------------------
+//	------------------------------
+//	ENDPOINTS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
+	
+	@DeleteMapping("/admin/produto/{idProduto}")
+	@Operation(summary = "Deleta um produto com o id fornecido no parametro da requisição")
+	@SecurityRequirement(name = "bearer-key")
+	public ResponseEntity<?> deletarProdutoPorId(@PathVariable @NotNull Long idProduto) {
+		produtoService.deletarProdutoPorId(idProduto);
+		return ResponseEntity.noContent().build();
+	}
+	
 	@PostMapping(path = "/admin/produto")
 	@ResponseBody
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cadastra um novo produto")
 	public ResponseEntity<MostrarProdutosDTO> cadastrarProduto(
-			@RequestBody CadastrarProdutoDTO cadastrarProdutoDTO,
+			@RequestBody @Valid CadastrarProdutoDTO cadastrarProdutoDTO,
 			UriComponentsBuilder uriBuilder
  			) {
 		var mostrarProdutosDTO = produtoService.cadastrarProduto(cadastrarProdutoDTO);
@@ -77,11 +94,4 @@ public class ProdutoController {
 		return ResponseEntity.ok(detalharProdutoDTO);
 	}
 
-	@DeleteMapping("/admin/produto/{idProduto}")
-	@Operation(summary = "Deleta um produto com o id fornecido no parametro da requisição")
-	@SecurityRequirement(name = "bearer-key")
-	public ResponseEntity<?> deletarProdutoPorId(@PathVariable Long idProduto) {
-		produtoService.deletarProdutoPorId(idProduto);
-		return ResponseEntity.noContent().build();
-	}
 }

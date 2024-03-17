@@ -113,7 +113,6 @@ public class ProdutoService {
 	public List<ArquivoInfoDTO> carregarArquivosProduto(List<ArquivosProduto> arquivosProduto) {
 		List<String> listaDeNomes = arquivosProduto.stream().map(ap -> ap.getNome()).collect(Collectors.toList());
 		List<ArquivoInfoDTO> listaArquivoInfoDTO = fileService.mostrarArquivoProdutoPorListaDeNomes(listaDeNomes);
-
 		return listaArquivoInfoDTO;
 	}
 

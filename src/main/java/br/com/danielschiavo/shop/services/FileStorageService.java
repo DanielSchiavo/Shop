@@ -83,7 +83,7 @@ public class FileStorageService {
 
 	        URI uri = uriBuilder.path("/arquivo-produto/" + nomeArquivo).build().toUri();
 
-	        var arquivoInfo = new ArquivoInfoDTO(nomeArquivo, uri.toString(), bytesArquivo);
+	        var arquivoInfo = new ArquivoInfoDTO(nomeArquivo, null, uri.toString(), bytesArquivo);
 
 	        arquivosInfo.add(arquivoInfo);
 	    }
