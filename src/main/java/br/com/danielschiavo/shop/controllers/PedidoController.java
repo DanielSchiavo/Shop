@@ -28,20 +28,27 @@ public class PedidoController {
 	@Autowired
 	private PedidoService pedidoService;
 	
-	@PostMapping("/pedido")
+	@GetMapping("/cliente/pedido")
+	@Operation(summary = "Pega todos os pedidos do cliente")
+	public ResponseEntity<Page<MostrarPedidoDTO>> pegarPedidosClientePorIdToken(Pageable pageable) {
+		Page<MostrarPedidoDTO> pagePedidosAConfirmar = pedidoService.pegarPedidosClientePorIdToken(pageable);
+		return ResponseEntity.ok(pagePedidosAConfirmar);
+	}
+	
+	@PostMapping("/cliente/pedido")
 	@Operation(summary = "Cria um pedido, tanto a partir do carrinho do cliente, quando do botão comprar agora")
 	public ResponseEntity<?> criarPedidoBotaoComprarAgoraEComprarDoCarrinho(@RequestBody @Valid CriarPedidoDTO pedidoDTO) {
-		MostrarPedidoDTO mostrarPedidoDTO = pedidoService.criarPedidoBotaoComprarAgoraEComprarDoCarrinho(pedidoDTO);
+		MostrarPedidoDTO mostrarPedidoDTO = pedidoService.criarPedidoBotaoComprarAgoraEComprarDoCarrinhoPorIdToken(pedidoDTO);
 		
 		return ResponseEntity.ok(mostrarPedidoDTO);
 	}	
 	
-	@GetMapping("/cliente/pedido")
-	@Operation(summary = "Pega todos os pedidos do cliente")
-	public ResponseEntity<Page<MostrarPedidoDTO>> pegarPedidosCliente(Pageable pageable) {
-		Page<MostrarPedidoDTO> pagePedidosAConfirmar = pedidoService.pegarPedidosCliente(pageable);
-		return ResponseEntity.ok(pagePedidosAConfirmar);
-	}
+	
+//	------------------------------
+//	------------------------------
+//	ENDPOINTS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
 	
 	@GetMapping("/admin/pedido/{idCliente}")
 	@Operation(summary = "Pega todos pedidos do cliente com id fornecido no parametro da requisição")
@@ -49,5 +56,4 @@ public class PedidoController {
 		Page<MostrarPedidoDTO> pagePedidosAConfirmar = pedidoService.pegarPedidosClientePorId(idCliente, pageable);
 		return ResponseEntity.ok(pagePedidosAConfirmar);
 	}
-
 }

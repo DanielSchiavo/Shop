@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shop.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class PedidoService {
 	@Autowired
 	private List<ValidadorCriarNovoPedido> validador;
 
-	public Page<MostrarPedidoDTO> pegarPedidosCliente(Pageable pageable) {
+	public Page<MostrarPedidoDTO> pegarPedidosClientePorIdToken(Pageable pageable) {
 		var idCliente = tokenJWTService.getClaimIdJWT();
 		var cliente = clienteRepository.getReferenceById(idCliente);
 
@@ -100,7 +101,7 @@ public class PedidoService {
 	}
 
 	@Transactional
-	public MostrarPedidoDTO criarPedidoBotaoComprarAgoraEComprarDoCarrinho(CriarPedidoDTO pedidoDTO) {
+	public MostrarPedidoDTO criarPedidoBotaoComprarAgoraEComprarDoCarrinhoPorIdToken(CriarPedidoDTO pedidoDTO) {
 		validador.forEach(v -> v.validar(pedidoDTO));
 
 		Pedido pedido = null;
@@ -240,18 +241,22 @@ public class PedidoService {
 			pedido.getItemsPedido().add(itemPedido);
 		}
 		else {
+			BigDecimal valorTotal = BigDecimal.ZERO;
 			produtosCarrinho.forEach(p -> {
 				Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(p.idProduto());
 				String first = produto.pegarNomePrimeiraImagem();
 				String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first, produto.getId());
 				ItemPedido itemPedido = new ItemPedido(null,
 													   produto.getPreco(),
-												   	   produto.getQuantidade(),
+												   	   p.quantidade(),
 												   	   produto.getNome(),
 												   	   nomeImagemPedido,
 												   	   produto,
 												   	   pedido);
 				pedido.getItemsPedido().add(itemPedido);
+				BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(p.quantidade()));
+				valorTotal.add(subTotal);
+				pedido.setValorTotal(valorTotal);
 			});
 		}
 		pedido.setPagamento(pagamento);
