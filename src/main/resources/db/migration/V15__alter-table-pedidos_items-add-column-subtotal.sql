@@ -1,0 +1,2 @@
+ALTER TABLE pedidos_items
+ADD COLUMN sub_total NUMERIC(8,2) NOT NULL;

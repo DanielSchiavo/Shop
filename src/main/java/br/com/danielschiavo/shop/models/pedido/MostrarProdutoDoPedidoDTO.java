@@ -8,6 +8,7 @@ public record MostrarProdutoDoPedidoDTO(
 		String nomeProduto,
 		BigDecimal preco,
 		Integer quantidade,
+		BigDecimal subTotal,
 		byte[] primeiraImagem
 		) {
 
@@ -15,6 +16,7 @@ public record MostrarProdutoDoPedidoDTO(
 		this(itemPedido.getNomeProduto(),
 			 itemPedido.getPreco(),
 			 itemPedido.getQuantidade(),
+			 itemPedido.getSubTotal(),
 			 primeiraImagem);
 	}
 

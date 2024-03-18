@@ -95,14 +95,14 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar arquivo produto deve retornar http 401 quando token não é enviado")
-	void deletarArquivoProduto_NenhumTokenEnviado_DeveRetornarUnauthorizred() throws IOException, Exception {
+	@DisplayName("Deletar arquivo produto deve retornar http 403 quando token não é enviado")
+	void deletarArquivoProduto_NenhumTokenEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		String nomeArquivo = "Nomequalquer.jpeg";
 		
 		var response = mvc.perform(delete("/shop/admin/filestorage/arquivo-produto/{nomeArquivo}", nomeArquivo))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -148,12 +148,12 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Mostrar arquivo produto por lista de nomes deve retornar codigo http 401 quando tenta usar endpoint sem enviar token")
-	void mostrarArquivoProdutoPorListaDeNomes_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Mostrar arquivo produto por lista de nomes deve retornar codigo http 403 quando tenta usar endpoint sem enviar token")
+	void mostrarArquivoProdutoPorListaDeNomes_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/admin/filestorage/arquivo-produto"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -189,13 +189,13 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Mostrar arquivo produto por lista de nomes deve retornar codigo http 401 quando tenta usar endpoint sem enviar token")
-	void mostrarArquivoProdutoPorNome_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Mostrar arquivo produto por lista de nomes deve retornar codigo http 403 quando tenta usar endpoint sem enviar token")
+	void mostrarArquivoProdutoPorNome_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		String nomeArquivo = "Imagemum.jpeg";
 		var response = mvc.perform(get("/shop/admin/filestorage/arquivo-produto/{nomeArquivo}", nomeArquivo))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -239,12 +239,12 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Cadastrar array arquivo produto deve retornar http 401 quando token não é enviado")
-	void cadastrarArrayArquivoProduto_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Cadastrar array arquivo produto deve retornar http 403 quando token não é enviado")
+	void cadastrarArrayArquivoProduto_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/admin/filestorage/arquivo-produto/array"))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -281,12 +281,12 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Cadastrar um arquivo produto deve retornar http 401 quando token não é enviado")
-	void cadastrarUmArquivoProduto_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Cadastrar um arquivo produto deve retornar http 403 quando token não é enviado")
+	void cadastrarUmArquivoProduto_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/admin/filestorage/arquivo-produto"))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -300,12 +300,12 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Alterar um arquivo produto deve retornar http 401 quando token não é enviado")
-	void alterarArquivoProduto_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Alterar um arquivo produto deve retornar http 403 quando token não é enviado")
+	void alterarArquivoProduto_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(put("/shop/admin/filestorage/arquivo-produto"))
 								.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 
@@ -337,14 +337,14 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar foto perfil deve retornar http 401 quando token não é enviado")
-	void deletarFotoPerfil_NenhumTokenEnviado_DeveRetornarUnauthorizred() throws IOException, Exception {
+	@DisplayName("Deletar foto perfil deve retornar http 403 quando token não é enviado")
+	void deletarFotoPerfil_NenhumTokenEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		String nomeFotoPerfilAntiga = "Nomequalquer.jpeg";
 		
 		var response = mvc.perform(delete("/shop/admin/filestorage/foto-perfil/{nomeFotoPerfilAntiga}", nomeFotoPerfilAntiga))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -380,13 +380,13 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar foto perfil por nome deve retornar codigo http 401 quando tenta usar endpoint sem enviar token")
-	void pegarFotoPerfilPorNome_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar foto perfil por nome deve retornar codigo http 403 quando tenta usar endpoint sem enviar token")
+	void pegarFotoPerfilPorNome_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		String nomeFotoPerfil = "Nomequalquer.jpeg";
 		var response = mvc.perform(get("/shop/admin/filestorage/foto-perfil/{nomeFotoPerfil}", nomeFotoPerfil))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -423,12 +423,12 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Cadastrar foto perfil deve retornar http 401 quando token não é enviado")
-	void cadastrarFotoPerfil_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Cadastrar foto perfil deve retornar http 403 quando token não é enviado")
+	void cadastrarFotoPerfil_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/admin/filestorage/foto-perfil"))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -443,13 +443,13 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Alterar foto perfil deve retornar http 401 quando token não é enviado")
-	void alterarFotoPerfil_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Alterar foto perfil deve retornar http 403 quando token não é enviado")
+	void alterarFotoPerfil_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		String nomeFotoPerfilAntiga = "Nomequalquer.jpeg";
 		var response = mvc.perform(put("/shop/admin/filestorage/foto-perfil/{nomeFotoPerfilAntiga}", nomeFotoPerfilAntiga))
 								.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 
@@ -488,13 +488,13 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar imagem pedido por nome deve retornar codigo http 401 quando tenta usar endpoint sem enviar token")
-	void pegarImagemPedidoPorNome_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar imagem pedido por nome deve retornar codigo http 403 quando tenta usar endpoint sem enviar token")
+	void pegarImagemPedidoPorNome_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		String nomeFotoPerfil = "Nomequalquer.jpeg";
 		var response = mvc.perform(get("/shop/admin/filestorage/pedido/{nomeFotoPerfil}", nomeFotoPerfil))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -526,11 +526,11 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Persistir ou recuperar imagem pedido deve retornar http 401 quando token não é enviado")
-	void persistirOuRecuperarImagemPedido_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Persistir ou recuperar imagem pedido deve retornar http 403 quando token não é enviado")
+	void persistirOuRecuperarImagemPedido_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/admin/filestorage/pedido"))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 }

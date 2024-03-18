@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.danielschiavo.shop.infra.security.DadosAutenticacaoDTO;
-import br.com.danielschiavo.shop.infra.security.TokenDTO;
 import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,9 +35,7 @@ public class AutenticacaoController {
 			
 			String token = tokenService.generateToken((Cliente) authentication.getPrincipal());
 			
-			TokenDTO tokenDTO = new TokenDTO(token);
-			
-			return ResponseEntity.ok(tokenDTO);
+			return ResponseEntity.ok().body("{ \"token\": \"" + token + "\" }");
 			
 		} catch (UsernameNotFoundException e) {
 			return ResponseEntity.badRequest().body(e);

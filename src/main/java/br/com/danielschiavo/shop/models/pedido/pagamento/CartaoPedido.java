@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shop.models.pedido.pagamento;
 
+import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.cartao.TipoCartao;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -27,4 +28,12 @@ public class CartaoPedido {
 	@Enumerated(EnumType.STRING)
 	private TipoCartao tipoCartao;
 	
+	public CartaoPedido(Cartao cartao, String numeroDeParcelas) {
+		this.nomeBanco = cartao.getNomeBanco();
+		this.numeroCartao = cartao.getNumeroCartao();
+		this.nomeNoCartao = cartao.getNomeNoCartao();
+		this.validadeCartao = cartao.getValidadeCartao();
+		this.numeroDeParcelas = numeroDeParcelas;
+		this.tipoCartao = cartao.getTipoCartao();
+	}
 }

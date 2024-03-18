@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.infra.security.TokenJWTService;
-import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
+import br.com.danielschiavo.shop.infra.security.UsuarioAutenticadoService;
 import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.Cliente;
+import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
@@ -33,7 +33,7 @@ public class ClienteService {
 	private FileStorageService fileService;
 	
 	@Autowired
-	private TokenJWTService tokenJWTService;
+	private UsuarioAutenticadoService usuarioAutenticadoService;
 
 	@Transactional
 	public MostrarClienteDTO cadastrarCliente(CadastrarClienteDTO clientDTO) {
@@ -64,16 +64,14 @@ public class ClienteService {
 	}
 
 	public MostrarClienteDTO detalharClientePorIdToken() {
-		Long id = tokenJWTService.getClaimIdJWT();
-		Cliente cliente = clienteRepository.findById(id).get();
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
 		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
 
 	@Transactional
 	public MostrarClienteDTO alterarClientePorIdToken(AlterarClienteDTO updateClientDTO) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		cliente.atualizarAtributos(updateClientDTO);
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
 		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
@@ -81,8 +79,7 @@ public class ClienteService {
 
 	@Transactional
 	public ArquivoInfoDTO alterarFotoPerfilPorIdToken(AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		Cliente cliente = verificarSeClienteExistePorId(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		String nomeNovaFotoPerfil = alterarFotoPerfilDTO.nomeNovaFotoPerfil();
 		
@@ -96,16 +93,14 @@ public class ClienteService {
 	}
 
 	public MostrarClientePaginaInicialDTO detalharClientePorIdTokenPaginaInicial() {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		Cliente cliente = verificarSeClienteExistePorId(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
 		return new MostrarClientePaginaInicialDTO(cliente.getNome(), arquivoInfoDTO);
 	}
 	
 	@Transactional
 	public void deletarFotoPerfilPorIdToken() {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		Cliente cliente = verificarSeClienteExistePorId(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		if (cliente.getFotoPerfil().equals("Padrao.jpeg")) {
 			throw new ValidacaoException("O cliente não tem foto de perfil, ele já está com a foto padrão, portanto, não é possível deletar");
 		}

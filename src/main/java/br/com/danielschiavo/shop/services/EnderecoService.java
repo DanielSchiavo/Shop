@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.infra.security.TokenJWTService;
-import br.com.danielschiavo.shop.models.endereco.Endereco;
+import br.com.danielschiavo.shop.infra.security.UsuarioAutenticadoService;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.endereco.AlterarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.CadastrarEnderecoDTO;
+import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
-import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.repositories.EnderecoRepository;
 
 @Service
@@ -23,10 +23,7 @@ public class EnderecoService {
 	private EnderecoRepository enderecoRepository;
 	
 	@Autowired
-	private TokenJWTService tokenJWTService;
-	
-	@Autowired
-	private ClienteRepository clienteRepository;
+	private UsuarioAutenticadoService usuarioAutenticadoService;
 	
 	public void save(Endereco address) {
 		enderecoRepository.save(address);
@@ -46,8 +43,7 @@ public class EnderecoService {
 	public MostrarEnderecoDTO cadastrarNovoEnderecoPorIdToken(CadastrarEnderecoDTO novoEnderecoDTO) {
 		var novoEndereco = new Endereco(novoEnderecoDTO);
 		
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		novoEndereco.setCliente(cliente);
 		
@@ -87,16 +83,14 @@ public class EnderecoService {
 	}
 
 	public List<MostrarEnderecoDTO> pegarEnderecosClientePorIdToken() {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		var pageEndereco = enderecoRepository.findAllByCliente(cliente);
 		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaMostrarEnderecoDTO).toList();
 	}
 
 	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		Optional<Endereco> optionalEndereco = enderecoRepository.findByIdAndCliente(idEndereco, cliente);
 		if (optionalEndereco.isPresent()) {
 			return optionalEndereco.get();

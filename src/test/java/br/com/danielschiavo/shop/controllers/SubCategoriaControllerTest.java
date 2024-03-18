@@ -96,14 +96,14 @@ class SubCategoriaControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar sub categoria por id deve retornar http 401 quando token não é enviado")
-	void deletarSubCategoriaPorId_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Deletar sub categoria por id deve retornar http 403 quando token não é enviado")
+	void deletarSubCategoriaPorId_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idCategoria = 2L;
 		
 		var response = mvc.perform(delete("/shop/admin/sub-categoria/{idSubCategoria}", idCategoria))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -146,12 +146,12 @@ class SubCategoriaControllerTest {
     }
     
     @Test
-    @DisplayName("Criar sub categoria deve retornar http 401 quando token não é enviado")
-    void cadastrarSubCategoria_TokenNaoEnviado_DeveRetornarUnauthorized() throws Exception {
+    @DisplayName("Criar sub categoria deve retornar http 403 quando token não é enviado")
+    void cadastrarSubCategoria_TokenNaoEnviado_DeveRetornarForbidden() throws Exception {
 		var response = mvc.perform(post("/shop/admin/sub-categoria"))
 				  .andReturn().getResponse();
         
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
     
     @Test
@@ -186,14 +186,14 @@ class SubCategoriaControllerTest {
     }
     
     @Test
-    @DisplayName("Alterar o nome da sub categoria por ID deve retornar http 401 quando token não é enviado")
-    void alterarSubCategoriaPorId_TokenNaoEnviado_DeveRetornarUnauthorized() throws Exception {
+    @DisplayName("Alterar o nome da sub categoria por ID deve retornar http 403 quando token não é enviado")
+    void alterarSubCategoriaPorId_TokenNaoEnviado_DeveRetornarForbidden() throws Exception {
         Long idCategoria = 1L;
         
         var response = mvc.perform(put("/shop/admin/categoria/{idCategoria}", idCategoria))
 				                .andReturn().getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
 }

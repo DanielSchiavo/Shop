@@ -75,8 +75,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -97,12 +97,12 @@ class PedidoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar pedidos cliente por id token deve retornar http 401 quando token não é enviado")
-	void pegarPedidosClientePorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar pedidos cliente por id token deve retornar http 403 quando token não é enviado")
+	void pegarPedidosClientePorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente/pedido"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -111,8 +111,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -143,8 +143,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -174,7 +174,7 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		MostrarPedidoDTO mostrarPedidoDTO = new MostrarPedidoDTO(2L, BigDecimal.valueOf(400.00), LocalDateTime.now(), StatusPedido.A_PAGAR, mostrarEntregaDTO, mostrarPagamentoDTO, produtos);
@@ -199,12 +199,12 @@ class PedidoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Criar pedido botao comprar agora e comprar do carrinho por id token deve retornar http 401 quando token não é enviado")
-	void criarPedidoBotaoComprarAgoraEComprarDoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Criar pedido botao comprar agora e comprar do carrinho por id token deve retornar http 403 quando token não é enviado")
+	void criarPedidoBotaoComprarAgoraEComprarDoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/cliente/pedido"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	
@@ -220,8 +220,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -254,12 +254,12 @@ class PedidoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar pedidos cliente por id token deve retornar http 401 quando nenhum token é enviado")
-	void pegarPedidosClientePorId_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar pedidos cliente por id token deve retornar http 403 quando nenhum token é enviado")
+	void pegarPedidosClientePorId_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idCliente = 2L;
 		var response = mvc.perform(get("/shop/admin/pedido/{idCliente}", idCliente))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 }

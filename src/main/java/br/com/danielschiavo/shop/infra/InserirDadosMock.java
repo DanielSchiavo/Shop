@@ -57,6 +57,10 @@ public class InserirDadosMock implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		limpadorBancoDeDados.limpar();
 		
+		inserirDados();
+	}
+
+	public void inserirDados() {
 		Cliente cliente = new Cliente(null, "14330283794", "Daniel", "Schiavo Rosseto", LocalDate.of(2000, 3, 3), LocalDate.now(), "daniel.schiavo35@gmail.com", "{noop}123456", "27996101055", null, null, null, null);
 		Endereco endereco = new Endereco(null, "29142298", "Divinopolis", "15", "Sem complemento", "Bela vista", "Cariacica", "ES", true, cliente);
 		Endereco endereco3 = new Endereco(null, "29152291", "Avenida luciano das neves", "3233", "Apartamento 302", "Praia de itaparica", "Vila velha", "ES", false, cliente);

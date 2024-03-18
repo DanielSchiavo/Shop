@@ -17,15 +17,10 @@ public class SecurityConfigurations {
 	
 	@Autowired
 	private SecurityFilter securityFilter;
-	
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-	
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    return http.csrf(csrf -> csrf.disable())
-	            .exceptionHandling(exceptionHandling -> 
-                	exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint))
 	            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	            .authorizeHttpRequests(req -> {
         			req.requestMatchers("/shop/admin/**").hasRole("ADMIN");
@@ -39,8 +34,8 @@ public class SecurityConfigurations {
 	            .build();
 	}
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 		return configuration.getAuthenticationManager();
 	}
 	

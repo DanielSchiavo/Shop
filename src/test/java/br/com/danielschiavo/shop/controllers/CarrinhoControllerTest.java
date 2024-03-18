@@ -70,13 +70,13 @@ class CarrinhoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar produto no carrinho deve retornar http 401 quando token não é enviado")
-	void deletarProdutoNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Deletar produto no carrinho deve retornar http 403 quando token não é enviado")
+	void deletarProdutoNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idProduto = 1L;
 		var response = mvc.perform(delete("/shop/cliente/carrinho/{idProduto}", idProduto))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -108,12 +108,12 @@ class CarrinhoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar carrinho cliente por id token deve retornar codigo http 401 quando token não é enviado")
-	void pegarCarrinhoClientePorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar carrinho cliente por id token deve retornar codigo http 403 quando token não é enviado")
+	void pegarCarrinhoClientePorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente/carrinho"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -131,12 +131,12 @@ class CarrinhoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Adicionar produtos no carrinho por id token deve retornar http 401 quando token não é enviado")
-	void adicionarProdutosNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Adicionar produtos no carrinho por id token deve retornar http 403 quando token não é enviado")
+	void adicionarProdutosNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/cliente/carrinho"))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -156,12 +156,12 @@ class CarrinhoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Setar quantidade produto no carrinho por id token deve retornar http 401 quando token não é informado")
-	void setarQuantidadeProdutoNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Setar quantidade produto no carrinho por id token deve retornar http 403 quando token não é informado")
+	void setarQuantidadeProdutoNoCarrinhoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(put("/shop/cliente/carrinho"))
 								.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 
 }

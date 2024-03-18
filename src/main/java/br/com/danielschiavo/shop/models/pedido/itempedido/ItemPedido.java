@@ -36,19 +36,22 @@ public class ItemPedido {
 	
 	private String primeiraImagem;
 	
+	private BigDecimal subTotal;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Produto produto;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Pedido pedido;
 	
-	public ItemPedido(Produto produto, Integer quantidade, String nomePrimeiraImagem) {
+	public ItemPedido(Produto produto, Integer quantidade, String nomePrimeiraImagem, Pedido pedido) {
 		this.preco = produto.getPreco();
 		this.quantidade = quantidade;
 		this.produto = produto;
 		this.nomeProduto = produto.getNome();
 		this.primeiraImagem = produto.pegarNomePrimeiraImagem();
 		this.primeiraImagem = nomePrimeiraImagem;
+		this.pedido = pedido;
 	}
 
 

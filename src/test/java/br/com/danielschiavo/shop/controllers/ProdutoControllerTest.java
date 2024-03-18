@@ -154,12 +154,12 @@ class ProdutoControllerTest {
 	
 	@Test
 	@DisplayName("Admin deletar produto por id deve retornar http 403 quando nenhum token é enviado")
-	void deletarProdutoPorId_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	void deletarProdutoPorId_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idProduto = 2L;
 		var response = mvc.perform(delete("/shop/admin/produto/{idProduto}", idProduto))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -206,11 +206,11 @@ class ProdutoControllerTest {
 	
 	@Test
 	@DisplayName("Cadastrar produto deve retornar http 403 quando token não é enviado")
-	void cadastrarProduto_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	void cadastrarProduto_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/admin/produto"))
 								  .andReturn().getResponse();
 			
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -265,13 +265,13 @@ class ProdutoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Alterar produto por id deve retornar http 401 quando tenta acessar o endpoint sem token")
-	void alterarProdutoPorId_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Alterar produto por id deve retornar http 403 quando tenta acessar o endpoint sem token")
+	void alterarProdutoPorId_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idProduto = 1L;
 		
 		var response = mvc.perform(put("/shop/admin/produto/{idProduto}", idProduto))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 }

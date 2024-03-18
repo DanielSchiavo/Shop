@@ -91,14 +91,14 @@ class ClienteControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar foto perfil deve retornar http 401 quando token não é enviado")
+	@DisplayName("Deletar foto perfil deve retornar http 403 quando token não é enviado")
 	void deletarFotoPerfil_ClienteInvalido_DeveRetornarForbidden() throws IOException, Exception {
 		doNothing().when(clienteService).deletarFotoPerfilPorIdToken();
 		
 		var response = mvc.perform(delete("/shop/cliente/foto-perfil"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
     
 	@Test
@@ -119,12 +119,12 @@ class ClienteControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Detalhar cliente página inicial deve retornar codigo http 401 quando token não é enviado")
+	@DisplayName("Detalhar cliente página inicial deve retornar codigo http 403 quando token não é enviado")
 	void detalharClientePaginaInicial_ClienteInvalido_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente/pagina-inicial"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 
 	@Test
@@ -148,12 +148,12 @@ class ClienteControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Detalhar cliente deve retornar http 401 quando token não é enviado")
+	@DisplayName("Detalhar cliente deve retornar http 403 quando token não é enviado")
 	void detalharCliente_ClienteInvalido_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -233,13 +233,13 @@ class ClienteControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Alterar cliente deve retornar http 401 quando token não é enviado")
+	@DisplayName("Alterar cliente deve retornar http 403 quando token não é enviado")
 	void alterarClientePorId_ClienteInvalido_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(put("/shop/cliente")
 								  .contentType(MediaType.APPLICATION_JSON))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 
 	@Test

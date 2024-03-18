@@ -10,9 +10,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.danielschiavo.shop.infra.security.TokenJWTService;
+import br.com.danielschiavo.shop.infra.security.UsuarioAutenticadoService;
 import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.endereco.Endereco;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
@@ -42,7 +43,7 @@ public class PedidoService {
 	private PedidoRepository pedidoRepository;
 
 	@Autowired
-	private TokenJWTService tokenJWTService;
+	private UsuarioAutenticadoService usuarioAutenticadoService;
 	
 	@Autowired
 	private FileStorageService fileService;
@@ -66,9 +67,8 @@ public class PedidoService {
 	private List<ValidadorCriarNovoPedido> validador;
 
 	public Page<MostrarPedidoDTO> pegarPedidosClientePorIdToken(Pageable pageable) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
-
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		
 		Page<Pedido> pagePedidos = pedidoRepository.findAllByCliente(cliente, pageable);
 
 		List<MostrarPedidoDTO> list = new ArrayList<>();
@@ -191,34 +191,20 @@ public class PedidoService {
 	}
 
 	private Pedido criarEntidadePedidoERelacionamentos(CriarPedidoDTO pedidoDTO, List<MostrarItemCarrinhoDTO> produtosCarrinho) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		Long idEndereco = pedidoDTO.entrega().idEndereco();
 		EnderecoPedido enderecoPedido = null;
 		if (idEndereco != null) {
 			Endereco endereco = enderecoService.verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
-
-			enderecoPedido = new EnderecoPedido(endereco.getCep(), 
-												endereco.getRua(), 
-												endereco.getNumero(),
-												endereco.getComplemento(), 
-												endereco.getBairro(), 
-												endereco.getCidade(), 
-												endereco.getEstado());
+			enderecoPedido = new EnderecoPedido(endereco);
 		}
 		
 		Long idCartao = pedidoDTO.pagamento().idCartao();
 		CartaoPedido cartaoPedido = null;
 		if (idCartao != null) {
 			Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao);
-			
-			cartaoPedido = new CartaoPedido(cartao.getNomeBanco(),
-											cartao.getNumeroCartao(),
-											cartao.getNomeNoCartao(),
-											cartao.getValidadeCartao(),
-											pedidoDTO.pagamento().numeroParcelas(),
-											cartao.getTipoCartao());
+			cartaoPedido = new CartaoPedido(cartao, pedidoDTO.pagamento().numeroParcelas());
 		}
 		
 		MetodoPagamento metodoPagamentoDTO = pedidoDTO.pagamento().metodoPagamento();
@@ -226,39 +212,33 @@ public class PedidoService {
 		var pagamento = new Pagamento(metodoPagamentoDTO, StatusPagamento.EM_PROCESSAMENTO, cartaoPedido, pedido);
 		var entrega = new Entrega(pedido, pedidoDTO.entrega().tipoEntrega(), enderecoPedido);
 		
+		BigDecimal valorTotal = BigDecimal.ZERO;
 		if (pedidoDTO.item() != null) {
 			AdicionarItemPedidoDTO adicionarItemPedidoDTO = pedidoDTO.item();
 			Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(adicionarItemPedidoDTO.idProduto());
 			ArquivosProduto first = produto.getArquivosProduto().stream().filter(arquivoProduto -> arquivoProduto.getPosicao() == 0).findFirst().get();
 			String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first.getNome(), produto.getId());
-			ItemPedido itemPedido = new ItemPedido(null,
-												   produto.getPreco(), 
-												   adicionarItemPedidoDTO.quantidade(), 
-												   produto.getNome(),
-												   nomeImagemPedido,
-												   produto,
-												   pedido);
+			ItemPedido itemPedido = new ItemPedido(produto, adicionarItemPedidoDTO.quantidade(), nomeImagemPedido, pedido);
 			pedido.getItemsPedido().add(itemPedido);
+			
+			BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(adicionarItemPedidoDTO.quantidade()));
+			itemPedido.setSubTotal(subTotal);
+			valorTotal.add(subTotal);
 		}
 		else {
-			BigDecimal valorTotal = BigDecimal.ZERO;
 			produtosCarrinho.forEach(p -> {
 				Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(p.idProduto());
 				String first = produto.pegarNomePrimeiraImagem();
 				String nomeImagemPedido = fileService.persistirOuRecuperarImagemPedido(first, produto.getId());
-				ItemPedido itemPedido = new ItemPedido(null,
-													   produto.getPreco(),
-												   	   p.quantidade(),
-												   	   produto.getNome(),
-												   	   nomeImagemPedido,
-												   	   produto,
-												   	   pedido);
+				ItemPedido itemPedido = new ItemPedido(produto, p.quantidade(), nomeImagemPedido, pedido);
 				pedido.getItemsPedido().add(itemPedido);
+				
 				BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(p.quantidade()));
+				itemPedido.setSubTotal(subTotal);
 				valorTotal.add(subTotal);
-				pedido.setValorTotal(valorTotal);
 			});
 		}
+		pedido.setValorTotal(valorTotal);
 		pedido.setPagamento(pagamento);
 		pedido.setEntrega(entrega);
 

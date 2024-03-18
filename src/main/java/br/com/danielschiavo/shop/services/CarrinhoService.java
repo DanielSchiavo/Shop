@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.infra.security.TokenJWTService;
+import br.com.danielschiavo.shop.infra.security.UsuarioAutenticadoService;
 import br.com.danielschiavo.shop.models.carrinho.Carrinho;
 import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.MostrarItemCarrinhoClienteDTO;
@@ -22,20 +22,16 @@ import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
-import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
 
 @Service
 public class CarrinhoService {
 
 	@Autowired
-	private TokenJWTService tokenJWTService;
+	private UsuarioAutenticadoService usuarioAutenticadoService;
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
-
-	@Autowired
-	private ClienteRepository clienteRepository;
 
 	@Autowired
 	private CarrinhoRepository carrinhoRepository;
@@ -49,9 +45,7 @@ public class CarrinhoService {
 			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
 					+ itemCarrinhoDTO.quantidade());
 		}
-		
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 
 		var produto = produtoRepository.getReferenceById(itemCarrinhoDTO.idProduto());
 
@@ -80,9 +74,7 @@ public class CarrinhoService {
 	}
 
 	public MostrarCarrinhoClienteDTO pegarCarrinhoClientePorIdToken() {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		Carrinho carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
 
@@ -126,10 +118,7 @@ public class CarrinhoService {
 		    throw new RuntimeException("Produto não encontrado para o ID: " + itemCarrinhoDTO.idProduto());
 		}
 	
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		
-		var cliente = clienteRepository.getReferenceById(idCliente);
-			
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		var carrinho = carrinhoRepository.findByCliente(cliente).orElseThrow();
 
 		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
@@ -151,8 +140,7 @@ public class CarrinhoService {
 	@Transactional
 	public void deletarProdutoNoCarrinhoPorIdToken(Long idProduto) 
 		{
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		Carrinho carrinho = cliente.getCarrinho();
 		
 		if (carrinho.getId() == null) {
@@ -181,8 +169,7 @@ public class CarrinhoService {
 	}
 	
 	public List<MostrarItemCarrinhoDTO> pegarItensNoCarrinhoCliente() {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		Carrinho carrinho = verificarCarrinhoCliente(cliente);
 

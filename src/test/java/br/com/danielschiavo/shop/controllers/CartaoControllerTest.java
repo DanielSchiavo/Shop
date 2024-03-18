@@ -75,13 +75,13 @@ class CartaoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar cartão por id token deve retornar http 401 quando token não é enviado")
-	void deletarCartaoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Deletar cartão por id token deve retornar http 403 quando token não é enviado")
+	void deletarCartaoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idCartao = 1L;
 		var response = mvc.perform(delete("/shop/cliente/cartao/{idCartao}", idCartao))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -104,12 +104,12 @@ class CartaoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar cartoes cliente por id token deve retornar http 401 quando token não é enviado")
-	void pegarCartoesClientePorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar cartoes cliente por id token deve retornar http 403 quando token não é enviado")
+	void pegarCartoesClientePorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente/cartao"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -135,12 +135,12 @@ class CartaoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Cadastrar novo cartão por id token deve retornar http 401 quando token não é enviado")
-	void cadastrarNovoCartaoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Cadastrar novo cartão por id token deve retornar http 403 quando token não é enviado")
+	void cadastrarNovoCartaoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/cliente/cartao"))
 										.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -156,13 +156,13 @@ class CartaoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Alterar cartao padrao por id token deve retornar http 401 quando token não é enviado")
-	void alterarCartaoPadraoPorIdToken_TokenInvalido_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Alterar cartao padrao por id token deve retornar http 403 quando token não é enviado")
+	void alterarCartaoPadraoPorIdToken_TokenInvalido_DeveRetornarForbidden() throws IOException, Exception {
 		Long idCartao = 2L;
 		var response = mvc.perform(put("/shop/cliente/cartao/{idCartao}", idCartao))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 
 }

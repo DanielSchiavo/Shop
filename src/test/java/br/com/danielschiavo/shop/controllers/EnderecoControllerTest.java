@@ -75,14 +75,14 @@ class EnderecoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar endereco por id token deve retornar http 401 quando token não é enviado")
-	void deletarEnderecoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Deletar endereco por id token deve retornar http 403 quando token não é enviado")
+	void deletarEnderecoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idEndereco = 1L;
 		
 		var response = mvc.perform(delete("/shop/cliente/endereco/{idEndereco}", idEndereco))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -107,12 +107,12 @@ class EnderecoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Pegar enderecos cliente por id token deve retornar codigo http 401 quando token não é enviado")
-	void pegarEnderecosClientePorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Pegar enderecos cliente por id token deve retornar codigo http 403 quando token não é enviado")
+	void pegarEnderecosClientePorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(get("/shop/cliente/endereco"))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -138,12 +138,12 @@ class EnderecoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Cadastrar novo endereco deve retornar http 401 quando token não é enviado")
-	void cadastrarNovoEndereco_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Cadastrar novo endereco deve retornar http 403 quando token não é enviado")
+	void cadastrarNovoEndereco_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(post("/shop/cliente/endereco"))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -169,14 +169,14 @@ class EnderecoControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Alterar endereco cliente por id token deve retornar http 200 quando informacoes estão válidas")
-	void alterarEnderecoPorIdToken_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Alterar endereco cliente por id token deve retornar http 403 quando nenhum token for enviado")
+	void alterarEnderecoPorIdToken_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idEndereco = 1L;
 		var response = mvc.perform(put("/shop/cliente/endereco/{idEndereco}", idEndereco)
 								  .contentType(MediaType.APPLICATION_JSON))
 						.andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 
 }

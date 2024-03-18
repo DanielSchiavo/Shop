@@ -99,14 +99,14 @@ class CategoriaControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Deletar categoria por id deve retornar http 401 quando token não é enviado")
-	void deletarCategoriaPorId_TokenNaoEnviado_DeveRetornarUnauthorized() throws IOException, Exception {
+	@DisplayName("Deletar categoria por id deve retornar http 403 quando token não é enviado")
+	void deletarCategoriaPorId_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
 		Long idCategoria = 2L;
 		
 		var response = mvc.perform(delete("/shop/admin/categoria/{idCategoria}", idCategoria))
 								  .andReturn().getResponse();
 		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
 	}
 	
 	@Test
@@ -159,8 +159,8 @@ class CategoriaControllerTest {
     }
     
     @Test
-    @DisplayName("Criar categoria deve retornar http 401 quando nenhum token é enviado")
-    void criarCategoria_TokenNaoEnviado_DeveRetornarUnauthorized() throws Exception {
+    @DisplayName("Criar categoria deve retornar http 403 quando nenhum token é enviado")
+    void criarCategoria_TokenNaoEnviado_DeveRetornarForbidden() throws Exception {
         CriarCategoriaDTO categoriaDTO = new CriarCategoriaDTO("Eletrônicos");
 
         var response = mvc.perform(post("/shop/admin/categoria")
@@ -168,7 +168,7 @@ class CategoriaControllerTest {
                 .content(criarCategoriaDTOJson.write(categoriaDTO).getJson()))
                 .andReturn().getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -211,8 +211,8 @@ class CategoriaControllerTest {
     }
     
     @Test
-    @DisplayName("Alterar o nome da categoria por ID deve retornar http 401 quando nenhum token é enviado")
-    void alterarNomeCategoriaPorId_SemToken_DeveRetornarUnauthorized() throws Exception {
+    @DisplayName("Alterar o nome da categoria por ID deve retornar http 403 quando nenhum token é enviado")
+    void alterarNomeCategoriaPorId_SemToken_DeveRetornarForbidden() throws Exception {
         Long idCategoria = 1L;
         CriarCategoriaDTO categoriaDTO = new CriarCategoriaDTO("Tecnologia");
 
@@ -221,6 +221,6 @@ class CategoriaControllerTest {
                 .content(criarCategoriaDTOJson.write(categoriaDTO).getJson()))
                 .andReturn().getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 }

@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.infra.security.TokenJWTService;
-import br.com.danielschiavo.shop.models.cartao.Cartao;
+import br.com.danielschiavo.shop.infra.security.UsuarioAutenticadoService;
 import br.com.danielschiavo.shop.models.cartao.CadastrarCartaoDTO;
+import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.cartao.MostrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.validacoes.ValidadorCadastrarNovoCartao;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.repositories.CartaoRepository;
-import br.com.danielschiavo.shop.repositories.ClienteRepository;
 
 @Service
 public class CartaoService {
@@ -25,18 +25,14 @@ public class CartaoService {
 	private CartaoRepository cartaoRepository;
 	
 	@Autowired
-	private TokenJWTService tokenJWTService;
-	
-	@Autowired
-	private ClienteRepository clienteRepository;
+	private UsuarioAutenticadoService usuarioAutenticadoService;
 	
 	@Autowired
 	private List<ValidadorCadastrarNovoCartao> validadores;
 
 	@Transactional
 	public MostrarCartaoDTO cadastrarNovoCartaoPorIdToken(CadastrarCartaoDTO cartaoDTO) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		validadores.forEach(v -> v.validar(cartaoDTO, cliente));
 		
@@ -56,17 +52,15 @@ public class CartaoService {
 	}
 	
 	public Page<MostrarCartaoDTO> pegarCartoesClientePorIdToken(Pageable pageable) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
-		 Page<Cartao> pageCartao = cartaoRepository.findAllByCliente(cliente, pageable);
+		Page<Cartao> pageCartao = cartaoRepository.findAllByCliente(cliente, pageable);
 		return pageCartao.map(MostrarCartaoDTO::converterParaMostrarCartaoDTO);
 	}
 	
 	@Transactional
 	public void deletarCartaoPorIdToken(Long id) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		var cartao = cartaoRepository.findById(id).orElseThrow();
 		
@@ -84,8 +78,7 @@ public class CartaoService {
 	@Transactional
 	public void alterarCartaoPadraoPorIdToken(Long id) {
 		Optional<Cartao> optionalCartao = cartaoRepository.findById(id);
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		if (optionalCartao.isPresent()) {
 			var cartao = optionalCartao.get();
@@ -114,8 +107,7 @@ public class CartaoService {
 	}
 
 	public Cartao verificarSeCartaoExistePorIdCartaoECliente(Long idCartao) {
-		var idCliente = tokenJWTService.getClaimIdJWT();
-		var cliente = clienteRepository.getReferenceById(idCliente);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
 		Optional<Cartao> optionalCartao = cartaoRepository.findByIdAndCliente(idCartao, cliente);
 		
@@ -123,7 +115,7 @@ public class CartaoService {
 			return optionalCartao.get();
 		}
 		else {
-			throw new ValidacaoException("Não existe o cartão de ID número " + idCartao + " para o cliente de ID número " + idCliente);
+			throw new ValidacaoException("Não existe o cartão de ID número " + idCartao + " para o cliente de ID número " + cliente.getId());
 		}
 	}
 	
