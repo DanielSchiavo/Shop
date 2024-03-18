@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shop.models.subcategoria;
 
+
 public record MostrarSubCategoriaDTO(
 			Long id,
 			String nomeSubCategoria

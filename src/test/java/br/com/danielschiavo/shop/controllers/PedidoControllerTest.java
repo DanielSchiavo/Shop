@@ -1,17 +1,13 @@
 package br.com.danielschiavo.shop.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +21,6 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,9 +30,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.danielschiavo.shop.JwtUtilTest;
-import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
-import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
-import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.models.pedido.CriarPagamentoDTO;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.MostrarPedidoDTO;
@@ -50,7 +42,6 @@ import br.com.danielschiavo.shop.models.pedido.itempedido.AdicionarItemPedidoDTO
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MostrarPagamentoDTO;
 import br.com.danielschiavo.shop.models.pedido.pagamento.StatusPagamento;
-import br.com.danielschiavo.shop.services.ClienteService;
 import br.com.danielschiavo.shop.services.PedidoService;
 
 @SpringBootTest

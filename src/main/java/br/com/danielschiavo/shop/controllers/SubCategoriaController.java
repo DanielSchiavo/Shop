@@ -19,7 +19,7 @@ import br.com.danielschiavo.shop.models.subcategoria.AlterarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaComCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
-import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.CadastrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.services.SubCategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -41,13 +41,28 @@ public class SubCategoriaController {
 		return ResponseEntity.ok(listaSubCategorias);
 	}
 	
+	
+//	------------------------------
+//	------------------------------
+//	ENDPOINTS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
+	
+	@DeleteMapping("/admin/sub-categoria/{idSubCategoria}")
+	@SecurityRequirement(name = "bearer-key")
+	@Operation(summary = "Deleta uma subcategoria com o id fornecido no parametro da requisição")
+	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long idSubCategoria){		
+		subCategoriaService.deletarSubCategoriaPorId(idSubCategoria);
+		return ResponseEntity.noContent().build();
+	}
+	
 	@PostMapping("/admin/sub-categoria")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cria uma nova subcategoria, uma subcategoria tem que ter uma categoria a qual ela está relacionada")
-	public ResponseEntity<MostrarSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid SubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
-		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
+	public ResponseEntity<MostrarSubCategoriaDTO> cadastrarSubCategoria(@RequestBody @Valid CadastrarSubCategoriaDTO dto, UriComponentsBuilder uriBuilder) {
+		MostrarSubCategoriaDTO subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(new MostrarSubCategoriaDTO(subCategoria));
+		return ResponseEntity.status(HttpStatus.CREATED).body(subCategoria);
 	}
 	
 	@PutMapping("/admin/sub-categoria/{idSubCategoria}")
@@ -58,13 +73,4 @@ public class SubCategoriaController {
 		
 		return ResponseEntity.ok(subCategoriaDTO);
 	}
-	
-	@DeleteMapping("/admin/sub-categoria/{idSubCategoria}")
-	@SecurityRequirement(name = "bearer-key")
-	@Operation(summary = "Deleta uma subcategoria com o id fornecido no parametro da requisição")
-	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long idSubCategoria){		
-		subCategoriaService.deletarSubCategoriaPorId(idSubCategoria);
-		return ResponseEntity.noContent().build();
-	}
-
 }

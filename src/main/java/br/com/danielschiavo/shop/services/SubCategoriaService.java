@@ -14,7 +14,7 @@ import br.com.danielschiavo.shop.models.subcategoria.AlterarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaComCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
-import br.com.danielschiavo.shop.models.subcategoria.SubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.CadastrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.repositories.SubCategoriaRepository;
 import jakarta.validation.Valid;
 
@@ -57,14 +57,15 @@ public class SubCategoriaService {
 	}
 
 	@Transactional
-	public SubCategoria cadastrarSubCategoria(@Valid SubCategoriaDTO subCategoriaDTO) {
+	public MostrarSubCategoriaDTO cadastrarSubCategoria(@Valid CadastrarSubCategoriaDTO subCategoriaDTO) {
 		Long idCategoria = subCategoriaDTO.categoria_id();
 		Categoria categoria = categoriaService.verificarSeExisteCategoriaPorId(idCategoria);
 		verificarSeNomeSubCategoriaJaExiste(subCategoriaDTO.nome());
 		SubCategoria subCategoria = new SubCategoria(null, subCategoriaDTO.nome(), categoria);
 
 		subCategoriaRepository.save(subCategoria);
-		return subCategoria;
+		
+		return new MostrarSubCategoriaDTO(subCategoria);
 	}
 
 	@Transactional

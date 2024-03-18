@@ -79,7 +79,6 @@ public class ProdutoController {
 		
 		var uri = uriBuilder.path("/products/{id}").buildAndExpand(mostrarProdutosDTO.id()).toUri();
 		return ResponseEntity.created(uri).body(mostrarProdutosDTO);
-
 	}
 
 	@PutMapping("/admin/produto/{idProduto}")
