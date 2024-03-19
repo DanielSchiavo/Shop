@@ -177,7 +177,7 @@ class ProdutoControllerTest {
 		List<ArquivoProdutoDTO> listaArquivoProdutoDTO = new ArrayList<>();
 		listaArquivoProdutoDTO.add(arquivoProdutoDTO);
 		listaArquivoProdutoDTO.add(arquivoProdutoDTO2);
-		CadastrarProdutoDTO cadastrarProdutoDTO = new CadastrarProdutoDTO("Produto1", "Descricao", BigDecimal.valueOf(200.00), 5, true, 1L, 1L, tipoEntrega, listaArquivoProdutoDTO);
+		CadastrarProdutoDTO cadastrarProdutoDTO = new CadastrarProdutoDTO("Produto1", "Descricao", BigDecimal.valueOf(200.00), 5, true, 1L, tipoEntrega, listaArquivoProdutoDTO);
 		
 		var response = mvc.perform(post("/shop/admin/produto")
 								  .header("Authorization", "Bearer " + tokenAdmin)
