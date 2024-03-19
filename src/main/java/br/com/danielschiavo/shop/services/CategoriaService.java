@@ -19,6 +19,23 @@ public class CategoriaService {
 
 	@Autowired
 	private CategoriaRepository categoriaRepository;
+	
+	public Page<Categoria> listarCategorias(Pageable pageable) {
+		return categoriaRepository.findAll(pageable);
+	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
+	
+	@Transactional
+	public void deletarCategoriaPorId(Long id) {
+		Categoria categoria = verificarSeExisteCategoriaPorId(id);
+		categoriaRepository.delete(categoria);
+	}
 
 	@Transactional
 	public MostrarCategoriaDTO criarCategoria(String nomeCategoria) {
@@ -45,12 +62,13 @@ public class CategoriaService {
 		categoriaRepository.save(categoria);
 		return new MostrarCategoriaDTO(categoria);
 	}
-
-	@Transactional
-	public void deletarCategoriaPorId(Long id) {
-		Categoria categoria = verificarSeExisteCategoriaPorId(id);
-		categoriaRepository.delete(categoria);
-	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
 
 	public Categoria verificarSeExisteCategoriaPorId(Long idCategoria) {
 		Optional<Categoria> optionalCategoria = categoriaRepository.findById(idCategoria);
@@ -60,8 +78,6 @@ public class CategoriaService {
 		return optionalCategoria.get();
 	}
 
-	public Page<Categoria> listarCategorias(Pageable pageable) {
-		return categoriaRepository.findAll(pageable);
-	}
+
 
 }

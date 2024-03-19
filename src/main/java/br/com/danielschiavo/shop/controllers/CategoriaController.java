@@ -19,7 +19,6 @@ import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.categoria.Categoria;
 import br.com.danielschiavo.shop.models.categoria.CriarCategoriaDTO;
 import br.com.danielschiavo.shop.models.categoria.MostrarCategoriaDTO;
-import br.com.danielschiavo.shop.repositories.CategoriaRepository;
 import br.com.danielschiavo.shop.services.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,9 +33,6 @@ public class CategoriaController {
 	
 	@Autowired
 	private CategoriaService categoriaService;
-	
-	@Autowired
-	private CategoriaRepository categoriaRepository;
 	
 	@GetMapping("/publico/categoria")
 	@Operation(summary = "Lista todas as categorias existentes")

@@ -1,11 +1,9 @@
 package br.com.danielschiavo.shop.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,8 +11,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.carrinho.Carrinho;
@@ -51,6 +47,33 @@ public class ProdutoService {
 	
 	@Autowired
 	private List<ValidadorCadastrarNovoProduto> validador;
+	
+	public Page<MostrarProdutosDTO> listarProdutos(Pageable pageable) {
+		Page<Produto> pageProdutos = produtoRepository.findAll(pageable);
+		List<MostrarProdutosDTO> list = new ArrayList<>();
+
+		for (Produto produto : pageProdutos) {
+			String nomePrimeiraImagem = produto.pegarNomePrimeiraImagem();
+			ArquivoInfoDTO arquivoInfoDTO = fileService.pegarArquivoProdutoPorNome(nomePrimeiraImagem);
+			MostrarProdutosDTO mostrarProdutos = new MostrarProdutosDTO(produto, arquivoInfoDTO.bytesArquivo());
+			list.add(mostrarProdutos);
+		}
+		return new PageImpl<>(list, pageProdutos.getPageable(), pageProdutos.getTotalElements());
+	}
+	
+	public DetalharProdutoDTO detalharProdutoPorId(Long id) {
+		Produto produto = produtoRepository.getReferenceById(id);
+		List<ArquivoInfoDTO> mostrarArquivosProdutoDTO = carregarArquivosProduto(produto.getArquivosProduto());
+		DetalharProdutoDTO detalharProdutoDTO = new DetalharProdutoDTO(produto, mostrarArquivosProdutoDTO);
+		return detalharProdutoDTO;
+	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
 
 	@Transactional
 	public void deletarProdutoPorId(Long id) {
@@ -65,71 +88,7 @@ public class ProdutoService {
 			});
 		}
 	}
-
-	public List<ArquivoInfoDTO> carregarArquivosProduto(List<ArquivosProduto> arquivosProduto) {
-		List<String> listaDeNomes = arquivosProduto.stream().map(ap -> ap.getNome()).collect(Collectors.toList());
-		List<ArquivoInfoDTO> listaArquivoInfoDTO = fileService.mostrarArquivoProdutoPorListaDeNomes(listaDeNomes);
-		return listaArquivoInfoDTO;
-	}
-
-	public Page<MostrarProdutosDTO> listarProdutos(Pageable pageable) {
-		Page<Produto> pageProdutos = produtoRepository.findAll(pageable);
-		List<MostrarProdutosDTO> list = new ArrayList<>();
-
-		for (Produto produto : pageProdutos) {
-			String nomePrimeiraImagem = produto.pegarNomePrimeiraImagem();
-			ArquivoInfoDTO arquivoInfoDTO = fileService.pegarArquivoProdutoPorNome(nomePrimeiraImagem);
-			MostrarProdutosDTO mostrarProdutos = new MostrarProdutosDTO(produto, arquivoInfoDTO.bytesArquivo());
-			list.add(mostrarProdutos);
-		}
-		return new PageImpl<>(list, pageProdutos.getPageable(), pageProdutos.getTotalElements());
-	}
-
-	public List<MostrarProdutosDTO> adicionarPrimeiraImagemEmMostrarProdutosDTO(List<Produto> produtos)
-			throws IOException {
-		List<MostrarProdutosDTO> listaMostrarProdutosDTO = new ArrayList<>();
-		for (Produto produto : produtos) {
-			for (ArquivosProduto arquivo : produto.getArquivosProduto()) {
-				if (arquivo.getPosicao() == 0) {
-					ArquivoInfoDTO arquivoInfoDTO = fileService.pegarArquivoProdutoPorNome(arquivo.getNome());
-					MostrarProdutosDTO mostrarProdutosDTO = new MostrarProdutosDTO(produto, arquivoInfoDTO.bytesArquivo());
-					listaMostrarProdutosDTO.add(mostrarProdutosDTO);
-				}
-			}
-		}
-		return listaMostrarProdutosDTO;
-	}
-
-	public CadastrarProdutoDTO transformarStringJsonEmProdutoDTO(String produto) {
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			CadastrarProdutoDTO produtoDTO = objectMapper.readValue(produto, CadastrarProdutoDTO.class);
-			return produtoDTO;
-		} catch (IOException err) {
-			System.out.println("Error " + err.toString());
-		}
-		return null;
-
-	}
-
-	public AlterarProdutoDTO transformarStringJsonParaAtualizarProdutoDTO(String produto) {
-		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			AlterarProdutoDTO atualizarProdutoDTO = objectMapper.readValue(produto, AlterarProdutoDTO.class);
-			return atualizarProdutoDTO;
-		} catch (IOException err) {
-			System.out.println("Error " + err.toString());
-		}
-		return null;
-
-	}
-
-	public int[] transformarStringPosicaoEmArrayInt(String posicao) {
-		String[] values = posicao.split(",");
-		return Stream.of(values).mapToInt(Integer::valueOf).toArray();
-	}
-
-
+	
 	@Transactional
 	public MostrarProdutosDTO cadastrarProduto(CadastrarProdutoDTO cadastrarProdutoDTO) {
 		validador.forEach(v -> v.validar(cadastrarProdutoDTO));
@@ -144,7 +103,7 @@ public class ProdutoService {
 		
 		return new MostrarProdutosDTO(produto, arquivoInfoDTO.bytesArquivo());
 	}
-
+	
 	@Transactional
 	public DetalharProdutoDTO alterarProdutoPorId(Long id, AlterarProdutoDTO alterarProdutoDTO) {
 		Produto produto = verificarSeProdutoExistePorId(id);
@@ -170,12 +129,18 @@ public class ProdutoService {
 
 		return new DetalharProdutoDTO(produto, carregarArquivosProduto(produto.getArquivosProduto()));
 	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
 
-	public DetalharProdutoDTO detalharProdutoPorId(Long id) {
-		Produto produto = produtoRepository.getReferenceById(id);
-		List<ArquivoInfoDTO> mostrarArquivosProdutoDTO = carregarArquivosProduto(produto.getArquivosProduto());
-		DetalharProdutoDTO detalharProdutoDTO = new DetalharProdutoDTO(produto, mostrarArquivosProdutoDTO);
-		return detalharProdutoDTO;
+	private List<ArquivoInfoDTO> carregarArquivosProduto(List<ArquivosProduto> arquivosProduto) {
+		List<String> listaDeNomes = arquivosProduto.stream().map(ap -> ap.getNome()).collect(Collectors.toList());
+		List<ArquivoInfoDTO> listaArquivoInfoDTO = fileService.mostrarArquivoProdutoPorListaDeNomes(listaDeNomes);
+		return listaArquivoInfoDTO;
 	}
 
 	public Produto verificarSeProdutoExistePorIdEAtivoTrue(Long id) {

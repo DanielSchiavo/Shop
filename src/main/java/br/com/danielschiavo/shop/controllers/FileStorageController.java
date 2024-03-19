@@ -38,7 +38,13 @@ public class FileStorageController {
 	@Autowired
 	private FileStorageService fileStorageService;
 	
-//PRODUTO
+	
+//	------------------------------
+//	------------------------------
+//			PRODUTO
+//	------------------------------
+//	------------------------------
+	
 	@DeleteMapping("/admin/filestorage/arquivo-produto/{nomeArquivo}")
 	@Operation(summary = "Deleta o arquivo com o nome enviado no parametro da requisição")
 	public ResponseEntity<?> deletarArquivoProduto(@PathVariable @NotNull String nomeArquivo) {
@@ -99,7 +105,12 @@ public class FileStorageController {
 	}
 	
 	
-//PERFIL
+//	------------------------------
+//	------------------------------
+//			PERFIL
+//	------------------------------
+//	------------------------------
+	
 	@DeleteMapping("/admin/filestorage/foto-perfil/{nomeFotoPerfilAntiga}")
 	@Operation(summary = "Deleta a foto de perfil com o nome enviado no parametro da requisição")
 	public ResponseEntity<?> deletarFotoPerfil(@PathVariable String nomeFotoPerfilAntiga) {
@@ -141,7 +152,12 @@ public class FileStorageController {
 	}
 	
 
-//PEDIDO	
+//	------------------------------
+//	------------------------------
+//			PEDIDO
+//	------------------------------
+//	------------------------------
+	
 	@GetMapping("/admin/filestorage/pedido/{nomeImagemPedido}")
 	@Operation(summary = "Recupera os bytes da imagem do pedido dado o nome no parametro da requisição")
 	public ResponseEntity<ArquivoInfoDTO> pegarImagemPedidoPorNome(@PathVariable String nomeImagemPedido) {

@@ -25,20 +25,20 @@ public class EnderecoService {
 	@Autowired
 	private UsuarioAutenticadoService usuarioAutenticadoService;
 	
-	public void save(Endereco address) {
-		enderecoRepository.save(address);
+	@Transactional
+	public void deletarEnderecoPorIdToken(Long idEndereco) {
+		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
+		
+		enderecoRepository.delete(endereco);
 	}
 	
-	public Endereco verificarID(Long clienteId, Long enderecoId) {
-		Optional<Endereco> optionalEndereco = enderecoRepository.findByClienteIdAndEnderecoId(clienteId, enderecoId);
-		if (optionalEndereco.isPresent()) {
-			Endereco endereco = optionalEndereco.get();
-			return endereco;
-		} else {	
-			throw new RuntimeException("ID do Endereco ou Cliente inexistente! ");
-		}
+	public List<MostrarEnderecoDTO> pegarEnderecosClientePorIdToken() {
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		
+		var pageEndereco = enderecoRepository.findAllByCliente(cliente);
+		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaMostrarEnderecoDTO).toList();
 	}
-
+	
 	@Transactional
 	public MostrarEnderecoDTO cadastrarNovoEnderecoPorIdToken(CadastrarEnderecoDTO novoEnderecoDTO) {
 		var novoEndereco = new Endereco(novoEnderecoDTO);
@@ -63,7 +63,7 @@ public class EnderecoService {
 		
 		return new MostrarEnderecoDTO(novoEndereco);
 	}
-
+	
 	@Transactional
 	public MostrarEnderecoDTO alterarEnderecoPorIdToken(AlterarEnderecoDTO enderecoDTO, Long idEndereco) {
 		var endereco = enderecoRepository.findById(idEndereco).get();
@@ -74,20 +74,13 @@ public class EnderecoService {
 		
 		return new MostrarEnderecoDTO(endereco);
 	}
-
-	@Transactional
-	public void deletarEnderecoPorIdToken(Long idEndereco) {
-		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
-		
-		enderecoRepository.delete(endereco);
-	}
-
-	public List<MostrarEnderecoDTO> pegarEnderecosClientePorIdToken() {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		
-		var pageEndereco = enderecoRepository.findAllByCliente(cliente);
-		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaMostrarEnderecoDTO).toList();
-	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
 
 	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
@@ -99,5 +92,16 @@ public class EnderecoService {
 			throw new ValidacaoException("Não existe Endereço com o ID " + idEndereco + " cadastrado para o Cliente ID " + cliente.getId());
 		}
 	}
+	
+	public Endereco verificarID(Long clienteId, Long enderecoId) {
+		Optional<Endereco> optionalEndereco = enderecoRepository.findByClienteIdAndEnderecoId(clienteId, enderecoId);
+		if (optionalEndereco.isPresent()) {
+			Endereco endereco = optionalEndereco.get();
+			return endereco;
+		} else {	
+			throw new RuntimeException("ID do Endereco ou Cliente inexistente! ");
+		}
+	}
+
 	
 }

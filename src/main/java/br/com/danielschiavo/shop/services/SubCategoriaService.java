@@ -31,7 +31,32 @@ public class SubCategoriaService {
 		Page<SubCategoria> pageSubCategoria = subCategoriaRepository.findAll(pageable);
 		return pageSubCategoria.map(MostrarSubCategoriaComCategoriaDTO::converterSubCategoriaParaMostrarSubCategoriaComCategoriaDTO);
 	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
 
+	@Transactional
+	public void deletarSubCategoriaPorId(Long id) {
+		SubCategoria subCategoria = verificarSeExisteSubCategoriaPorId(id);
+		subCategoriaRepository.delete(subCategoria);
+	}
+	
+	@Transactional
+	public MostrarSubCategoriaDTO cadastrarSubCategoria(@Valid CadastrarSubCategoriaDTO subCategoriaDTO) {
+		Long idCategoria = subCategoriaDTO.categoria_id();
+		Categoria categoria = categoriaService.verificarSeExisteCategoriaPorId(idCategoria);
+		verificarSeNomeSubCategoriaJaExiste(subCategoriaDTO.nome());
+		SubCategoria subCategoria = new SubCategoria(null, subCategoriaDTO.nome(), categoria);
+
+		subCategoriaRepository.save(subCategoria);
+		
+		return new MostrarSubCategoriaDTO(subCategoria);
+	}
+	
 	@Transactional
 	public MostrarSubCategoriaDTO alterarSubCategoriaPorId(Long idSubCategoria, AlterarSubCategoriaDTO alterarSubCategoriaDTO) {
 		SubCategoria subCategoria = this.verificarSeExisteSubCategoriaPorId(idSubCategoria);
@@ -49,29 +74,18 @@ public class SubCategoriaService {
 		return new MostrarSubCategoriaDTO(subCategoria);
 	}
 
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
+	
 	public void verificarSeNomeSubCategoriaJaExiste(String nome) {
 		Optional<SubCategoria> optionalSubCategoria = subCategoriaRepository.findByNome(nome);
 		if (optionalSubCategoria.isPresent()) {
 			throw new ValidacaoException("A categoria de nome " + nome + " já existe");
 		}
-	}
-
-	@Transactional
-	public MostrarSubCategoriaDTO cadastrarSubCategoria(@Valid CadastrarSubCategoriaDTO subCategoriaDTO) {
-		Long idCategoria = subCategoriaDTO.categoria_id();
-		Categoria categoria = categoriaService.verificarSeExisteCategoriaPorId(idCategoria);
-		verificarSeNomeSubCategoriaJaExiste(subCategoriaDTO.nome());
-		SubCategoria subCategoria = new SubCategoria(null, subCategoriaDTO.nome(), categoria);
-
-		subCategoriaRepository.save(subCategoria);
-		
-		return new MostrarSubCategoriaDTO(subCategoria);
-	}
-
-	@Transactional
-	public void deletarSubCategoriaPorId(Long id) {
-		SubCategoria subCategoria = verificarSeExisteSubCategoriaPorId(id);
-		subCategoriaRepository.delete(subCategoria);
 	}
 
 	public SubCategoria verificarSeExisteSubCategoriaPorId(Long idSubCategoria) {

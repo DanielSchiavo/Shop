@@ -40,39 +40,26 @@ public class CarrinhoService {
 	private FileStorageService fileService;
 	
 	@Transactional
-	public void adicionarProdutosNoCarrinhoPorIdToken(ItemCarrinhoDTO itemCarrinhoDTO) {
-		if (itemCarrinhoDTO.quantidade() <= 0) {
-			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
-					+ itemCarrinhoDTO.quantidade());
-		}
+	public void deletarProdutoNoCarrinhoPorIdToken(Long idProduto) 
+		{
 		Cliente cliente = usuarioAutenticadoService.getCliente();
-
-		var produto = produtoRepository.getReferenceById(itemCarrinhoDTO.idProduto());
-
-		var optionalCarrinho = carrinhoRepository.findByCliente(cliente);
+		Carrinho carrinho = cliente.getCarrinho();
 		
-		if(optionalCarrinho.isPresent()) {
-			Carrinho carrinho = optionalCarrinho.get();
-
-			List<ItemCarrinho> itensCarrinho = carrinho.getItemsCarrinho();
-	
-			for (ItemCarrinho itemCarrinho : itensCarrinho) {
-				if (itemCarrinho.getProduto().getId() == itemCarrinhoDTO.idProduto()) {
-					itemCarrinho.setQuantidade(itemCarrinho.getQuantidade() + itemCarrinhoDTO.quantidade());
-					carrinhoRepository.save(carrinho);
-					return;
-				}
-			}
-			carrinho.getItemsCarrinho().add(new ItemCarrinho(null, itemCarrinhoDTO.quantidade(), produto, carrinho));
-	
-			carrinhoRepository.save(carrinho);
+		if (carrinho.getId() == null) {
+			throw new ValidacaoException("Não existe um carrinho para o cliente de id número " + cliente.getId());
 		}
-		else {
-			Carrinho carrinho = new Carrinho(cliente, produto, itemCarrinhoDTO.quantidade());
-			carrinhoRepository.save(carrinho);
+		
+		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
+		while (iterator.hasNext()) {
+			ItemCarrinho itemCarrinho = iterator.next();
+			if (itemCarrinho.getProduto().getId() == idProduto) {
+				iterator.remove();
+				carrinhoRepository.save(carrinho);
+				return;
+			}
 		}
 	}
-
+	
 	public MostrarCarrinhoClienteDTO pegarCarrinhoClientePorIdToken() {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
 		
@@ -111,6 +98,40 @@ public class CarrinhoService {
 		return new MostrarCarrinhoClienteDTO(carrinho.getId(), listaMostrarItensCarrinhoCliente, valorTotal);
 
 	}
+	
+	@Transactional
+	public void adicionarProdutosNoCarrinhoPorIdToken(ItemCarrinhoDTO itemCarrinhoDTO) {
+		if (itemCarrinhoDTO.quantidade() <= 0) {
+			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
+					+ itemCarrinhoDTO.quantidade());
+		}
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+
+		var produto = produtoRepository.getReferenceById(itemCarrinhoDTO.idProduto());
+
+		var optionalCarrinho = carrinhoRepository.findByCliente(cliente);
+		
+		if(optionalCarrinho.isPresent()) {
+			Carrinho carrinho = optionalCarrinho.get();
+
+			List<ItemCarrinho> itensCarrinho = carrinho.getItemsCarrinho();
+	
+			for (ItemCarrinho itemCarrinho : itensCarrinho) {
+				if (itemCarrinho.getProduto().getId() == itemCarrinhoDTO.idProduto()) {
+					itemCarrinho.setQuantidade(itemCarrinho.getQuantidade() + itemCarrinhoDTO.quantidade());
+					carrinhoRepository.save(carrinho);
+					return;
+				}
+			}
+			carrinho.getItemsCarrinho().add(new ItemCarrinho(null, itemCarrinhoDTO.quantidade(), produto, carrinho));
+	
+			carrinhoRepository.save(carrinho);
+		}
+		else {
+			Carrinho carrinho = new Carrinho(cliente, produto, itemCarrinhoDTO.quantidade());
+			carrinhoRepository.save(carrinho);
+		}
+	}
 
 	@Transactional
 	public void setarQuantidadeProdutoNoCarrinhoPorIdToken(ItemCarrinhoDTO itemCarrinhoDTO) {
@@ -136,28 +157,14 @@ public class CarrinhoService {
 			}
 		}
 	}
-
-	@Transactional
-	public void deletarProdutoNoCarrinhoPorIdToken(Long idProduto) 
-		{
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		Carrinho carrinho = cliente.getCarrinho();
-		
-		if (carrinho.getId() == null) {
-			throw new ValidacaoException("Não existe um carrinho para o cliente de id número " + cliente.getId());
-		}
-		
-		Iterator<ItemCarrinho> iterator = carrinho.getItemsCarrinho().iterator();
-		while (iterator.hasNext()) {
-			ItemCarrinho itemCarrinho = iterator.next();
-			if (itemCarrinho.getProduto().getId() == idProduto) {
-				iterator.remove();
-				carrinhoRepository.save(carrinho);
-				return;
-			}
-		}
-	}
 	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
+
 	public Carrinho verificarCarrinhoCliente(Cliente cliente) {
 		Optional<Carrinho> optionalCliente = carrinhoRepository.findByCliente(cliente);
 		if (optionalCliente.isPresent()) {
@@ -178,18 +185,6 @@ public class CarrinhoService {
 				.collect(Collectors.toList());
 		
 		return listMostrarItemCarrinho;
-//		List<MostrarItemCarrinhoDTO> produtosDesordenados = new ArrayList<>();
-//		listMostrarItemCarrinho.forEach(id -> {
-//			produtoService.verificarSeProdutoExistePorIdEAtivoTrue(id.idProduto());
-//			MostrarItemCarrinhoDTO mostrarItemCarrinhoDTO = new MostrarItemCarrinhoDTO(id.idProduto(), id.quantidade());
-//			produtosDesordenados.add(mostrarItemCarrinhoDTO);
-//		});
-//			
-//		return listMostrarItemCarrinho.stream().map(id -> produtosDesordenados.stream()
-//		                   .filter(produto -> produto.getId().equals(id.idProduto()))
-//		                   .findFirst()
-//		                   .orElse(null))
-//						   .collect(Collectors.toList());
 	}
 
 }

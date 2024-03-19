@@ -29,6 +29,28 @@ public class CartaoService {
 	
 	@Autowired
 	private List<ValidadorCadastrarNovoCartao> validadores;
+	
+	@Transactional
+	public void deletarCartaoPorIdToken(Long id) {
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		
+		var cartao = cartaoRepository.findById(id).orElseThrow();
+		
+		cliente.getCartoes().forEach(c -> {
+			if (c.getId() == id) {
+				cartaoRepository.delete(cartao);
+				return;
+			}
+		});
+		throw new ValidacaoException("O Cartão de id número " + id + " não é do cliente logado");
+	}
+	
+	public Page<MostrarCartaoDTO> pegarCartoesClientePorIdToken(Pageable pageable) {
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		
+		Page<Cartao> pageCartao = cartaoRepository.findAllByCliente(cliente, pageable);
+		return pageCartao.map(MostrarCartaoDTO::converterParaMostrarCartaoDTO);
+	}
 
 	@Transactional
 	public MostrarCartaoDTO cadastrarNovoCartaoPorIdToken(CadastrarCartaoDTO cartaoDTO) {
@@ -57,30 +79,6 @@ public class CartaoService {
 		return new MostrarCartaoDTO(novoCartao);
 	}
 	
-	public Page<MostrarCartaoDTO> pegarCartoesClientePorIdToken(Pageable pageable) {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		
-		Page<Cartao> pageCartao = cartaoRepository.findAllByCliente(cliente, pageable);
-		return pageCartao.map(MostrarCartaoDTO::converterParaMostrarCartaoDTO);
-	}
-	
-	@Transactional
-	public void deletarCartaoPorIdToken(Long id) {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		
-		var cartao = cartaoRepository.findById(id).orElseThrow();
-		
-		cliente.getCartoes().forEach(c -> {
-			if (c.getId() == id) {
-				cartaoRepository.delete(cartao);
-				return;
-			}
-		});
-		
-		throw new ValidacaoException("O Cartão de id número " + id + " não é do cliente logado");
-		
-	}
-
 	@Transactional
 	public void alterarCartaoPadraoPorIdToken(Long id) {
 		Optional<Cartao> optionalCartao = cartaoRepository.findById(id);
@@ -109,8 +107,14 @@ public class CartaoService {
 		else {
 			throw new ValidacaoException("ID do cartão de número: " + id + " não existe");
 		}
-		
 	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
 
 	public Cartao verificarSeCartaoExistePorIdCartaoECliente(Long idCartao) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();

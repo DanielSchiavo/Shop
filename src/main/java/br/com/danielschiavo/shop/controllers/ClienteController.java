@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
+import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.MostrarClientePaginaInicialDTO;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
-import br.com.danielschiavo.shop.repositories.ClienteRepository;
 import br.com.danielschiavo.shop.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,9 +35,6 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteService clienteService;
-	
-	@Autowired
-	private ClienteRepository clientRepository;
 	
 	@DeleteMapping("/cliente/foto-perfil")
 	@Operation(summary = "Deleta foto do perfil do cliente")

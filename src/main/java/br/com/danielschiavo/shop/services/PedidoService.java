@@ -82,24 +82,7 @@ public class PedidoService {
 		return new PageImpl<>(list, pagePedidos.getPageable(),
 				pagePedidos.getTotalElements());
 	}
-
-	public Page<MostrarPedidoDTO> pegarPedidosClientePorId(Long id, Pageable pageable) {
-		var cliente = clienteRepository.getReferenceById(id);
-
-		Page<Pedido> pagePedidos = pedidoRepository.findAllByCliente(cliente, pageable);
-
-		List<MostrarPedidoDTO> list = new ArrayList<>();
-
-		for (Pedido pedido : pagePedidos) {
-			List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = montarMostrarProdutoDoPedidoDTO(pedido);
-
-			var mostrarPedidoDTO = new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
-			list.add(mostrarPedidoDTO);
-		}
-		return new PageImpl<>(list, pagePedidos.getPageable(),
-				pagePedidos.getTotalElements());
-	}
-
+	
 	@Transactional
 	public MostrarPedidoDTO criarPedidoBotaoComprarAgoraEComprarDoCarrinhoPorIdToken(CriarPedidoDTO pedidoDTO) {
 		validador.forEach(v -> v.validar(pedidoDTO));
@@ -130,6 +113,37 @@ public class PedidoService {
 		
 		return new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
 	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
+
+	public Page<MostrarPedidoDTO> pegarPedidosClientePorId(Long id, Pageable pageable) {
+		var cliente = clienteRepository.getReferenceById(id);
+
+		Page<Pedido> pagePedidos = pedidoRepository.findAllByCliente(cliente, pageable);
+
+		List<MostrarPedidoDTO> list = new ArrayList<>();
+
+		for (Pedido pedido : pagePedidos) {
+			List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = montarMostrarProdutoDoPedidoDTO(pedido);
+
+			var mostrarPedidoDTO = new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
+			list.add(mostrarPedidoDTO);
+		}
+		return new PageImpl<>(list, pagePedidos.getPageable(),
+				pagePedidos.getTotalElements());
+	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS PARA UTILITARIOS
+//	------------------------------
+//	------------------------------
 
 	private List<MostrarProdutoDoPedidoDTO> montarMostrarProdutoDoPedidoDTO(Pedido pedido) {
 		List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = new ArrayList<>();

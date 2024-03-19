@@ -27,23 +27,42 @@ public class ClienteService {
 	private ClienteRepository clienteRepository;
 	
 	@Autowired
-	private EnderecoService enderecoService;
-	
-	@Autowired
 	private FileStorageService fileService;
 	
 	@Autowired
 	private UsuarioAutenticadoService usuarioAutenticadoService;
 
 	@Transactional
+	public void deletarFotoPerfilPorIdToken() {
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		if (cliente.getFotoPerfil().equals("Padrao.jpeg")) {
+			throw new ValidacaoException("O cliente não tem foto de perfil, ele já está com a foto padrão, portanto, não é possível deletar");
+		}
+		fileService.deletarFotoPerfilNoDisco(cliente.getFotoPerfil());
+		cliente.setFotoPerfil("Padrao.jpeg");
+		
+		clienteRepository.save(cliente);
+	}
+	
+	public MostrarClientePaginaInicialDTO detalharClientePorIdTokenPaginaInicial() {
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+		return new MostrarClientePaginaInicialDTO(cliente.getNome(), arquivoInfoDTO);
+	}
+	
+	public MostrarClienteDTO detalharClientePorIdToken() {
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
+		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
+	}
+	
+	@Transactional
 	public MostrarClienteDTO cadastrarCliente(CadastrarClienteDTO clientDTO) {
 		var cliente = new Cliente(clientDTO);
 		System.out.println(" TESTE ");
 		if (clientDTO.endereco() != null) {
 			Endereco endereco = new Endereco(clientDTO, cliente);
-			enderecoService.save(endereco);
 			cliente.getEnderecos().add(endereco);
-			System.out.println(" TESTE ");
 		}
 
 		clienteRepository.save(cliente);
@@ -53,22 +72,6 @@ public class ClienteService {
 		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
 	
-	public Page<MostrarClienteDTO> adminDetalharTodosClientes(Pageable pageable) {
-		Page<Cliente> pageClientes = clienteRepository.findAll(pageable);
-		return pageClientes.map(this::converterParaDetalharClienteDTO);
-	}
-
-	private MostrarClienteDTO converterParaDetalharClienteDTO(Cliente cliente) {
-		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
-	    return new MostrarClienteDTO(cliente, arquivoInfoDTO);
-	}
-
-	public MostrarClienteDTO detalharClientePorIdToken() {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
-		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
-	}
-
 	@Transactional
 	public MostrarClienteDTO alterarClientePorIdToken(AlterarClienteDTO updateClientDTO) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
@@ -76,7 +79,7 @@ public class ClienteService {
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
 		return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
-
+	
 	@Transactional
 	public ArquivoInfoDTO alterarFotoPerfilPorIdToken(AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
@@ -91,25 +94,35 @@ public class ClienteService {
 		
 		return arquivoInfoDTO;
 	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS PARA ADMINISTRADORES
+//	------------------------------
+//	------------------------------
+	
+	public void adminDeletarClientePorId(Long idCliente) {
+		clienteRepository.deleteById(idCliente);
+	}
+	
+	public Page<MostrarClienteDTO> adminDetalharTodosClientes(Pageable pageable) {
+		Page<Cliente> pageClientes = clienteRepository.findAll(pageable);
+		return pageClientes.map(this::converterParaDetalharClienteDTO);
+	}
+	
+	
+//	------------------------------
+//	------------------------------
+//	METODOS UTILITARIOS
+//	------------------------------
+//	------------------------------
 
-	public MostrarClientePaginaInicialDTO detalharClientePorIdTokenPaginaInicial() {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
+	private MostrarClienteDTO converterParaDetalharClienteDTO(Cliente cliente) {
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarFotoPerfilPorNome(cliente.getFotoPerfil());
-		return new MostrarClientePaginaInicialDTO(cliente.getNome(), arquivoInfoDTO);
+	    return new MostrarClienteDTO(cliente, arquivoInfoDTO);
 	}
-	
-	@Transactional
-	public void deletarFotoPerfilPorIdToken() {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		if (cliente.getFotoPerfil().equals("Padrao.jpeg")) {
-			throw new ValidacaoException("O cliente não tem foto de perfil, ele já está com a foto padrão, portanto, não é possível deletar");
-		}
-		fileService.deletarFotoPerfilNoDisco(cliente.getFotoPerfil());
-		cliente.setFotoPerfil("Padrao.jpeg");
-		
-		clienteRepository.save(cliente);
-	}
-	
+
 	public Cliente verificarSeClienteExistePorId(Long id) {
 		Optional<Cliente> optionalCliente = clienteRepository.findById(id);
 		if (optionalCliente.isPresent()) {
@@ -120,14 +133,8 @@ public class ClienteService {
 	}
 
 	
-//	------------------------------
-//	------------------------------
-//	ENDPOINTS PARA ADMINISTRADORES
-//	------------------------------
-//	------------------------------
+
 	
-	public void adminDeletarClientePorId(Long idCliente) {
-		clienteRepository.deleteById(idCliente);
-	}
+
 
 }

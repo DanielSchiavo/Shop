@@ -32,37 +32,13 @@ public class FileStorageService {
 	private final Path raizProduto = Path.of(System.getProperty("user.home") + "/.shop/" + "imagens/produto");
 	
 	private final Path raizPedido = Path.of(System.getProperty("user.home") + "/.shop/" + "imagens/pedido");
-
-// PRODUTO
-	public void verificarSeExisteArquivoProdutoPorNome(String nome) {
-		try {
-			FileUrlResource fileUrlResource = new FileUrlResource(raizProduto + "/" + nome);
-			if (!fileUrlResource.exists()) {
-				throw new ValidacaoException("Não existe arquivo-produto com o nome " + nome);
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
 	
-	public ArquivoInfoDTO pegarArquivoProdutoPorNome(String nomeArquivo) {
-		byte[] bytes = recuperarBytesArquivoProdutoDoDisco(nomeArquivo);
-		return new ArquivoInfoDTO(nomeArquivo, bytes);
-	}
 	
-	public ArquivoInfoDTO persistirUmArquivoProduto(MultipartFile arquivo) {
-		String nomeArquivo = gerarNomeArquivoProduto(arquivo);
-		byte[] bytesArquivo = salvarNoDiscoArquivoProduto(nomeArquivo, arquivo);
-		
-		return new ArquivoInfoDTO(nomeArquivo, bytesArquivo);
-	}
-	
-	public ArquivoInfoDTO alterarArquivoProduto(MultipartFile arquivo, String nomeAntigoDoArquivo) {
-		deletarArquivoProdutoNoDisco(nomeAntigoDoArquivo);
-		String novoNomeGerado = gerarNomeArquivoProduto(arquivo);
-		byte[] bytes = salvarNoDiscoArquivoProduto(novoNomeGerado, arquivo);
-		return new ArquivoInfoDTO(novoNomeGerado, bytes);
-	}
+//	------------------------------
+//	------------------------------
+//			PRODUTO
+//	------------------------------
+//	------------------------------
 	
 	public void deletarArquivoProdutoNoDisco(String nome) {
 		try {
@@ -70,6 +46,20 @@ public class FileStorageService {
 		} catch (IOException e) {
 			throw new FileStorageException("Falha ao excluir arquivo de nome " + nome + " no disco. ", e);
 		}
+	}
+	
+	public List<ArquivoInfoDTO> mostrarArquivoProdutoPorListaDeNomes(List<String> listNomes) {
+		List<ArquivoInfoDTO> listaArquivosInfoDTO = new ArrayList<>();
+		listNomes.forEach(nome -> {
+			byte[] bytes = recuperarBytesArquivoProdutoDoDisco(nome);
+			listaArquivosInfoDTO.add(new ArquivoInfoDTO(nome, bytes));
+		});
+		return listaArquivosInfoDTO;
+	}
+	
+	public ArquivoInfoDTO pegarArquivoProdutoPorNome(String nomeArquivo) {
+		byte[] bytes = recuperarBytesArquivoProdutoDoDisco(nomeArquivo);
+		return new ArquivoInfoDTO(nomeArquivo, bytes);
 	}
 	
 	public List<ArquivoInfoDTO> persistirArrayArquivoProduto(MultipartFile[] arquivos, UriComponentsBuilder uriBuilderBase) {
@@ -91,6 +81,25 @@ public class FileStorageService {
 	    return arquivosInfo;
 	}
 	
+	public ArquivoInfoDTO persistirUmArquivoProduto(MultipartFile arquivo) {
+		String nomeArquivo = gerarNomeArquivoProduto(arquivo);
+		byte[] bytesArquivo = salvarNoDiscoArquivoProduto(nomeArquivo, arquivo);
+		
+		return new ArquivoInfoDTO(nomeArquivo, bytesArquivo);
+	}
+	
+	public ArquivoInfoDTO alterarArquivoProduto(MultipartFile arquivo, String nomeAntigoDoArquivo) {
+		deletarArquivoProdutoNoDisco(nomeAntigoDoArquivo);
+		String novoNomeGerado = gerarNomeArquivoProduto(arquivo);
+		byte[] bytes = salvarNoDiscoArquivoProduto(novoNomeGerado, arquivo);
+		return new ArquivoInfoDTO(novoNomeGerado, bytes);
+	}
+
+	
+//
+// METODOS UTILITARIOS DE PRODUTO
+//	
+
 	private byte[] salvarNoDiscoArquivoProduto(String nomeArquivo, MultipartFile arquivo) {
 		try {
 			byte[] bytes = arquivo.getInputStream().readAllBytes();
@@ -133,16 +142,35 @@ public class FileStorageService {
 		}
 	}
 
-	public List<ArquivoInfoDTO> mostrarArquivoProdutoPorListaDeNomes(List<String> listNomes) {
-		List<ArquivoInfoDTO> listaArquivosInfoDTO = new ArrayList<>();
-		listNomes.forEach(nome -> {
-			byte[] bytes = recuperarBytesArquivoProdutoDoDisco(nome);
-			listaArquivosInfoDTO.add(new ArquivoInfoDTO(nome, bytes));
-		});
-		return listaArquivosInfoDTO;
+	public void verificarSeExisteArquivoProdutoPorNome(String nome) {
+		try {
+			FileUrlResource fileUrlResource = new FileUrlResource(raizProduto + "/" + nome);
+			if (!fileUrlResource.exists()) {
+				throw new ValidacaoException("Não existe arquivo-produto com o nome " + nome);
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
-
-// PERFIL
+	
+//	------------------------------
+//	------------------------------
+//			PERFIL
+//	------------------------------
+//	------------------------------
+	
+	public void deletarFotoPerfilNoDisco(String nome) {
+		try {
+			Files.delete(this.raizPerfil.resolve(nome));
+		} catch (IOException e) {
+			throw new FileStorageException("Falha ao excluir arquivo de nome " + nome + " no disco. ", e);
+		}
+	}
+	
+	public ArquivoInfoDTO pegarFotoPerfilPorNome(String nomeArquivo) {
+		byte[] bytes = recuperarBytesFotoPerfilDoDisco(nomeArquivo);
+		return new ArquivoInfoDTO(nomeArquivo, bytes);
+	}
 	
 	public ArquivoInfoDTO persistirFotoPerfil(MultipartFile arquivo) {
 		String nome = gerarNovoNomeFotoPerfil(arquivo);
@@ -158,6 +186,11 @@ public class FileStorageService {
 		return new ArquivoInfoDTO(nome, bytes);
 	}
 	
+	
+//
+// METODOS UTILITARIOS DE PERFIL
+//	
+	
 	private byte[] sobrescreverNoDiscoFotoPerfil(MultipartFile novaFoto, String nome) {
 		try {
 			Files.copy(novaFoto.getInputStream(), this.raizPerfil.resolve(nome), StandardCopyOption.REPLACE_EXISTING);
@@ -166,19 +199,6 @@ public class FileStorageService {
 			throw new FileStorageException("Não foi possível sobrescrever o arquivo no disco");
 		}
 
-	}
-
-	public ArquivoInfoDTO pegarFotoPerfilPorNome(String nomeArquivo) {
-		byte[] bytes = recuperarBytesFotoPerfilDoDisco(nomeArquivo);
-		return new ArquivoInfoDTO(nomeArquivo, bytes);
-	}
-	
-	public void deletarFotoPerfilNoDisco(String nome) {
-		try {
-			Files.delete(this.raizPerfil.resolve(nome));
-		} catch (IOException e) {
-			throw new FileStorageException("Falha ao excluir arquivo de nome " + nome + " no disco. ", e);
-		}
 	}
 	
 	private String gerarNovoNomeFotoPerfil(MultipartFile fotoPerfil) {
@@ -226,8 +246,17 @@ public class FileStorageService {
 	}
 	
 	
-//PEDIDO
+//	------------------------------
+//	------------------------------
+//			PEDIDO
+//	------------------------------
+//	------------------------------
 
+	public ArquivoInfoDTO pegarImagemPedidoPorNome(String nomeArquivo) {
+		byte[] bytes = recuperarBytesImagemPedidoDoDisco(nomeArquivo);
+		return new ArquivoInfoDTO(nomeArquivo, bytes);
+	}
+	
 	public String persistirOuRecuperarImagemPedido(String nomePrimeiraImagemProduto, Long idProduto) {
 		String arquivoInfoDTO = verificarSeExisteImagemPedidoNoDisco(nomePrimeiraImagemProduto);
 		if (arquivoInfoDTO != null) {
@@ -242,10 +271,9 @@ public class FileStorageService {
 		}
 	}
 	
-	public ArquivoInfoDTO pegarImagemPedidoPorNome(String nomeArquivo) {
-		byte[] bytes = recuperarBytesImagemPedidoDoDisco(nomeArquivo);
-		return new ArquivoInfoDTO(nomeArquivo, bytes);
-	}
+//
+// METODOS UTILITARIOS DE PERFIL
+//	
 	
 	private byte[] recuperarBytesImagemPedidoDoDisco(String nomeArquivo) {
 		FileUrlResource fileUrlResource;
@@ -297,4 +325,6 @@ public class FileStorageService {
 	        throw new FileStorageException("Falha ao tentar recuperar imagem do pedido no disco.", e);
 	    }
 	}
+	
+
 }

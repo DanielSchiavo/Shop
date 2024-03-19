@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.danielschiavo.shop.models.subcategoria.AlterarSubCategoriaDTO;
+import br.com.danielschiavo.shop.models.subcategoria.CadastrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaComCategoriaDTO;
 import br.com.danielschiavo.shop.models.subcategoria.MostrarSubCategoriaDTO;
-import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
-import br.com.danielschiavo.shop.models.subcategoria.CadastrarSubCategoriaDTO;
 import br.com.danielschiavo.shop.services.SubCategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
