@@ -64,13 +64,20 @@ public class Produto {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private SubCategoria subCategoria;
 	
-	public Produto(CadastrarProdutoDTO produtoDTO, SubCategoria subCategoria) {
-		this.nome = produtoDTO.nome();
-		this.descricao = produtoDTO.descricao();
-		this.preco = produtoDTO.preco();
-		this.quantidade = produtoDTO.quantidade();
-		this.ativo = produtoDTO.ativo();
+	public Produto(CadastrarProdutoDTO cadastrarProdutoDTO, SubCategoria subCategoria) {
+		this.nome = cadastrarProdutoDTO.nome();
+		this.descricao = cadastrarProdutoDTO.descricao();
+		this.preco = cadastrarProdutoDTO.preco();
+		this.quantidade = cadastrarProdutoDTO.quantidade();
+		this.ativo = cadastrarProdutoDTO.ativo();
+		this.categoria = subCategoria.getCategoria();
 		this.subCategoria = subCategoria;
+		cadastrarProdutoDTO.tipoEntrega().forEach(te -> {
+			this.tiposEntrega.add(new TipoEntregaProduto(null, te, this));
+		});;
+		cadastrarProdutoDTO.arquivos().forEach(a -> {
+			this.arquivosProduto.add(new ArquivosProduto(null, a.nome(), a.posicao().byteValue(), this));
+		});
 	}
 
 	public void alterarAtributos(AlterarProdutoDTO alterarProdutoDTO, Produto produto) {
@@ -116,21 +123,5 @@ public class Produto {
 	public String pegarNomePrimeiraImagem() {
 		ArquivosProduto arquivoProduto = this.arquivosProduto.stream().filter(ap -> ap.getPosicao() == 0).findFirst().get();
 		return arquivoProduto.getNome();
-	}
-
-	public Produto(CadastrarProdutoDTO cadastrarProdutoDTO, Categoria categoria, SubCategoria subCategoria) {
-		this.nome = cadastrarProdutoDTO.nome();
-		this.descricao = cadastrarProdutoDTO.descricao();
-		this.preco = cadastrarProdutoDTO.preco();
-		this.quantidade = cadastrarProdutoDTO.quantidade();
-		this.ativo = cadastrarProdutoDTO.ativo();
-		this.categoria = categoria;
-		this.subCategoria = subCategoria;
-		cadastrarProdutoDTO.tipoEntrega().forEach(te -> {
-			this.tiposEntrega.add(new TipoEntregaProduto(null, te, this));
-		});;
-		cadastrarProdutoDTO.arquivos().forEach(a -> {
-			this.arquivosProduto.add(new ArquivosProduto(null, a.nome(), a.posicao().byteValue(), this));
-		});
 	}
 }

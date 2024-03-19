@@ -24,8 +24,6 @@ public record CadastrarProdutoDTO(
 		@NotNull
 		Boolean ativo,
 		@NotNull
-		Long idCategoria,
-		@NotNull
 		Long idSubCategoria,
 		@NotNull
 		Set<TipoEntrega> tipoEntrega,

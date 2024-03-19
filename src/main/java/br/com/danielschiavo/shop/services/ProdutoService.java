@@ -26,6 +26,7 @@ import br.com.danielschiavo.shop.models.produto.DetalharProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.MostrarProdutosDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
+import br.com.danielschiavo.shop.models.produto.validacoes.ValidadorCadastrarNovoProduto;
 import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.repositories.CarrinhoRepository;
 import br.com.danielschiavo.shop.repositories.ProdutoRepository;
@@ -47,8 +48,9 @@ public class ProdutoService {
 
 	@Autowired
 	private CarrinhoRepository carrinhoRepository;
-
-	private final int MAX_FILES = 10;
+	
+	@Autowired
+	private List<ValidadorCadastrarNovoProduto> validador;
 
 	@Transactional
 	public void deletarProdutoPorId(Long id) {
@@ -63,52 +65,6 @@ public class ProdutoService {
 			});
 		}
 	}
-
-//	@Transactional
-//	public MostrarProdutosDTO criarNovoProduto(Produto produto, MultipartFile[] files, int[] position) {
-//		Produto productFlush = produtoRepository.saveAndFlush(produto);
-//
-//		List<String> productFileName = fileService.pegarNomeArquivoProduto(files, position, productFlush.getId());
-//		fileService.salvarNoDiscoArquivosProduto(files, productFileName);
-//
-//		productFlush.setArquivosProduto(productFileName, position);
-//
-//		produtoRepository.save(productFlush);
-//
-//		ArquivoInfoDTO arquivoInfoDTO = fileService.detalharArquivoProdutoPorNome(productFileName.get(0)); // ESTÁ
-//																											// ERRADO!
-//		return new MostrarProdutosDTO(produto, arquivoInfoDTO.bytesArquivo());
-//	}
-
-//	@Transactional
-//	public void atualizarArquivos(MultipartFile[] arquivos, int[] posicoes, Produto product) {
-//		List<ArquivosProduto> productFiles = product.getArquivosProduto();
-//		Iterator<ArquivosProduto> iterator = productFiles.iterator();
-//		while (iterator.hasNext()) {
-//			ArquivosProduto arquivoProduto = iterator.next();
-//			fileService.deletarArquivoProdutoNoDisco(arquivoProduto.getNome());
-//			iterator.remove();
-//		}
-//
-//		List<String> nomeArquivoProduto = fileService.pegarNomeArquivoProduto(arquivos, posicoes, product.getId());
-//		for (int i = 0; i < posicoes.length; i++) {
-//			if (!arquivos[i].getContentType().startsWith("image") && posicoes[i] == 0) {
-//				throw new RuntimeException("O primeiro arquivo tem que ser uma imagem para exibição do produto! ");
-//			}
-//			int a = i;
-//			Optional<ArquivosProduto> optionalArquivoProduto = product.getArquivosProduto().stream()
-//					.filter(arquivoProduto -> arquivoProduto.getPosicao() == posicoes[a]).findFirst();
-//			if (optionalArquivoProduto.isPresent()) {
-//				fileService.deletarArquivoProdutoNoDisco(optionalArquivoProduto.get().getNome());
-//				fileService.salvarNoDiscoArquivoProduto(arquivos[i], nomeArquivoProduto.get(i));
-//				optionalArquivoProduto.get().setNome(nomeArquivoProduto.get(i));
-//				continue;
-//			}
-//			fileService.salvarNoDiscoArquivoProduto(arquivos[i], nomeArquivoProduto.get(i));
-//			product.adicionarArquivosProduto(nomeArquivoProduto.get(i), posicoes[i]);
-//		}
-//		produtoRepository.save(product);
-//	}
 
 	public List<ArquivoInfoDTO> carregarArquivosProduto(List<ArquivosProduto> arquivosProduto) {
 		List<String> listaDeNomes = arquivosProduto.stream().map(ap -> ap.getNome()).collect(Collectors.toList());
@@ -176,17 +132,10 @@ public class ProdutoService {
 
 	@Transactional
 	public MostrarProdutosDTO cadastrarProduto(CadastrarProdutoDTO cadastrarProdutoDTO) {
-		if (cadastrarProdutoDTO.arquivos().size() > MAX_FILES) {
-			throw new ValidacaoException("O máximo de arquivos para produto são " + MAX_FILES);
-		}
-		
-		cadastrarProdutoDTO.arquivos().forEach(arquivo -> {
-			fileService.verificarSeExisteArquivoProdutoPorNome(arquivo.nome());
-		});
+		validador.forEach(v -> v.validar(cadastrarProdutoDTO));
 		
 		SubCategoria subCategoria = subCategoriaService.verificarSeExisteSubCategoriaPorId(cadastrarProdutoDTO.idSubCategoria());
-		Categoria categoria = categoriaService.verificarSeExisteCategoriaPorId(cadastrarProdutoDTO.idCategoria());
-		Produto produto = new Produto(cadastrarProdutoDTO, categoria, subCategoria);
+		Produto produto = new Produto(cadastrarProdutoDTO, subCategoria);
 
 		String nomePrimeiraImagem = produto.pegarNomePrimeiraImagem();
 		ArquivoInfoDTO arquivoInfoDTO = fileService.pegarArquivoProdutoPorNome(nomePrimeiraImagem);

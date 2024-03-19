@@ -36,16 +36,22 @@ public class CartaoService {
 		
 		validadores.forEach(v -> v.validar(cartaoDTO, cliente));
 		
-		var novoCartao = new Cartao(cartaoDTO);
-		novoCartao.setCliente(cliente);
-		novoCartao.setNomeBanco("Falta implementar API banco");
+		var novoCartao = new Cartao(cartaoDTO, cliente);
 		
-		if (cartaoDTO.cartaoPadrao() == false) {
-			if (!cartaoRepository.existsByClienteAndCartaoPadraoTrue(cliente)) {
-				novoCartao.setCartaoPadrao(true);
+		if (cartaoDTO.cartaoPadrao() == true) {
+			var optionalCartao = cartaoRepository.findByClienteAndCartaoPadraoTrue(cliente);
+			
+			if (optionalCartao.isPresent()) {
+				var cartao = optionalCartao.get();
+				cartao.setCartaoPadrao(false);
+				cartaoRepository.save(cartao);
+				if (cartaoDTO.cartaoPadrao() == false) {
+					novoCartao.setCartaoPadrao(true);
+				}
 			}
 		}
 		
+		novoCartao.setNomeBanco("Falta implementar API banco");
 		cartaoRepository.save(novoCartao);
 		
 		return new MostrarCartaoDTO(novoCartao);

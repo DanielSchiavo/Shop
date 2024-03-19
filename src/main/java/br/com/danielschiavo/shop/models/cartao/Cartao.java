@@ -42,11 +42,12 @@ public class Cartao {
 	@ManyToOne
 	private Cliente cliente;
 
-	public Cartao(CadastrarCartaoDTO cartaoDTO) {
+	public Cartao(CadastrarCartaoDTO cartaoDTO, Cliente cliente) {
 		this.numeroCartao = cartaoDTO.numeroCartao();
 		this.nomeNoCartao = cartaoDTO.nomeNoCartao();
 		this.validadeCartao = cartaoDTO.validadeCartao();
 		this.cartaoPadrao = cartaoDTO.cartaoPadrao();
 		this.tipoCartao = cartaoDTO.tipoCartao();
+		this.cliente = cliente;
 	}
 }

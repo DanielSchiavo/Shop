@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shop.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -18,11 +19,13 @@ public interface CartaoRepository extends JpaRepository<Cartao, Long>{
 //	@Query("SELECT c FROM Cartao c WHERE c.cartaoPadrao = true AND c.cliente = :cliente")
 	Optional<Cartao> findByClienteAndCartaoPadraoTrue(Cliente cliente);
 
-	Optional<Cartao> findByNumeroCartao(String numeroCartao);
+	List<Cartao> findByNumeroCartao(String numeroCartao);
 
 	Optional<Cartao> findByCartaoPadraoTrue();
 
 	Boolean existsByClienteAndCartaoPadraoTrue(Cliente cliente);
 
 	Optional<Cartao> findByIdAndCliente(Long idCartao, Cliente cliente);
+
+	List<Cartao> findAllByCliente(Cliente cliente);
 }

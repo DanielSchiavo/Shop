@@ -39,7 +39,7 @@ public class ValidadorMetodoPagamento implements ValidadorCriarNovoPedido {
 			if (idCartao != null) {
 				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, você não deve enviar um ID de cartão junto.");
 			}
-			if (numeroParcelas == null) {
+			if (numeroParcelas != null) {
 				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, você não deve enviar o número de parcelas junto.");
 			}
 		}

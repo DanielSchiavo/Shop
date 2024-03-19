@@ -32,4 +32,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 	
 	Optional<Produto> findByIdAndAtivoTrue(Long id);
 
+	@Query("SELECT p FROM Produto p WHERE LOWER(p.nome) = LOWER(:nome)")
+	Optional<Produto> findByNomeLowerCase(String nome);
+
 }
