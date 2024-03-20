@@ -51,8 +51,8 @@ public class CategoriaService {
 	}
 
 	@Transactional
-	public MostrarCategoriaDTO alterarNomeCategoriaPorId(Long id, CriarCategoriaDTO categoriaDTO) {
-		Categoria categoria = verificarSeExisteCategoriaPorId(id);
+	public MostrarCategoriaDTO alterarNomeCategoriaPorId(Long idCategoriaASerAlterada, CriarCategoriaDTO categoriaDTO) {
+		Categoria categoria = verificarSeExisteCategoriaPorId(idCategoriaASerAlterada);
 		String novoNome = categoriaDTO.nome();
 		Optional<Categoria> optionalCategoria = categoriaRepository.findByNome(novoNome);
 		if (optionalCategoria.isPresent()) {

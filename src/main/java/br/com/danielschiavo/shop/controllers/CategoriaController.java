@@ -76,12 +76,12 @@ public class CategoriaController {
 		
 	}
 	
-	@PutMapping("/admin/categoria/{idCategoria}")
+	@PutMapping("/admin/categoria/{idCategoriaASerAlterada}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Altera o nome da categoria", 
 	   		   operationId = "02_alterarNomeCategoriaPorId")
-	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long idCategoria, @RequestBody @NotNull CriarCategoriaDTO categoriaDTO) {
-		MostrarCategoriaDTO mostrarCategoriaDTO = categoriaService.alterarNomeCategoriaPorId(idCategoria, categoriaDTO);
+	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long idCategoriaASerAlterada, @RequestBody @NotNull CriarCategoriaDTO categoriaDTO) {
+		MostrarCategoriaDTO mostrarCategoriaDTO = categoriaService.alterarNomeCategoriaPorId(idCategoriaASerAlterada, categoriaDTO);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(mostrarCategoriaDTO);
 	}
