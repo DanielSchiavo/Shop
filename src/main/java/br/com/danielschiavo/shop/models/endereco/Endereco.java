@@ -47,6 +47,7 @@ public class Endereco {
 		this.bairro = clienteDTO.endereco().bairro();
 		this.cidade = clienteDTO.endereco().cidade();
 		this.estado = clienteDTO.endereco().estado();
+		this.enderecoPadrao = clienteDTO.endereco().enderecoPadrao();
 		this.cliente = cliente;
 	}
 

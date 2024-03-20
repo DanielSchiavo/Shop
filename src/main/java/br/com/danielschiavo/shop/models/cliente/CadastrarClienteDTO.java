@@ -9,9 +9,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 public record CadastrarClienteDTO(
 		@NotBlank
+		@Size(min=11, max=11)
 		String cpf,
 		@NotBlank
 		String nome,
@@ -26,6 +28,7 @@ public record CadastrarClienteDTO(
 		@NotBlank
 		String senha,
 		@NotBlank
+		@Size(min=11, max=11)
 		String celular,
 		@NotBlank
 		String fotoPerfil,

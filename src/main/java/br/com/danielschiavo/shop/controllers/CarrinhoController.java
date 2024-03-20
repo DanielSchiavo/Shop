@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
 import br.com.danielschiavo.shop.services.CarrinhoService;
@@ -37,10 +38,15 @@ public class CarrinhoController {
 	
 	@GetMapping("/cliente/carrinho")
 	@Operation(summary = "Pega todos os produtos que estão no carrinho do cliente")
-	public ResponseEntity<MostrarCarrinhoClienteDTO> pegarCarrinhoClientePorIdToken() {
-		MostrarCarrinhoClienteDTO mostrarCarrinhoClienteDTO = carrinhoService.pegarCarrinhoClientePorIdToken();
+	public ResponseEntity<?> pegarCarrinhoClientePorIdToken() {
+		try {
+			MostrarCarrinhoClienteDTO mostrarCarrinhoClienteDTO = carrinhoService.pegarCarrinhoClientePorIdToken();
+			
+			return ResponseEntity.ok(mostrarCarrinhoClienteDTO);
+		} catch (ValidacaoException e) {
+			return ResponseEntity.badRequest().body(e);
+		}
 		
-		return ResponseEntity.ok(mostrarCarrinhoClienteDTO);
 	}
 	
 	@PostMapping("/cliente/carrinho")
