@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +53,7 @@ class CartaoControllerTest {
 	private CartaoService cartaoService;
 	
 	@Autowired
-	private JacksonTester<Page<MostrarCartaoDTO>> pageMostrarCartaoDTOJson;
+	private JacksonTester<List<MostrarCartaoDTO>> listaMostrarCartaoDTOJson;
 	
 	@Autowired
 	private JacksonTester<MostrarCartaoDTO> mostrarCartaoDTOJson;
@@ -89,8 +90,8 @@ class CartaoControllerTest {
 	void pegarCartoesClientePorIdToken_TokenValido_DeveRetornarOk() throws IOException, Exception {
 		MostrarCartaoDTO mostrarCartaoDTO = new MostrarCartaoDTO(null, "SANTANDER", "1234567812345678", TipoCartao.CREDITO, true);
 		MostrarCartaoDTO mostrarCartaoDTO2 = new MostrarCartaoDTO(null, "CAIXA", "8765432187654321", TipoCartao.DEBITO, false);
-		Page<MostrarCartaoDTO> pageMostrarCartao = new PageImpl<>(List.of(mostrarCartaoDTO, mostrarCartaoDTO2));
-        when(cartaoService.pegarCartoesClientePorIdToken(any())).thenReturn(pageMostrarCartao);
+		List<MostrarCartaoDTO> listaMostrarCartaoDTO = new ArrayList<>(List.of(mostrarCartaoDTO, mostrarCartaoDTO2));
+        when(cartaoService.pegarCartoesClientePorIdToken()).thenReturn(listaMostrarCartaoDTO);
         
 		var response = mvc.perform(get("/shop/cliente/cartao")
 								  .header("Authorization", "Bearer " + tokenUser))
@@ -98,9 +99,9 @@ class CartaoControllerTest {
 		
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		
-        var jsonEsperado = pageMostrarCartaoDTOJson.write(pageMostrarCartao).getJson();
+        var jsonEsperado = listaMostrarCartaoDTOJson.write(listaMostrarCartaoDTO).getJson();
 
-        JSONAssert.assertEquals(jsonEsperado, response.getContentAsString(), JSONCompareMode.LENIENT);
+        assertThat(response.getContentAsString()).isEqualTo(jsonEsperado);
 	}
 	
 	@Test

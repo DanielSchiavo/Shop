@@ -113,7 +113,7 @@ public class CarrinhoService {
 	@Transactional
 	public void adicionarProdutosNoCarrinhoPorIdToken(ItemCarrinhoDTO itemCarrinhoDTO) {
 		if (itemCarrinhoDTO.quantidade() <= 0) {
-			throw new RuntimeException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
+			throw new ValidacaoException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
 					+ itemCarrinhoDTO.quantidade());
 		}
 		

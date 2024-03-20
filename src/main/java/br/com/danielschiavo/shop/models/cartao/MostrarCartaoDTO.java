@@ -16,7 +16,7 @@ public record MostrarCartaoDTO(
 			 novoCartao.getTipoCartao(),
 			 novoCartao.getCartaoPadrao());
 	}
-	
+
 	public static MostrarCartaoDTO converterParaMostrarCartaoDTO(Cartao cartao) {
 		MostrarCartaoDTO mostrarCartaoDTO = new MostrarCartaoDTO(cartao.getId(),
 																 cartao.getNomeBanco(),
@@ -25,5 +25,4 @@ public record MostrarCartaoDTO(
 																 cartao.getCartaoPadrao());
 		return mostrarCartaoDTO;
 	}
-
 }

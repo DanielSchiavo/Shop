@@ -1,9 +1,9 @@
 package br.com.danielschiavo.shop.controllers;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.danielschiavo.shop.infra.exceptions.MensagemErroDTO;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.cartao.CadastrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cartao.MostrarCartaoDTO;
@@ -36,17 +37,27 @@ public class CartaoController {
 	@DeleteMapping("/cliente/cartao/{idCartao}")
 	@Operation(summary = "Deleta o cartão que contém o id fornecido")
 	public ResponseEntity<?> deletarCartaoPorIdToken(@PathVariable Long idCartao) {
-		cartaoService.deletarCartaoPorIdToken(idCartao);
-		
-		return ResponseEntity.noContent().build();
+		try {
+			cartaoService.deletarCartaoPorIdToken(idCartao);
+			return ResponseEntity.noContent().build();
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
-	
+
 	@GetMapping("/cliente/cartao")
 	@Operation(summary = "Pega todos os cartões do usuário que está logado")
-	public ResponseEntity<Page<MostrarCartaoDTO>> pegarCartoesClientePorIdToken(Pageable pageable) {
-		Page<MostrarCartaoDTO> detalharCartaoDTO = cartaoService.pegarCartoesClientePorIdToken(pageable);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(detalharCartaoDTO);
+	public ResponseEntity<?> pegarCartoesClientePorIdToken() {
+		try {
+			List<MostrarCartaoDTO> listMostrarCartaoDTO = cartaoService.pegarCartoesClientePorIdToken();
+			return ResponseEntity.status(HttpStatus.OK).body(listMostrarCartaoDTO);
+
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@PostMapping("/cliente/cartao")

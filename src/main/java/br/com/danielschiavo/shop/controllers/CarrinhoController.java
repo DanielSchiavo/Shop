@@ -1,6 +1,7 @@
 package br.com.danielschiavo.shop.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.danielschiavo.shop.infra.exceptions.MensagemErroDTO;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.carrinho.MostrarCarrinhoClienteDTO;
 import br.com.danielschiavo.shop.models.carrinho.itemcarrinho.ItemCarrinhoDTO;
@@ -32,8 +34,14 @@ public class CarrinhoController {
 	@DeleteMapping("/cliente/carrinho/{idProduto}")
 	@Operation(summary = "Deleta um produto do carrinho")
 	public ResponseEntity<Object> deletarProdutoNoCarrinhoPorIdToken(@PathVariable Long idProduto) {
-		carrinhoService.deletarProdutoNoCarrinhoPorIdToken(idProduto);
-		return ResponseEntity.noContent().build();
+		try {
+			carrinhoService.deletarProdutoNoCarrinhoPorIdToken(idProduto);
+			return ResponseEntity.noContent().build();
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@GetMapping("/cliente/carrinho")
@@ -44,24 +52,34 @@ public class CarrinhoController {
 			
 			return ResponseEntity.ok(mostrarCarrinhoClienteDTO);
 		} catch (ValidacaoException e) {
-			return ResponseEntity.badRequest().body(e);
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
 		}
-		
 	}
 	
 	@PostMapping("/cliente/carrinho")
 	@Operation(summary = "Adiciona um produto no carrinho, se o cliente não tiver um carrinho, também cria automáticamente")
 	public ResponseEntity<Object> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoDTO itemCarrinhoDTO) {
-		carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(itemCarrinhoDTO);
-		
-		return ResponseEntity.ok().build();
+		try {
+			carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(itemCarrinhoDTO);
+			return ResponseEntity.ok().build();
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@PutMapping("/cliente/carrinho")
 	@Operation(summary = "Seta a quantidade de determinado produto que está no carrinho")
 	public ResponseEntity<Object> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoDTO itemCarrinhoDTO) {
-		carrinhoService.setarQuantidadeProdutoNoCarrinhoPorIdToken(itemCarrinhoDTO);
-		return ResponseEntity.ok().build();
+		try {
+			carrinhoService.setarQuantidadeProdutoNoCarrinhoPorIdToken(itemCarrinhoDTO);
+			return ResponseEntity.ok().build();
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
-
 }

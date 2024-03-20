@@ -66,7 +66,7 @@ public class Cliente implements UserDetails {
 	@JsonIgnore
 	private List<Endereco> enderecos = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JsonIgnore
 	private List<Cartao> cartoes = new ArrayList<>();
 	
