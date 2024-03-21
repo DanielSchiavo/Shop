@@ -27,51 +27,71 @@ public class EnderecoService {
 	
 	@Transactional
 	public void deletarEnderecoPorIdToken(Long idEndereco) {
-		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		List<Endereco> enderecos = cliente.getEnderecos();
+		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, enderecos);
 		
 		enderecoRepository.delete(endereco);
 	}
 	
 	public List<MostrarEnderecoDTO> pegarEnderecosClientePorIdToken() {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
+		List<Endereco> enderecos = cliente.getEnderecos();
+		if (enderecos.isEmpty()) {
+			throw new ValidacaoException("Cliente não possui nenhum endereço cadastrado");
+		}
 		
-		var pageEndereco = enderecoRepository.findAllByCliente(cliente);
-		return pageEndereco.stream().map(MostrarEnderecoDTO::converterParaMostrarEnderecoDTO).toList();
+		return enderecos.stream()
+				.map(MostrarEnderecoDTO::converterParaMostrarEnderecoDTO).toList();
 	}
 	
 	@Transactional
 	public MostrarEnderecoDTO cadastrarNovoEnderecoPorIdToken(CadastrarEnderecoDTO novoEnderecoDTO) {
-		var novoEndereco = new Endereco(novoEnderecoDTO);
-		
 		Cliente cliente = usuarioAutenticadoService.getCliente();
-		
+		Endereco novoEndereco = new Endereco(novoEnderecoDTO);
 		novoEndereco.setCliente(cliente);
 		
-		if (novoEnderecoDTO.enderecoPadrao() == true) {
-			
-			var optionalEndereco = enderecoRepository.findByClienteAndEnderecoPadraoTrue(cliente);
-			if (optionalEndereco.isPresent()) {
-				var endereco = optionalEndereco.get();
-				endereco.setEnderecoPadrao(false);
-				enderecoRepository.save(endereco);
-			}
-			
+		List<Endereco> enderecos = cliente.getEnderecos();
+		enderecos.add(novoEndereco);
+		if (novoEnderecoDTO.enderecoPadrao() == true && !enderecos.isEmpty()) {
+			enderecos.forEach(endereco -> {
+				if (endereco.getEnderecoPadrao() == true) {
+					endereco.setEnderecoPadrao(false);
+					enderecoRepository.save(endereco);
+				}
+			});
+		}
+		
+		if (novoEnderecoDTO.enderecoPadrao() == false && enderecos.isEmpty()) {
 			novoEndereco.setEnderecoPadrao(true);
 		}
 		
 		enderecoRepository.save(novoEndereco);
-		
 		return new MostrarEnderecoDTO(novoEndereco);
 	}
 	
 	@Transactional
 	public MostrarEnderecoDTO alterarEnderecoPorIdToken(AlterarEnderecoDTO enderecoDTO, Long idEndereco) {
-		var endereco = enderecoRepository.findById(idEndereco).get();
+		Cliente cliente = usuarioAutenticadoService.getCliente();
+		List<Endereco> enderecos = cliente.getEnderecos();
+		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, enderecos);
 		
 		endereco.alterarEndereco(enderecoDTO);
 		
-		enderecoRepository.save(endereco);
+		if (enderecoDTO.enderecoPadrao() == true && !enderecos.isEmpty()) {
+			enderecos.forEach(e -> {
+				if (e.getEnderecoPadrao() == true) {
+					e.setEnderecoPadrao(false);
+					enderecoRepository.save(e);
+				}
+			});
+		}
 		
+		if (enderecoDTO.enderecoPadrao() == false && enderecos.isEmpty()) {
+			endereco.setEnderecoPadrao(true);
+		}
+		
+		enderecoRepository.save(endereco);
 		return new MostrarEnderecoDTO(endereco);
 	}
 	
@@ -82,15 +102,10 @@ public class EnderecoService {
 //	------------------------------
 //	------------------------------
 
-	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco) {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		Optional<Endereco> optionalEndereco = enderecoRepository.findByIdAndCliente(idEndereco, cliente);
-		if (optionalEndereco.isPresent()) {
-			return optionalEndereco.get();
-		}
-		else {
-			throw new ValidacaoException("Não existe Endereço com o ID " + idEndereco + " cadastrado para o Cliente ID " + cliente.getId());
-		}
+	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco, List<Endereco> enderecos) {
+		return enderecos.stream()
+				.filter(endereco -> endereco.getId() == idEndereco)
+				.findFirst().orElseThrow(() -> new ValidacaoException("Não existe Endereço com o ID " + idEndereco + " cadastrado para esse cliente"));
 	}
 	
 	public Endereco verificarID(Long clienteId, Long enderecoId) {

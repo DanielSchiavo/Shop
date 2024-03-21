@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.danielschiavo.shop.infra.exceptions.MensagemErroDTO;
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.endereco.AlterarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.CadastrarEnderecoDTO;
 import br.com.danielschiavo.shop.models.endereco.MostrarEnderecoDTO;
@@ -36,17 +38,27 @@ public class EnderecoController {
 	@DeleteMapping("/cliente/endereco/{idEndereco}")
 	@Operation(summary = "Deletar um endereço por id")
 	public ResponseEntity<?> deletarEndereco(@PathVariable Long idEndereco) {
-		enderecoService.deletarEnderecoPorIdToken(idEndereco);
-		
-		return ResponseEntity.noContent().build();
+		try {
+			enderecoService.deletarEnderecoPorIdToken(idEndereco);
+			return ResponseEntity.noContent().build();
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@GetMapping("/cliente/endereco")
 	@Operation(summary = "Pegar todos endereços do cliente")
-	public ResponseEntity<List<MostrarEnderecoDTO>> pegarEnderecosClientePorIdToken() {
-		List<MostrarEnderecoDTO> mostrarEnderecoDTO = enderecoService.pegarEnderecosClientePorIdToken();
-		
-		return ResponseEntity.status(HttpStatus.OK).body(mostrarEnderecoDTO);
+	public ResponseEntity<?> pegarEnderecosClientePorIdToken() {
+		try {
+			List<MostrarEnderecoDTO> mostrarEnderecoDTO = enderecoService.pegarEnderecosClientePorIdToken();
+			return ResponseEntity.status(HttpStatus.OK).body(mostrarEnderecoDTO);
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@PostMapping("/cliente/endereco")
@@ -59,10 +71,15 @@ public class EnderecoController {
 	
 	@PutMapping("/cliente/endereco/{idEndereco}")
 	@Operation(summary = "Alterar um endereço por id")
-	public ResponseEntity<MostrarEnderecoDTO> alterarEnderecoPorIdToken(@PathVariable Long idEndereco, @RequestBody AlterarEnderecoDTO novoEnderecoDTO) {
-		MostrarEnderecoDTO enderecoDTO = enderecoService.alterarEnderecoPorIdToken(novoEnderecoDTO, idEndereco);
-		
-		return ResponseEntity.ok().body(enderecoDTO);
+	public ResponseEntity<?> alterarEnderecoPorIdToken(@PathVariable Long idEndereco, @RequestBody AlterarEnderecoDTO novoEnderecoDTO) {
+		try {
+			MostrarEnderecoDTO enderecoDTO = enderecoService.alterarEnderecoPorIdToken(novoEnderecoDTO, idEndereco);
+			return ResponseEntity.ok().body(enderecoDTO);
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 }

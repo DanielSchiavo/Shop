@@ -210,7 +210,7 @@ public class PedidoService {
 		Long idEndereco = pedidoDTO.entrega().idEndereco();
 		EnderecoPedido enderecoPedido = null;
 		if (idEndereco != null) {
-			Endereco endereco = enderecoService.verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco);
+			Endereco endereco = enderecoService.verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, cliente.getEnderecos());
 			enderecoPedido = new EnderecoPedido(endereco);
 		}
 		
