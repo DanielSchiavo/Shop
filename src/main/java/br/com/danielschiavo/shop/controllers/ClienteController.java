@@ -4,6 +4,7 @@ package br.com.danielschiavo.shop.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.danielschiavo.shop.infra.exceptions.MensagemErroDTO;
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.AlterarFotoPerfilDTO;
 import br.com.danielschiavo.shop.models.cliente.CadastrarClienteDTO;
@@ -39,9 +42,14 @@ public class ClienteController {
 	@DeleteMapping("/cliente/foto-perfil")
 	@Operation(summary = "Deleta foto do perfil do cliente")
 	public ResponseEntity<?> deletarFotoPerfilClientePorIdToken() {
-		clienteService.deletarFotoPerfilPorIdToken();
+		try {
+			clienteService.deletarFotoPerfilPorIdToken();
+			return ResponseEntity.noContent().build();
 
-		return ResponseEntity.noContent().build();
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@GetMapping("/cliente/pagina-inicial")
@@ -71,7 +79,7 @@ public class ClienteController {
 	
 	@PutMapping("/cliente")
 	@Operation(summary = "Cliente altera seus próprios dados")
-	public ResponseEntity<MostrarClienteDTO> alterarClientePorIdToken(@RequestBody AlterarClienteDTO alterarClienteDTO) {
+	public ResponseEntity<MostrarClienteDTO> alterarClientePorIdToken(@RequestBody @Valid AlterarClienteDTO alterarClienteDTO) {
 		MostrarClienteDTO mostrarClienteDTO = clienteService.alterarClientePorIdToken(alterarClienteDTO);
 
 		return ResponseEntity.ok(mostrarClienteDTO);
@@ -80,9 +88,14 @@ public class ClienteController {
 	@PutMapping("/cliente/foto-perfil")
 	@Operation(summary = "Alterar a foto do perfil do cliente")
 	public ResponseEntity<?> alterarFotoPerfilPorIdToken(@RequestBody @Valid AlterarFotoPerfilDTO alterarFotoPerfilDTO) {
-		ArquivoInfoDTO arquivoInfoDTO = clienteService.alterarFotoPerfilPorIdToken(alterarFotoPerfilDTO);
-		
-		return ResponseEntity.ok(arquivoInfoDTO);
+		try {
+			ArquivoInfoDTO arquivoInfoDTO = clienteService.alterarFotoPerfilPorIdToken(alterarFotoPerfilDTO);
+			return ResponseEntity.ok(arquivoInfoDTO);
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 
 

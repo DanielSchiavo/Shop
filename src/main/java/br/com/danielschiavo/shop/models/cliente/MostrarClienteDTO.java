@@ -16,7 +16,6 @@ public record MostrarClienteDTO(
 		LocalDate dataNascimento,
 		LocalDate dataCriacaoConta,
 		String email,
-		String senha,
 		String celular,
 		ArquivoInfoDTO fotoPerfil,
 		List<MostrarEnderecoDTO> enderecos,
@@ -32,7 +31,6 @@ public record MostrarClienteDTO(
 			cliente.getDataNascimento(),
 			cliente.getDataCriacaoConta(),
 			cliente.getEmail(),
-			cliente.getSenha(),
 			cliente.getCelular(),
 			arquivoInfoDTO,
 			cliente.getEnderecos().stream()

@@ -59,7 +59,6 @@ public class ClienteService {
 	@Transactional
 	public MostrarClienteDTO cadastrarCliente(CadastrarClienteDTO clientDTO) {
 		var cliente = new Cliente(clientDTO);
-		System.out.println(" TESTE ");
 		if (clientDTO.endereco() != null) {
 			Endereco endereco = new Endereco(clientDTO, cliente);
 			cliente.getEnderecos().add(endereco);

@@ -133,7 +133,7 @@ class ClienteControllerTest {
 		MostrarEnderecoDTO mostrarEnderecoDTO = new MostrarEnderecoDTO(null, "29142298", "divinopolis", "35", null, "bela vista", "divino", "es", true);
 		List<MostrarEnderecoDTO> lista = new ArrayList<>();
 		lista.add(mostrarEnderecoDTO);
-		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "123456", "27996101055", null, lista, null);
+		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "27996101055", null, lista, null);
 		when(clienteService.detalharClientePorIdToken()).thenReturn(mostrarClienteDTO);
 		
 		var response = mvc.perform(get("/shop/cliente")
@@ -159,7 +159,7 @@ class ClienteControllerTest {
 	@Test
 	@DisplayName("Cadastrar cliente deve retornar http 201 quando informacoes estão válidas sem endereço")
 	void cadastrarCliente_ClienteValidoSemEndereco_DeveRetornarCreated() throws IOException, Exception {
-		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "123456", "27996101055", null, null, null);
+		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "27996101055", null, null, null);
 		when(clienteService.cadastrarCliente(any())).thenReturn(mostrarClienteDTO);
 		
 		var response = mvc.perform(post("/shop/publico/cadastrar/cliente")
@@ -183,7 +183,7 @@ class ClienteControllerTest {
 		MostrarEnderecoDTO mostrarEnderecoDTO = new MostrarEnderecoDTO(null, "29142298", "divinopolis", "35", null, "bela vista", "divino", "es", true);
 		List<MostrarEnderecoDTO> lista = new ArrayList<>();
 		lista.add(mostrarEnderecoDTO);
-		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "123456", "27996101055", null, lista, null);
+		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "27996101055", null, lista, null);
 		when(clienteService.cadastrarCliente(any())).thenReturn(mostrarClienteDTO);
 		
 		var response = mvc.perform(post("/shop/publico/cadastrar/cliente")
@@ -213,7 +213,7 @@ class ClienteControllerTest {
 	@Test
 	@DisplayName("Alterar cliente deve retornar http 200 quando informacoes estão válidas")
 	void alterarClientePorId_ClienteValido_DeveRetornarOk() throws IOException, Exception {
-		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "123456", "27996101055", null, null, null);
+		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "27996101055", null, null, null);
 		when(clienteService.alterarClientePorIdToken(any())).thenReturn(mostrarClienteDTO);
 		
 		var response = mvc.perform(put("/shop/cliente")
@@ -313,8 +313,8 @@ class ClienteControllerTest {
 	@Test
 	@DisplayName("Admin detalhar todos clientes deve retornar http 200 quando token informado é válido")
 	void adminDetalharTodosClientes_AdminValido_DeveRetornarOk() throws IOException, Exception {
-		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "123456", "27996101055", null, null, null);
-		var mostrarClienteDTO2 = new MostrarClienteDTO(null, "12345612342", "Anderson", "Emiliano", LocalDate.of(2000, 2, 6), LocalDate.now(), "jorlan@gmail.com", "123456", "27999833653", null, null, null);
+		var mostrarClienteDTO = new MostrarClienteDTO(null, "12345671012", "Junior", "da Silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "juniordasilva@gmail.com", "27996101055", null, null, null);
+		var mostrarClienteDTO2 = new MostrarClienteDTO(null, "12345612342", "Anderson", "Emiliano", LocalDate.of(2000, 2, 6), LocalDate.now(), "jorlan@gmail.com", "27999833653", null, null, null);
 		Page<MostrarClienteDTO> pageCliente = new PageImpl<>(List.of(mostrarClienteDTO, mostrarClienteDTO2));
         when(clienteService.adminDetalharTodosClientes(any())).thenReturn(pageCliente);
         
