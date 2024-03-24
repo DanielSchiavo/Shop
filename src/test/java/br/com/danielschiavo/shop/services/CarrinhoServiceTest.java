@@ -141,7 +141,7 @@ class CarrinhoServiceTest {
 		listaItemCarrinho.addAll(List.of(itemCarrinho, itemCarrinho2));
 		BDDMockito.when(carrinho.getItemsCarrinho()).thenReturn(listaItemCarrinho);
 		BDDMockito.when(produtoRepository.findAllById(any())).thenReturn(listaProdutos);
-		ArquivoInfoDTO arquivoInfoDTO = new ArquivoInfoDTO(null, null, null, String.valueOf("qualquer").getBytes());
+		ArquivoInfoDTO arquivoInfoDTO = new ArquivoInfoDTO(null, null, null, null, null, String.valueOf("qualquer").getBytes());
 		BDDMockito.when(fileService.pegarArquivoProdutoPorNome(any())).thenReturn(arquivoInfoDTO);
 		
 		//ACT

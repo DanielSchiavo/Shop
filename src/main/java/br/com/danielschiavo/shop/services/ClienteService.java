@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shop.services;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class ClienteService {
 	private UsuarioAutenticadoService usuarioAutenticadoService;
 
 	@Transactional
-	public void deletarFotoPerfilPorIdToken() {
+	public void deletarFotoPerfilPorIdToken() throws IOException {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
 		if (cliente.getFotoPerfil().equals("Padrao.jpeg")) {
 			throw new ValidacaoException("O cliente não tem foto de perfil, ele já está com a foto padrão, portanto, não é possível deletar");

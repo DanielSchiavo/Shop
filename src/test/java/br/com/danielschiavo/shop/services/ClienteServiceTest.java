@@ -3,6 +3,7 @@ package br.com.danielschiavo.shop.services;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ class ClienteServiceTest {
 	
 	@Test
 	@DisplayName("Deletar foto perfil por id token deve remover a foto perfil do cliente e definir a foto do cliente como Padrao.jpeg")
-	void deletarFotoPerfilPorIdToken_ClienteNaoTemFotoPadrao_NaoDeveLancarExcecao() {
+	void deletarFotoPerfilPorIdToken_ClienteNaoTemFotoPadrao_NaoDeveLancarExcecao() throws IOException {
 		//ARRANGE
 		Cliente cliente = new Cliente(null, "12345678994", "Silvana", "Pereira da silva", LocalDate.of(2000, 3, 3), LocalDate.now(), "silvana.dasilva@gmail.com", "{noop}123456", "27999833653", "outrafoto.jpeg", null, null, null);
 		BDDMockito.when(usuarioAutenticadoService.getCliente()).thenReturn(cliente);

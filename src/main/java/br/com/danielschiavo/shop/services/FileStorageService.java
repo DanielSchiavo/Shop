@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,8 +52,12 @@ public class FileStorageService {
 	public List<ArquivoInfoDTO> mostrarArquivoProdutoPorListaDeNomes(List<String> listNomes) {
 		List<ArquivoInfoDTO> listaArquivosInfoDTO = new ArrayList<>();
 		listNomes.forEach(nome -> {
-			byte[] bytes = recuperarBytesArquivoProdutoDoDisco(nome);
-			listaArquivosInfoDTO.add(new ArquivoInfoDTO(nome, bytes));
+			try {
+				byte[] bytes = recuperarBytesArquivoProdutoDoDisco(nome);
+				listaArquivosInfoDTO.add(new ArquivoInfoDTO(nome, bytes));
+			} catch (FileStorageException e) {
+				listaArquivosInfoDTO.add(ArquivoInfoDTO.comErro(nome, e.getMessage()));
+			}
 		});
 		return listaArquivosInfoDTO;
 	}
@@ -65,34 +70,51 @@ public class FileStorageService {
 	public List<ArquivoInfoDTO> persistirArrayArquivoProduto(MultipartFile[] arquivos, UriComponentsBuilder uriBuilderBase) {
 	    List<ArquivoInfoDTO> arquivosInfo = new ArrayList<>();
 
-	    for (int i = 0; i < arquivos.length; i++) {
-	        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uriBuilderBase.toUriString());
-
-	        String nomeArquivo = gerarNomeArquivoProduto(arquivos[i]);
-	        byte[] bytesArquivo = salvarNoDiscoArquivoProduto(nomeArquivo, arquivos[i]);
-
-	        URI uri = uriBuilder.path("/arquivo-produto/" + nomeArquivo).build().toUri();
-
-	        var arquivoInfo = new ArquivoInfoDTO(nomeArquivo, null, uri.toString(), bytesArquivo);
-
-	        arquivosInfo.add(arquivoInfo);
+	    for (MultipartFile arquivo : arquivos) {
+	    	try {
+	    		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uriBuilderBase.toUriString());
+	    		String nomeArquivo = gerarNomeArquivoProduto(arquivo);
+	    		byte[] bytesArquivo = salvarNoDiscoArquivoProduto(nomeArquivo, arquivo);
+	    		URI uri = uriBuilder.path("/arquivo-produto/" + nomeArquivo).build().toUri();
+	    		var arquivoInfo = ArquivoInfoDTO.comUriENomeAntigoArquivo(nomeArquivo, arquivo.getOriginalFilename(), uri.toString(), bytesArquivo);
+	    		arquivosInfo.add(arquivoInfo);
+			} catch (FileStorageException e) {
+				arquivosInfo.add(ArquivoInfoDTO.comErro(arquivo.getOriginalFilename(), e.getMessage()));
+			}
 	    }
-
+	    
 	    return arquivosInfo;
 	}
 	
-	public ArquivoInfoDTO persistirUmArquivoProduto(MultipartFile arquivo) {
-		String nomeArquivo = gerarNomeArquivoProduto(arquivo);
-		byte[] bytesArquivo = salvarNoDiscoArquivoProduto(nomeArquivo, arquivo);
+	public List<ArquivoInfoDTO> alterarArrayArquivoProduto(MultipartFile[] arquivos, String nomesArquivosASeremExcluidos, UriComponentsBuilder uriBuilderBase) {
+		if (arquivos.length == 0 || nomesArquivosASeremExcluidos.isEmpty()) {
+			throw new ValidacaoException("Você tem que mandar pelo menos um arquivo e um nomeArquivoASerExcluido");
+		}
+		List<ArquivoInfoDTO> arquivosInfo = new ArrayList<>();
+		String[] split = nomesArquivosASeremExcluidos.trim().split(",");
 		
-		return new ArquivoInfoDTO(nomeArquivo, bytesArquivo);
-	}
-	
-	public ArquivoInfoDTO alterarArquivoProduto(MultipartFile arquivo, String nomeAntigoDoArquivo) {
-		deletarArquivoProdutoNoDisco(nomeAntigoDoArquivo);
-		String novoNomeGerado = gerarNomeArquivoProduto(arquivo);
-		byte[] bytes = salvarNoDiscoArquivoProduto(novoNomeGerado, arquivo);
-		return new ArquivoInfoDTO(novoNomeGerado, bytes);
+		for(String nomeArquivoASerExcluido : split) {
+			try {
+				deletarArquivoProdutoNoDisco(nomeArquivoASerExcluido);
+				
+			} catch (FileStorageException e) {
+				arquivosInfo.add(ArquivoInfoDTO.comErro(nomeArquivoASerExcluido, e.getMessage()));
+			}
+		}
+		
+		for (MultipartFile arquivo : arquivos) {
+			try {
+				UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uriBuilderBase.toUriString());
+				String novoNomeGerado = gerarNomeArquivoProduto(arquivo);
+				byte[] bytes = salvarNoDiscoArquivoProduto(novoNomeGerado, arquivo);
+				URI uri = uriBuilder.path("/arquivo-produto/" + novoNomeGerado).build().toUri();
+				
+				arquivosInfo.add(ArquivoInfoDTO.comUri(novoNomeGerado, uri.toString(), bytes));
+			} catch (FileStorageException e) {
+				arquivosInfo.add(ArquivoInfoDTO.comErro(arquivo.getOriginalFilename(), e.getMessage()));
+			}
+		}
+		return arquivosInfo;
 	}
 
 	
@@ -112,7 +134,7 @@ public class FileStorageService {
 	
 	private String gerarNomeArquivoProduto(MultipartFile arquivo) {
 		String[] contentType = arquivo.getContentType().split("/");
-		if (!Arrays.asList(contentType[0]).contains("image") && !Arrays.asList(contentType[0]).contains("video")) {
+		if (!contentType[0].contains("image") && !contentType[0].contains("video")) {
 			throw new FileStorageException("Só é aceito imagens e videos");
 		}
 		if (!contentType[1].contains("jpg") && !contentType[1].contains("jpeg") && !contentType[1].contains("png")
@@ -131,7 +153,7 @@ public class FileStorageService {
         return substring + timestamp;
     }
     
-    private byte[] recuperarBytesArquivoProdutoDoDisco(String nomeArquivoProduto) {
+    public byte[] recuperarBytesArquivoProdutoDoDisco(String nomeArquivoProduto) {
 		FileUrlResource fileUrlResource;
 		try {
 			fileUrlResource = new FileUrlResource(raizProduto + "/" + nomeArquivoProduto);
@@ -159,12 +181,12 @@ public class FileStorageService {
 //	------------------------------
 //	------------------------------
 	
-	public void deletarFotoPerfilNoDisco(String nome) {
-		try {
-			Files.delete(this.raizPerfil.resolve(nome));
-		} catch (IOException e) {
-			throw new FileStorageException("Falha ao excluir arquivo de nome " + nome + " no disco. ", e);
+	public void deletarFotoPerfilNoDisco(String nome) throws IOException {
+		if (nome == "Padrao.jpeg") {
+			throw new ValidacaoException("Você não pode excluir a foto de perfil Padrao.jpeg");
 		}
+		Files.delete(this.raizPerfil.resolve(nome));
+			
 	}
 	
 	public ArquivoInfoDTO pegarFotoPerfilPorNome(String nomeArquivo) {
@@ -172,18 +194,41 @@ public class FileStorageService {
 		return new ArquivoInfoDTO(nomeArquivo, bytes);
 	}
 	
-	public ArquivoInfoDTO persistirFotoPerfil(MultipartFile arquivo) {
-		String nome = gerarNovoNomeFotoPerfil(arquivo);
-		byte[] bytesArquivo = salvarNoDiscoFotoPerfil(nome, arquivo);
+	public ArquivoInfoDTO persistirFotoPerfil(MultipartFile arquivo, UriComponentsBuilder uriBuilderBase) {
+		try {
+			UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uriBuilderBase.toUriString());
+			String nome = gerarNovoNomeFotoPerfil(arquivo);
+			byte[] bytesArquivo = salvarNoDiscoFotoPerfil(nome, arquivo);
+			URI uri = uriBuilder.path("/arquivo-produto/" + nome).build().toUri();
+			
+			return ArquivoInfoDTO.comUri(nome, uri.toString(), bytesArquivo);
+			
+		} catch (FileStorageException e) {
+			return ArquivoInfoDTO.comErro(arquivo.getOriginalFilename(), e.getMessage());
+		}
 		
-		return new ArquivoInfoDTO(nome, bytesArquivo);
 	}
 	
-	public ArquivoInfoDTO alterarFotoPerfil(MultipartFile novaFoto, String nome) {
-		verificarSeExisteFotoPerfilPorNome(nome);
-		byte[] bytes = sobrescreverNoDiscoFotoPerfil(novaFoto, nome);
-		
-		return new ArquivoInfoDTO(nome, bytes);
+	public ArquivoInfoDTO alterarFotoPerfil(MultipartFile novaFoto, String nomeArquivoASerSubstituido) {
+		if (novaFoto == null || nomeArquivoASerSubstituido.isEmpty()) {
+			throw new ValidacaoException("Você tem que mandar pelo menos um arquivo e um nomeArquivoASerExcluido");
+		}
+		String[] contentType = novaFoto.getContentType().split("/");
+		if (!contentType[0].contains("image")) {
+			throw new FileStorageException("Só é aceito imagens e videos");
+		}
+		if (!contentType[1].contains("jpg") && !contentType[1].contains("jpeg") && !contentType[1].contains("png")) {
+			throw new FileStorageException("Os tipos aceitos são jpg, jpeg, png");
+		}
+		try {
+			verificarSeExisteFotoPerfilPorNome(nomeArquivoASerSubstituido);
+			byte[] bytes = sobrescreverNoDiscoFotoPerfil(novaFoto, nomeArquivoASerSubstituido);
+			
+			return new ArquivoInfoDTO(nomeArquivoASerSubstituido, bytes);
+			
+		} catch (FileStorageException e) {
+			return ArquivoInfoDTO.comErro(novaFoto.getOriginalFilename(), e.getMessage());
+		}
 	}
 	
 	
@@ -223,7 +268,7 @@ public class FileStorageService {
 		}
 	}
 
-	private byte[] recuperarBytesFotoPerfilDoDisco(String nomeArquivoProduto) {
+	public byte[] recuperarBytesFotoPerfilDoDisco(String nomeArquivoProduto) {
 		FileUrlResource fileUrlResource;
 		try {
 			fileUrlResource = new FileUrlResource(raizPerfil + "/" + nomeArquivoProduto);
@@ -263,19 +308,17 @@ public class FileStorageService {
 			return arquivoInfoDTO;
 		}
 		else {
-			System.out.println(" AQUI ");
 			String novoNomeImagemPedidoGerado = gerarNomeImagemPedido(idProduto, nomePrimeiraImagemProduto);
 			salvarNoDiscoImagemPedido(novoNomeImagemPedidoGerado, nomePrimeiraImagemProduto);
 			return novoNomeImagemPedidoGerado;
-			
 		}
 	}
 	
 //
-// METODOS UTILITARIOS DE PERFIL
+// METODOS UTILITARIOS DE PEDIDO
 //	
 	
-	private byte[] recuperarBytesImagemPedidoDoDisco(String nomeArquivo) {
+	public byte[] recuperarBytesImagemPedidoDoDisco(String nomeArquivo) {
 		FileUrlResource fileUrlResource;
 		try {
 			fileUrlResource = new FileUrlResource(raizPedido + "/" + nomeArquivo);
@@ -287,20 +330,15 @@ public class FileStorageService {
 	}
 
 	private byte[] salvarNoDiscoImagemPedido(String novoNomeImagemPedidoGerado, String nomePrimeiraImagemProduto) {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.raizProduto, nomePrimeiraImagemProduto)) {
-        	Path fileUri = null;
-        	for (Path entry : stream) {
-                System.out.println("Arquivo encontrado: " + entry.getFileName());
-                fileUri = entry;
-                break;
-            }
-        	FileUrlResource file = new FileUrlResource(fileUri.toString());
-        	Files.copy(file.getInputStream(), this.raizPedido.resolve(novoNomeImagemPedidoGerado), StandardCopyOption.REPLACE_EXISTING);
-        	return file.getContentAsByteArray();
-        } catch (IOException e) {
-        	e.printStackTrace();
-        	throw new FileStorageException("",e);
-        }
+		try {
+			ArquivoInfoDTO arquivoInfoDTO = pegarArquivoProdutoPorNome(nomePrimeiraImagemProduto);
+			byte[] bytes = arquivoInfoDTO.bytesArquivo();
+			Files.write(this.raizPedido.resolve(novoNomeImagemPedidoGerado), bytes, StandardOpenOption.CREATE_NEW);
+			return bytes;
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new FileStorageException("Não foi possivel salvar o arquivo " + novoNomeImagemPedidoGerado + " no disco");
+		}
 	}
 
 	private String gerarNomeImagemPedido(Long idProduto, String nomePrimeiraImagemProduto) {
@@ -312,7 +350,7 @@ public class FileStorageService {
 		return nome;
 	}
 	
-	private String verificarSeExisteImagemPedidoNoDisco(String nomePrimeiraImagemProduto) {
+	public String verificarSeExisteImagemPedidoNoDisco(String nomePrimeiraImagemProduto) {
 		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*" + nomePrimeiraImagemProduto);
 	    try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.raizPedido)) {
 	        for (Path entry : stream) {

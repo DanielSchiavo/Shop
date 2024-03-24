@@ -1,0 +1,11 @@
+ALTER TABLE pedidos_entrega ALTER COLUMN cep DROP NOT NULL;
+
+ALTER TABLE pedidos_entrega ALTER COLUMN rua DROP NOT NULL;
+
+ALTER TABLE pedidos_entrega ALTER COLUMN numero DROP NOT NULL;
+
+ALTER TABLE pedidos_entrega ALTER COLUMN bairro DROP NOT NULL;
+
+ALTER TABLE pedidos_entrega ALTER COLUMN cidade DROP NOT NULL;
+
+ALTER TABLE pedidos_entrega ALTER COLUMN estado DROP NOT NULL;

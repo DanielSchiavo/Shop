@@ -1,6 +1,8 @@
 package br.com.danielschiavo.shop.controllers;
 
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,9 @@ public class ClienteController {
 		} catch (ValidacaoException e) {
 			HttpStatus status = HttpStatus.NOT_FOUND;
 			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		} catch (IOException e) {
+			HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status.toString(), "Falha interna no servidor ao tentar excluir o arquivo."));
 		}
 	}
 	

@@ -3,6 +3,7 @@ package br.com.danielschiavo.shop.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -226,7 +227,7 @@ public class PedidoService {
 		var pagamento = new Pagamento(metodoPagamentoDTO, StatusPagamento.EM_PROCESSAMENTO, cartaoPedido, pedido);
 		var entrega = new Entrega(pedido, pedidoDTO.entrega().tipoEntrega(), enderecoPedido);
 		
-		BigDecimal valorTotal = BigDecimal.ZERO;
+        AtomicReference<BigDecimal> valorTotal = new AtomicReference<>(BigDecimal.ZERO);
 		if (pedidoDTO.item() != null) {
 			AdicionarItemPedidoDTO adicionarItemPedidoDTO = pedidoDTO.item();
 			Produto produto = produtoService.verificarSeProdutoExistePorIdEAtivoTrue(adicionarItemPedidoDTO.idProduto());
@@ -237,7 +238,7 @@ public class PedidoService {
 			
 			BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(adicionarItemPedidoDTO.quantidade()));
 			itemPedido.setSubTotal(subTotal);
-			valorTotal.add(subTotal);
+			valorTotal.set(subTotal);
 		}
 		else {
 			produtosCarrinho.forEach(p -> {
@@ -249,10 +250,10 @@ public class PedidoService {
 				
 				BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(p.quantidade()));
 				itemPedido.setSubTotal(subTotal);
-				valorTotal.add(subTotal);
+		        valorTotal.updateAndGet(v -> v.add(subTotal));
 			});
 		}
-		pedido.setValorTotal(valorTotal);
+		pedido.setValorTotal(valorTotal.get());
 		pedido.setPagamento(pagamento);
 		pedido.setEntrega(entrega);
 

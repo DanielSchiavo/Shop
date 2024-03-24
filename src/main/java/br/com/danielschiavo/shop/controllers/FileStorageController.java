@@ -1,10 +1,13 @@
 package br.com.danielschiavo.shop.controllers;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.danielschiavo.shop.infra.exceptions.FileStorageException;
+import br.com.danielschiavo.shop.infra.exceptions.MensagemErroDTO;
+import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.models.filestorage.MostrarArquivoProdutoDTO;
 import br.com.danielschiavo.shop.models.filestorage.PostImagemPedidoDTO;
@@ -48,25 +54,36 @@ public class FileStorageController {
 	@DeleteMapping("/admin/filestorage/arquivo-produto/{nomeArquivo}")
 	@Operation(summary = "Deleta o arquivo com o nome enviado no parametro da requisição")
 	public ResponseEntity<?> deletarArquivoProduto(@PathVariable @NotNull String nomeArquivo) {
-		fileStorageService.deletarArquivoProdutoNoDisco(nomeArquivo);
-		return ResponseEntity.noContent().build();
+		try {
+			fileStorageService.deletarArquivoProdutoNoDisco(nomeArquivo);
+			return ResponseEntity.noContent().build();
+			
+		} catch (FileStorageException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 	}
 	
 	@GetMapping("/admin/filestorage/arquivo-produto")
 	@Operation(summary = "Recupera os bytes das imagens enviadas em um array no corpo da requisição")
-	public ResponseEntity<List<ArquivoInfoDTO>> mostrarArquivoProdutoPorListaDeNomes(@RequestBody List<MostrarArquivoProdutoDTO> listaMostrarArquivoProdutoDTO) {
+	public ResponseEntity<?> mostrarArquivoProdutoPorListaDeNomes(@RequestBody List<MostrarArquivoProdutoDTO> listaMostrarArquivoProdutoDTO) {
 		List<String> listaNomes = listaMostrarArquivoProdutoDTO.stream().map(lmap -> lmap.nome()).collect(Collectors.toList());
 		List<ArquivoInfoDTO> listArquivos = fileStorageService.mostrarArquivoProdutoPorListaDeNomes(listaNomes);
-		
 		return ResponseEntity.ok(listArquivos);
 	}
 	
 	@GetMapping("/admin/filestorage/arquivo-produto/{nomeArquivo}")
 	@Operation(summary = "Recupera os bytes do nome do arquivo fornecido no parametro da requisição")
-	public ResponseEntity<ArquivoInfoDTO> mostrarArquivoProdutoPorNome(@PathVariable String nomeArquivo) {
-		ArquivoInfoDTO arquivo = fileStorageService.pegarArquivoProdutoPorNome(nomeArquivo);
+	public ResponseEntity<?> mostrarArquivoProdutoPorNome(@PathVariable String nomeArquivo) {
+		try {
+			ArquivoInfoDTO arquivo = fileStorageService.pegarArquivoProdutoPorNome(nomeArquivo);
+			return ResponseEntity.ok(arquivo);
+			
+		} catch (FileStorageException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		}
 		
-		return ResponseEntity.ok(arquivo);
 	}
 	
 	@PostMapping(path = "/admin/filestorage/arquivo-produto/array" , consumes = "multipart/form-data")
@@ -77,29 +94,24 @@ public class FileStorageController {
 			UriComponentsBuilder uriBuilder
  			) {
 		List<ArquivoInfoDTO> listArquivoInfoDTO = fileStorageService.persistirArrayArquivoProduto(arquivos, uriBuilder);
-		return ResponseEntity.created(uriBuilder.build().toUri()).body(listArquivoInfoDTO);
-	}
-
-	@PostMapping(path = "/admin/filestorage/arquivo-produto" , consumes = "multipart/form-data")
-	@ResponseBody
-	@Operation(summary = "Salva um arquivo enviado através de um formulario html e gera um nome")
-	public ResponseEntity<ArquivoInfoDTO> cadastrarUmArquivoProduto(
-			@RequestPart(name = "arquivo", required = true) MultipartFile arquivo,
-			UriComponentsBuilder uriBuilder
- 			) {
-		ArquivoInfoDTO arquivoInfo = fileStorageService.persistirUmArquivoProduto(arquivo);
-		
-		URI uri = uriBuilder.path("/shop/admin/filestorage/arquivo-produto" + arquivoInfo.nomeArquivo()).build().toUri();
-		return ResponseEntity.created(uri).body(arquivoInfo);
+	    boolean erroEncontrado = listArquivoInfoDTO.stream()
+	            .anyMatch(arquivo -> arquivo.erro() != null);
+		if (erroEncontrado == false) {
+			return ResponseEntity.created(uriBuilder.build().toUri()).body(listArquivoInfoDTO);
+		}
+		else {
+			return ResponseEntity.badRequest().body(listArquivoInfoDTO);
+		}
 	}
 	
 	@PutMapping("/admin/filestorage/arquivo-produto")
 	@Operation(summary = "Deleta o nomeAntigoDoArquivo e salva o arquivo enviado e gera um novo nome")
-	public ResponseEntity<?> alterarArquivoProduto(
-			@RequestPart(name = "arquivo", required = true) MultipartFile arquivo,
-			@RequestParam(name = "nomeAntigoDoArquivo", required = true) String nomeAntigoDoArquivo
+	public ResponseEntity<?> alterarArrayArquivoProduto(
+			@RequestPart(name = "arquivo", required = true) MultipartFile[] arquivos,
+			@RequestParam(name = "nomeAntigoDoArquivo", required = true) String nomesArquivosASeremExcluidos,
+			UriComponentsBuilder uriBuilder
 			) {
-		ArquivoInfoDTO arquivoInfoDTO = fileStorageService.alterarArquivoProduto(arquivo, nomeAntigoDoArquivo);
+		List<ArquivoInfoDTO> arquivoInfoDTO = fileStorageService.alterarArrayArquivoProduto(arquivos, nomesArquivosASeremExcluidos, uriBuilder);
 
 		return ResponseEntity.ok(arquivoInfoDTO);
 	}
@@ -114,9 +126,20 @@ public class FileStorageController {
 	@DeleteMapping("/admin/filestorage/foto-perfil/{nomeFotoPerfilAntiga}")
 	@Operation(summary = "Deleta a foto de perfil com o nome enviado no parametro da requisição")
 	public ResponseEntity<?> deletarFotoPerfil(@PathVariable String nomeFotoPerfilAntiga) {
-		fileStorageService.deletarFotoPerfilNoDisco(nomeFotoPerfilAntiga);
-
-		return ResponseEntity.noContent().build();
+		try {
+			fileStorageService.deletarFotoPerfilNoDisco(nomeFotoPerfilAntiga);
+			return ResponseEntity.noContent().build();
+			
+		} catch (ValidacaoException e) {
+			HttpStatus status = HttpStatus.BAD_REQUEST;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status, e));
+		} catch (NoSuchFileException e) {
+			HttpStatus status = HttpStatus.NOT_FOUND;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status.toString(), "O arquivo " + nomeFotoPerfilAntiga + " não existe"));
+		} catch (IOException e) {
+			HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return ResponseEntity.status(status).body(new MensagemErroDTO(status.toString(), "Falha interna no servidor ao tentar excluir o arquivo."));
+		}
 	}
 	
 	@GetMapping("/admin/filestorage/foto-perfil/{nomeFotoPerfil}")
@@ -133,10 +156,17 @@ public class FileStorageController {
 			@RequestPart(name = "foto", required = true) MultipartFile foto,
 			UriComponentsBuilder uriBuilder
 			) {
-		ArquivoInfoDTO arquivoInfoDTO = fileStorageService.persistirFotoPerfil(foto);
+		ArquivoInfoDTO arquivoInfoDTO = fileStorageService.persistirFotoPerfil(foto, uriBuilder);
 		
-		URI uri = uriBuilder.path("/shop/admin/filestorage/foto-perfil/" + arquivoInfoDTO.nomeArquivo()).build().toUri();
-		return ResponseEntity.created(uri).body(arquivoInfoDTO);
+		if (arquivoInfoDTO.erro() == null) {
+			URI uri = uriBuilder.path("/shop/admin/filestorage/foto-perfil/" + arquivoInfoDTO.nomeArquivo()).build().toUri();
+			return ResponseEntity.created(uri).body(arquivoInfoDTO);
+		}
+		else {
+			return ResponseEntity.badRequest().body(arquivoInfoDTO);
+		}
+		
+
 	}
 	
 	@PutMapping("/admin/filestorage/foto-perfil/{nomeFotoPerfilAntiga}")
@@ -148,7 +178,12 @@ public class FileStorageController {
 			) {
 		ArquivoInfoDTO arquivoInfoDTO = fileStorageService.alterarFotoPerfil(novaFoto, nomeFotoPerfilAntiga);
 		
-		return ResponseEntity.ok(arquivoInfoDTO);
+		if (arquivoInfoDTO.erro() == null) {
+			return ResponseEntity.ok(arquivoInfoDTO);
+		}
+		else {
+			return ResponseEntity.badRequest().body(arquivoInfoDTO);
+		}
 	}
 	
 

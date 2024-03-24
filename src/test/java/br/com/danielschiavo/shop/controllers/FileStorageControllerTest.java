@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.danielschiavo.shop.JwtUtilTest;
-import br.com.danielschiavo.shop.models.cliente.AlterarClienteDTO;
-import br.com.danielschiavo.shop.models.cliente.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import br.com.danielschiavo.shop.models.filestorage.MostrarArquivoProdutoDTO;
 import br.com.danielschiavo.shop.models.filestorage.PostImagemPedidoDTO;
@@ -58,9 +55,6 @@ class FileStorageControllerTest {
 	
 	@Autowired
 	private JacksonTester<List<ArquivoInfoDTO>> listaArquivoInfoDTOJson;
-	
-	@Autowired
-	private JacksonTester<MostrarArquivoProdutoDTO> mostrarArquivoProdutoDTOJson;
 	
 	@Autowired
 	private JacksonTester<ArquivoInfoDTO> arquivoInfoDTOJson;
@@ -248,48 +242,6 @@ class FileStorageControllerTest {
 	}
 	
 	@Test
-	@DisplayName("Cadastrar um arquivo produto deve retornar http 201 quando token e multipart são enviados")
-	void cadastrarUmArquivoProduto_TokenAdminEArrayMultipart_DeveRetornarCreated() throws IOException, Exception {
-		byte[] bytesImagem = "Hello world".getBytes();
-		ArquivoInfoDTO arquivoInfoDTO = new ArquivoInfoDTO("Imagemum.jpeg", bytesImagem);
-		when(fileStorageService.persistirUmArquivoProduto(any())).thenReturn(arquivoInfoDTO);
-		
-        MockMultipartFile file1 = new MockMultipartFile("arquivo", "Imagemum.jpeg",
-                MediaType.TEXT_PLAIN_VALUE, bytesImagem);
-		
-		var response = mvc.perform(multipart("/shop/admin/filestorage/arquivo-produto")
-								  .file(file1)
-								  .header("Authorization", "Bearer " + tokenAdmin)
-								  .contentType(MediaType.MULTIPART_FORM_DATA))
-						.andReturn().getResponse();
-		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-		
-        var jsonEsperado = arquivoInfoDTOJson.write(arquivoInfoDTO).getJson();
-
-        assertThat(response.getContentAsString()).isEqualTo(jsonEsperado);
-	}
-	
-	@Test
-	@DisplayName("Cadastrar um arquivo produto deve retornar http 403 quando usuario comum tenta acessar o endpoint")
-	void cadastrarUmArquivoProduto_TokenUser_DeveRetornarForbidden() throws IOException, Exception {
-		var response = mvc.perform(post("/shop/admin/filestorage/arquivo-produto")
-								  .header("Authorization", "Bearer " + tokenUser))
-						.andReturn().getResponse();
-		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-	}
-	
-	@Test
-	@DisplayName("Cadastrar um arquivo produto deve retornar http 403 quando token não é enviado")
-	void cadastrarUmArquivoProduto_TokenNaoEnviado_DeveRetornarForbidden() throws IOException, Exception {
-		var response = mvc.perform(post("/shop/admin/filestorage/arquivo-produto"))
-						.andReturn().getResponse();
-		
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-	}
-	
-	@Test
 	@DisplayName("Alterar arquivo produto deve retornar http 403 quando usuario comum tenta acessar o endpoint")
 	void alterarArquivoProduto_TokenUser_DeveRetornarForbidden() throws IOException, Exception {
 		var response = mvc.perform(put("/shop/admin/filestorage/arquivo-produto")
@@ -394,7 +346,7 @@ class FileStorageControllerTest {
 	void cadastrarFotoPerfil_TokenAdminEArrayMultipart_DeveRetornarCreated() throws IOException, Exception {
 		byte[] bytesImagem = "Hello world".getBytes();
 		ArquivoInfoDTO arquivoInfoDTO = new ArquivoInfoDTO("Imagemum.jpeg", bytesImagem);
-		when(fileStorageService.persistirFotoPerfil(any())).thenReturn(arquivoInfoDTO);
+		when(fileStorageService.persistirFotoPerfil(any(), any())).thenReturn(arquivoInfoDTO);
 		
         MockMultipartFile file1 = new MockMultipartFile("foto", "Imagemum.jpeg",
                 MediaType.TEXT_PLAIN_VALUE, bytesImagem);
