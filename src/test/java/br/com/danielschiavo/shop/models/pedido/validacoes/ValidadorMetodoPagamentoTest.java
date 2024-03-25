@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.cartao.TipoCartao;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.pedido.CriarPagamentoDTO;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
@@ -37,6 +38,9 @@ class ValidadorMetodoPagamentoTest {
 	@Mock
 	private CartaoService cartaoService;
 	
+	@Mock
+	private Cliente cliente;
+	
 	@Test
 	@DisplayName("Validador metodo pagamento não deve lançar exceção quando informações corretas para pagamento no cartão de crédito são enviadas")
 	void ValidadorMetodoPagamento_InformacoesCorretasParaPagamentoNoCartaoCredito_NaoDeveLancarExcecao() {
@@ -44,10 +48,10 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.CARTAO_CREDITO);
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(1L);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn("6");
-		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any())).willReturn(cartao);
+		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any(), any())).willReturn(cartao);
 		BDDMockito.given(cartao.getTipoCartao()).willReturn(TipoCartao.CREDITO);
 		
-		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO));
+		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -57,7 +61,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.CARTAO_CREDITO);
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(null);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -66,10 +70,10 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento()).willReturn(criarPagamentoDTO);
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.CARTAO_CREDITO);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn(null);
-		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any())).willReturn(cartao);
+		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any(), any())).willReturn(cartao);
 		BDDMockito.given(cartao.getTipoCartao()).willReturn(TipoCartao.CREDITO);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -79,10 +83,10 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.CARTAO_DEBITO);
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(1L);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn(null);
-		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any())).willReturn(cartao);
+		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any(), any())).willReturn(cartao);
 		BDDMockito.given(cartao.getTipoCartao()).willReturn(TipoCartao.DEBITO);
 		
-		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO));
+		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -92,7 +96,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.CARTAO_DEBITO);
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(null);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -101,10 +105,10 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento()).willReturn(criarPagamentoDTO);
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.CARTAO_DEBITO);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn("6");
-		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any())).willReturn(cartao);
+		BDDMockito.given(cartaoService.verificarSeCartaoExistePorIdCartaoECliente(any(), any())).willReturn(cartao);
 		BDDMockito.given(cartao.getTipoCartao()).willReturn(TipoCartao.DEBITO);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -115,7 +119,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(null);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn(null);
 		
-		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO));
+		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -125,7 +129,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.BOLETO);
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(1L);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -135,7 +139,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.BOLETO);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn("6");
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 
 	@Test
@@ -146,7 +150,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(null);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn(null);
 		
-		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO));
+		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -156,7 +160,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.PIX);
 		BDDMockito.given(criarPedidoDTO.pagamento().idCartao()).willReturn(1L);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -166,7 +170,7 @@ class ValidadorMetodoPagamentoTest {
 		BDDMockito.given(criarPedidoDTO.pagamento().metodoPagamento()).willReturn(MetodoPagamento.PIX);
 		BDDMockito.given(criarPedidoDTO.pagamento().numeroParcelas()).willReturn("6");
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 }

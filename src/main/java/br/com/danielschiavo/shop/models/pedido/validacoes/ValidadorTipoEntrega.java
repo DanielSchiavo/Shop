@@ -3,6 +3,7 @@ package br.com.danielschiavo.shop.models.pedido.validacoes;
 import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 
@@ -10,7 +11,7 @@ import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 public class ValidadorTipoEntrega implements ValidadorCriarNovoPedido {
 
 	@Override
-	public void validar(CriarPedidoDTO pedidoDTO) {
+	public void validar(CriarPedidoDTO pedidoDTO, Cliente cliente) {
 		TipoEntrega tipoEntregaDTO = pedidoDTO.entrega().tipoEntrega();
 		Long idEnderecoDTO = pedidoDTO.entrega().idEndereco();
 		if ((tipoEntregaDTO == TipoEntrega.CORREIOS || tipoEntregaDTO == TipoEntrega.ENTREGA_EXPRESSA) && idEnderecoDTO == null) {

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.cartao.Cartao;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
 import br.com.danielschiavo.shop.services.CartaoService;
@@ -16,7 +17,7 @@ public class ValidadorMetodoPagamento implements ValidadorCriarNovoPedido {
 	private CartaoService cartaoService;
 	
 	@Override
-	public void validar(CriarPedidoDTO pedidoDTO) {
+	public void validar(CriarPedidoDTO pedidoDTO, Cliente cliente) {
 		MetodoPagamento metodoPagamentoDTO = pedidoDTO.pagamento().metodoPagamento();
 		Long idCartao = pedidoDTO.pagamento().idCartao();
 		String numeroParcelas = pedidoDTO.pagamento().numeroParcelas();
@@ -24,7 +25,7 @@ public class ValidadorMetodoPagamento implements ValidadorCriarNovoPedido {
 			if (idCartao == null) {
 				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, é necessário enviar o ID do cartão juntamente.");
 			}
-			Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao);
+			Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao, cliente);
 			if (!metodoPagamentoDTO.toString().endsWith(cartao.getTipoCartao().toString())) {
 				throw new ValidacaoException("O cartão cadastrado de id número " + cartao.getId() + ", foi cadastrado como um cartão de " + cartao.getTipoCartao().toString() + ", não condiz com o método de pagamento fornecido, que é: " + metodoPagamentoDTO.toString());
 			}

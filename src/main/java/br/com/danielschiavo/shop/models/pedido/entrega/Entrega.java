@@ -42,6 +42,7 @@ public class Entrega {
 	private Pedido pedido;
 	
 	public Entrega(Pedido pedido, TipoEntrega tipoEntrega, EnderecoPedido enderecoPedido) {
+		this.pedido = pedido;
 		this.tipoEntrega = tipoEntrega;
 		this.enderecoPedido = enderecoPedido;
 	}

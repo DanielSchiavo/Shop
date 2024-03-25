@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import br.com.danielschiavo.shop.models.pedido.itempedido.ItemPedido;
 
 public record MostrarProdutoDoPedidoDTO(
+		Long idProduto,
 		String nomeProduto,
 		BigDecimal preco,
 		Integer quantidade,
@@ -13,7 +14,8 @@ public record MostrarProdutoDoPedidoDTO(
 		) {
 
 	public MostrarProdutoDoPedidoDTO(ItemPedido itemPedido, byte[] primeiraImagem) {
-		this(itemPedido.getNomeProduto(),
+		this(itemPedido.getProduto().getId(),
+			 itemPedido.getNomeProduto(),
 			 itemPedido.getPreco(),
 			 itemPedido.getQuantidade(),
 			 itemPedido.getSubTotal(),

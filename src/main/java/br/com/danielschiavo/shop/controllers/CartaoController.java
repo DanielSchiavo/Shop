@@ -69,7 +69,7 @@ public class CartaoController {
 	}
 	
 	@PutMapping("/cliente/cartao/{idCartao}")
-	@Operation(summary = "Altera o cartão padrão do usuário", description = "Se essa requisição for enviada fornecendo um id de cartão que esteja atribuido cartaoPadrao = false, então esse cartão será definido como cartaoPadrao = true e todos os outros como false. Se o id do cartão fornecido for cartaoPadrao = true, a resposta será um BAD_REQUEST porque a única forma de definir um cartaoPadrao = true é fazendo uma requisição PUT para um cartão que esteja definido como cartaoPadrao = false. Só se pode ter 1 cartão padrão.")
+	@Operation(summary = "Altera o cartão padrão do usuário", description = "Se essa requisição for enviada fornecendo um id de cartão que esteja atribuido cartaoPadrao = false, então esse cartão será definido como cartaoPadrao = true e todos os outros cartões do cliente como false. Se o cartão fornecido no parâmetro através do id estiver como cartaoPadrao = true, esse cartão será definido como cartaoPadrao = false")
 	public ResponseEntity<?> alterarCartaoPadraoPorIdToken(@PathVariable Long idCartao) {
 		try {
 			cartaoService.alterarCartaoPadraoPorIdToken(idCartao);

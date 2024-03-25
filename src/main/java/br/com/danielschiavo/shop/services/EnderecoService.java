@@ -28,8 +28,7 @@ public class EnderecoService {
 	@Transactional
 	public void deletarEnderecoPorIdToken(Long idEndereco) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
-		List<Endereco> enderecos = cliente.getEnderecos();
-		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, enderecos);
+		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, cliente);
 		
 		enderecoRepository.delete(endereco);
 	}
@@ -74,7 +73,7 @@ public class EnderecoService {
 	public MostrarEnderecoDTO alterarEnderecoPorIdToken(AlterarEnderecoDTO enderecoDTO, Long idEndereco) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
 		List<Endereco> enderecos = cliente.getEnderecos();
-		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, enderecos);
+		Endereco endereco = verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, cliente);
 		
 		endereco.alterarEndereco(enderecoDTO);
 		
@@ -102,10 +101,8 @@ public class EnderecoService {
 //	------------------------------
 //	------------------------------
 
-	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco, List<Endereco> enderecos) {
-		return enderecos.stream()
-				.filter(endereco -> endereco.getId() == idEndereco)
-				.findFirst().orElseThrow(() -> new ValidacaoException("Não existe Endereço com o ID " + idEndereco + " cadastrado para esse cliente"));
+	public Endereco verificarSeEnderecoExistePorIdEnderecoECliente(Long idEndereco, Cliente cliente) {
+		return enderecoRepository.findByIdAndCliente(idEndereco, cliente).orElseThrow(() -> new ValidacaoException("Não existe endereço de id número " + idEndereco + " para o cliente de id número " + cliente.getId()));
 	}
 	
 	public Endereco verificarID(Long clienteId, Long enderecoId) {

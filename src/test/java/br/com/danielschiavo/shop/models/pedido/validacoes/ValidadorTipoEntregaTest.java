@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
+import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
 import br.com.danielschiavo.shop.models.pedido.entrega.CriarEntregaDTO;
@@ -26,6 +27,9 @@ class ValidadorTipoEntregaTest {
 	@Mock
 	private CriarEntregaDTO criarEntregaDTO;
 	
+	@Mock
+	private Cliente cliente;
+	
 	@Test
 	@DisplayName("Validador tipo entrega não deve lançar exceção quando tipo de entrega correios for enviado com idEndereco")
 	void ValidadorTipoEntrega_CorreiosComIdEndereco_NaoDeveLancarExcecao() {
@@ -33,7 +37,7 @@ class ValidadorTipoEntregaTest {
 		BDDMockito.given(criarEntregaDTO.idEndereco()).willReturn(1L);
 		BDDMockito.given(criarPedidoDTO.entrega()).willReturn(criarEntregaDTO);
 		
-		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO));
+		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -43,7 +47,7 @@ class ValidadorTipoEntregaTest {
 		BDDMockito.given(criarEntregaDTO.idEndereco()).willReturn(null);
 		BDDMockito.given(criarPedidoDTO.entrega()).willReturn(criarEntregaDTO);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -53,7 +57,7 @@ class ValidadorTipoEntregaTest {
 		BDDMockito.given(criarEntregaDTO.idEndereco()).willReturn(1L);
 		BDDMockito.given(criarPedidoDTO.entrega()).willReturn(criarEntregaDTO);
 		
-		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO));
+		Assertions.assertDoesNotThrow(() -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -63,7 +67,7 @@ class ValidadorTipoEntregaTest {
 		BDDMockito.given(criarEntregaDTO.idEndereco()).willReturn(null);
 		BDDMockito.given(criarPedidoDTO.entrega()).willReturn(criarEntregaDTO);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -73,7 +77,7 @@ class ValidadorTipoEntregaTest {
 		BDDMockito.given(criarEntregaDTO.idEndereco()).willReturn(1L);
 		BDDMockito.given(criarPedidoDTO.entrega()).willReturn(criarEntregaDTO);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 	
 	@Test
@@ -83,7 +87,7 @@ class ValidadorTipoEntregaTest {
 		BDDMockito.given(criarEntregaDTO.idEndereco()).willReturn(1L);
 		BDDMockito.given(criarPedidoDTO.entrega()).willReturn(criarEntregaDTO);
 		
-		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO));
+		Assertions.assertThrows(ValidacaoException.class, () -> validador.validar(criarPedidoDTO, cliente));
 	}
 
 }

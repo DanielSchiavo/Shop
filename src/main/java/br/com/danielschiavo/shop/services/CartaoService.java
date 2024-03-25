@@ -134,17 +134,8 @@ public class CartaoService {
 //	------------------------------
 //	------------------------------
 
-	public Cartao verificarSeCartaoExistePorIdCartaoECliente(Long idCartao) {
-		Cliente cliente = usuarioAutenticadoService.getCliente();
-		
-		Optional<Cartao> optionalCartao = cartaoRepository.findByIdAndCliente(idCartao, cliente);
-		
-		if (optionalCartao.isPresent()) {
-			return optionalCartao.get();
-		}
-		else {
-			throw new ValidacaoException("Não existe o cartão de ID número " + idCartao + " para o cliente de ID número " + cliente.getId());
-		}
+	public Cartao verificarSeCartaoExistePorIdCartaoECliente(Long idCartao, Cliente cliente) {
+		return cartaoRepository.findByIdAndCliente(idCartao, cliente).orElseThrow(() -> new ValidacaoException("Não existe o cartão de ID número " + idCartao + " para o cliente de ID número " + cliente.getId()));
 	}
 	
 }

@@ -75,8 +75,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO(1L, "Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO(2L, "Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -111,8 +111,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO(1L, "Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO(2L, "Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -143,8 +143,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO(1L, "Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO(2L, "Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
@@ -174,7 +174,7 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO(1L, "Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		MostrarPedidoDTO mostrarPedidoDTO = new MostrarPedidoDTO(2L, BigDecimal.valueOf(400.00), LocalDateTime.now(), StatusPedido.A_PAGAR, mostrarEntregaDTO, mostrarPagamentoDTO, produtos);
@@ -220,8 +220,8 @@ class PedidoControllerTest {
 		MostrarEntregaDTO mostrarEntregaDTO = new MostrarEntregaDTO(TipoEntrega.RETIRADA_NA_LOJA, null);
 		MostrarPagamentoDTO mostrarPagamentoDTO = new MostrarPagamentoDTO(MetodoPagamento.BOLETO, StatusPagamento.PENDENTE, null);
 		byte[] bytesImagem = "Hello world".getBytes();
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO("Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
-		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO("Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO = new MostrarProdutoDoPedidoDTO(1L, "Produto 1", BigDecimal.valueOf(400.00), 2, BigDecimal.valueOf(800.00), bytesImagem);
+		MostrarProdutoDoPedidoDTO mostrarProdutoDoPedidoDTO2 = new MostrarProdutoDoPedidoDTO(2L, "Produto 2", BigDecimal.valueOf(200.00), 2, BigDecimal.valueOf(400.00), bytesImagem);
 		List<MostrarProdutoDoPedidoDTO> produtos = new ArrayList<>();
 		produtos.add(mostrarProdutoDoPedidoDTO);
 		produtos.add(mostrarProdutoDoPedidoDTO2);
