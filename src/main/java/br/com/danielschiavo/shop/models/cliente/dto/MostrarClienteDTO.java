@@ -2,12 +2,14 @@ package br.com.danielschiavo.shop.models.cliente.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import br.com.danielschiavo.shop.models.cliente.cartao.MostrarCartaoDTO;
 import br.com.danielschiavo.shop.models.cliente.endereco.MostrarEnderecoDTO;
+import br.com.danielschiavo.shop.models.cliente.role.Role;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +34,7 @@ public class MostrarClienteDTO {
 	private String email;
 	private String celular;
 	private ArquivoInfoDTO fotoPerfil;
+	private Set<Role> roles;
 	private List<MostrarEnderecoDTO> enderecos;
 	private List<MostrarCartaoDTO> cartoes;
 }

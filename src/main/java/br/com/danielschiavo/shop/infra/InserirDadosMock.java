@@ -16,6 +16,9 @@ import br.com.danielschiavo.shop.models.cliente.cartao.Cartao.CartaoBuilder;
 import br.com.danielschiavo.shop.models.cliente.cartao.TipoCartao;
 import br.com.danielschiavo.shop.models.cliente.endereco.Endereco;
 import br.com.danielschiavo.shop.models.cliente.endereco.Endereco.EnderecoBuilder;
+import br.com.danielschiavo.shop.models.cliente.role.NomeRole;
+import br.com.danielschiavo.shop.models.cliente.role.Role;
+import br.com.danielschiavo.shop.models.cliente.role.Role.RoleBuilder;
 import br.com.danielschiavo.shop.models.pedido.Pedido;
 import br.com.danielschiavo.shop.models.pedido.Pedido.PedidoBuilder;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
@@ -54,6 +57,7 @@ public class InserirDadosMock implements CommandLineRunner {
 	private EnderecoBuilder enderecoBuilder = Endereco.builder();
 	private CartaoBuilder cartaoBuilder = Cartao.builder();
 	private ClienteBuilder clienteBuilder = Cliente.builder();
+	private RoleBuilder roleBuilder = Role.builder();
 	
 	private PedidoBuilder pedidoBuilder = Pedido.builder();
 	
@@ -105,6 +109,8 @@ public class InserirDadosMock implements CommandLineRunner {
 						.senha("{noop}123456")
 						.celular("27996101055")
 						.fotoPerfil("Padrao.jpeg")
+						.adicionarRole(roleBuilder.id(null)
+												  .role(NomeRole.ADMIN).build())
 						.carrinho(true)
 						.comItemCarrinhoIdQuantidadeProduto(null, 3, produto)
 						.adicionarEndereco(enderecoBuilder.id(null)

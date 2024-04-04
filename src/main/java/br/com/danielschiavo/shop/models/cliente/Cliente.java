@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +17,8 @@ import br.com.danielschiavo.shop.models.cliente.carrinho.Carrinho;
 import br.com.danielschiavo.shop.models.cliente.carrinho.itemcarrinho.ItemCarrinho;
 import br.com.danielschiavo.shop.models.cliente.cartao.Cartao;
 import br.com.danielschiavo.shop.models.cliente.endereco.Endereco;
+import br.com.danielschiavo.shop.models.cliente.role.NomeRole;
+import br.com.danielschiavo.shop.models.cliente.role.Role;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -69,6 +73,11 @@ public class Cliente implements UserDetails {
 	
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private Set<Role> roles = new HashSet<>();
+	
+    @Getter(value = AccessLevel.NONE)
+    @Setter(value = AccessLevel.NONE)
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Endereco> enderecos = new ArrayList<>();
 
@@ -79,6 +88,9 @@ public class Cliente implements UserDetails {
 	
 	@OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Carrinho carrinho;
+	
+	
+	
 	
 	public List<Cartao> getCartoes() {
 		return Collections.unmodifiableList(this.cartoes);
@@ -94,7 +106,21 @@ public class Cliente implements UserDetails {
 
 	public void adicionarEndereco(Endereco endereco) {
 		this.enderecos.add(endereco);
-	}	
+	}
+	
+	public Set<Role> getRoles() {
+		return Collections.unmodifiableSet(this.roles);
+	}
+
+	public void adicionarRole(Role role) {
+		this.roles.add(role);
+	}
+	
+	public void removerRole(Role role) {
+		this.roles.remove(role);
+	}
+	
+	
 	
 	public static ClienteBuilder builder() {
 		return new ClienteBuilder();
@@ -116,11 +142,7 @@ public class Cliente implements UserDetails {
 	}
 	
 	private boolean isAdmin() {
-		if ("daniel.schiavo35@gmail.com".equals(this.getEmail())) {
-			return true;
-		}
-		
-		return false;
+		return roles.stream().anyMatch(role -> role.getRole() == NomeRole.ADMIN);
 	}
 
 	@Override
@@ -211,6 +233,13 @@ public class Cliente implements UserDetails {
 		
 		public ClienteBuilder fotoPerfil(String fotoPerfil) {
 	        this.cliente.setFotoPerfil(fotoPerfil);
+			return this;
+		}
+		
+		public ClienteBuilder adicionarRole(Role role) {
+			role.setCliente(this.cliente);
+			role.setDataAtribuicao(LocalDateTime.now());
+			this.cliente.adicionarRole(role);
 			return this;
 		}
 		

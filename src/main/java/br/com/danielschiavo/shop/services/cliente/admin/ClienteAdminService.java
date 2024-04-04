@@ -25,6 +25,7 @@ public class ClienteAdminService {
 	@Autowired
 	private ClienteMapper clienteMapper;
 	
+
 	public void adminDeletarClientePorId(Long idCliente) {
 		clienteRepository.deleteById(idCliente);
 	}
@@ -33,8 +34,7 @@ public class ClienteAdminService {
 		Page<Cliente> pageClientes = clienteRepository.findAll(pageable);
 		return pageClientes.map(cliente -> clienteMapper.clienteParaMostrarClienteDTO(cliente, fileService));
 	}
-	
-	
+
 //	------------------------------
 //	------------------------------
 //	METODOS UTILITARIOS

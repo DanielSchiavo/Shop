@@ -24,19 +24,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ClienteAdminController {
 
 	@Autowired
-	private ClienteAdminService clienteService;
+	private ClienteAdminService clienteAdminService;
 	
 	@DeleteMapping("/admin/cliente/{idCliente}")
 	@Operation(summary = "Deleta o cliente pelo id fornecido no parametro da requisição")
 	public ResponseEntity<?> adminDeletarClientePorId(@PathVariable Long idCliente) {
-		clienteService.adminDeletarClientePorId(idCliente);
+		clienteAdminService.adminDeletarClientePorId(idCliente);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@GetMapping("/admin/cliente")
 	@Operation(summary = "Mostra todos os clientes cadastrados")
 	public ResponseEntity<Page<MostrarClienteDTO>> adminDetalharTodosClientes(Pageable pageable) {
-		var client = clienteService.adminDetalharTodosClientes(pageable);
+		var client = clienteAdminService.adminDetalharTodosClientes(pageable);
 		return ResponseEntity.ok(client);
 	}
+	
 }
