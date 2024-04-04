@@ -4,17 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.cartao.Cartao;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
+import br.com.danielschiavo.shop.models.cliente.cartao.Cartao;
+import br.com.danielschiavo.shop.models.pedido.dto.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
-import br.com.danielschiavo.shop.services.CartaoService;
+import br.com.danielschiavo.shop.services.cliente.user.CartaoUserService;
 
 @Service
 public class ValidadorMetodoPagamento implements ValidadorCriarNovoPedido {
 	
 	@Autowired
-	private CartaoService cartaoService;
+	private CartaoUserService cartaoService;
 	
 	@Override
 	public void validar(CriarPedidoDTO pedidoDTO, Cliente cliente) {

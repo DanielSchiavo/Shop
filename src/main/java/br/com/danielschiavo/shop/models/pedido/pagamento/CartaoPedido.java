@@ -1,22 +1,24 @@
 package br.com.danielschiavo.shop.models.pedido.pagamento;
 
-import br.com.danielschiavo.shop.models.cartao.Cartao;
-import br.com.danielschiavo.shop.models.cartao.TipoCartao;
+import br.com.danielschiavo.shop.models.cliente.cartao.Cartao;
+import br.com.danielschiavo.shop.models.cliente.cartao.TipoCartao;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Embeddable
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@ToString
+@Builder
 public class CartaoPedido {
 	
 	private String nomeBanco;

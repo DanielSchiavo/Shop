@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
+import br.com.danielschiavo.shop.models.pedido.dto.CriarPedidoDTO;
 
 @Service
 public class ValidadorTipoEntrega implements ValidadorCriarNovoPedido {

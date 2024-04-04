@@ -13,10 +13,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Table(name = "pedidos_entrega")
 @Getter
@@ -24,6 +26,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@ToString
+@Builder
 @Entity
 public class Entrega {
 
@@ -40,11 +44,5 @@ public class Entrega {
 	
 	@OneToOne(mappedBy = "entrega")
 	private Pedido pedido;
-	
-	public Entrega(Pedido pedido, TipoEntrega tipoEntrega, EnderecoPedido enderecoPedido) {
-		this.pedido = pedido;
-		this.tipoEntrega = tipoEntrega;
-		this.enderecoPedido = enderecoPedido;
-	}
 
 }

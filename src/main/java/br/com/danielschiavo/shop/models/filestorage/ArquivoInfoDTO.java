@@ -3,11 +3,14 @@ package br.com.danielschiavo.shop.models.filestorage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.Builder;
+
+@Builder
 @JsonInclude(Include.NON_NULL)
 public record ArquivoInfoDTO(
 		String nomeArquivo,
 		String nomeAntigoArquivo,
-		Integer posicao, 
+		Byte posicao, 
 		String erro, 
 		String uri, 
 		byte[] bytesArquivo) {

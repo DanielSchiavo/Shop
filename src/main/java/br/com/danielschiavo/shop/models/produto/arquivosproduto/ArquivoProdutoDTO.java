@@ -6,6 +6,6 @@ public record ArquivoProdutoDTO(
 		@NotNull
 		String nome,
 		@NotNull
-		Integer posicao) {
+		Byte posicao) {
 
 }

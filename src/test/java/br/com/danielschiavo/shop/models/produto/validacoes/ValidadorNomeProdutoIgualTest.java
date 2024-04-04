@@ -1,6 +1,8 @@
 package br.com.danielschiavo.shop.models.produto.validacoes;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -8,17 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
-import static org.mockito.ArgumentMatchers.any;
-
-import java.util.Optional;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.produto.CadastrarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.Produto;
-import br.com.danielschiavo.shop.repositories.ProdutoRepository;
+import br.com.danielschiavo.shop.models.produto.dto.CadastrarProdutoDTO;
+import br.com.danielschiavo.shop.repositories.produto.ProdutoRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ValidadorNomeProdutoIgualTest {

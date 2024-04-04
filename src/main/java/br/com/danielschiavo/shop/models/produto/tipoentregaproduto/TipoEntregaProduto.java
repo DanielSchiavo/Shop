@@ -11,10 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Table(name = "produtos_tipo_entrega")
 @Entity
@@ -22,6 +24,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "produto")
+@Builder
 @EqualsAndHashCode(of = {"id", "produto", "tipoEntrega"})
 public class TipoEntregaProduto {
 	

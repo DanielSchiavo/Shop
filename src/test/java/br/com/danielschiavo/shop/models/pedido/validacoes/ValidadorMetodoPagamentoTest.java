@@ -12,13 +12,13 @@ import static org.mockito.ArgumentMatchers.any;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.cartao.Cartao;
-import br.com.danielschiavo.shop.models.cartao.TipoCartao;
 import br.com.danielschiavo.shop.models.cliente.Cliente;
-import br.com.danielschiavo.shop.models.pedido.CriarPagamentoDTO;
-import br.com.danielschiavo.shop.models.pedido.CriarPedidoDTO;
+import br.com.danielschiavo.shop.models.cliente.cartao.Cartao;
+import br.com.danielschiavo.shop.models.cliente.cartao.TipoCartao;
+import br.com.danielschiavo.shop.models.pedido.dto.CriarPagamentoDTO;
+import br.com.danielschiavo.shop.models.pedido.dto.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
-import br.com.danielschiavo.shop.services.CartaoService;
+import br.com.danielschiavo.shop.services.cliente.user.CartaoUserService;
 
 @ExtendWith(MockitoExtension.class)
 class ValidadorMetodoPagamentoTest {
@@ -36,7 +36,7 @@ class ValidadorMetodoPagamentoTest {
 	private Cartao cartao;
 	
 	@Mock
-	private CartaoService cartaoService;
+	private CartaoUserService cartaoService;
 	
 	@Mock
 	private Cliente cliente;

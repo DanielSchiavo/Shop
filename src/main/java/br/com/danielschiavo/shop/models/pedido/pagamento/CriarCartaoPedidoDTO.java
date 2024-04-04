@@ -1,6 +1,6 @@
 package br.com.danielschiavo.shop.models.pedido.pagamento;
 
-import br.com.danielschiavo.shop.models.cartao.TipoCartao;
+import br.com.danielschiavo.shop.models.cliente.cartao.TipoCartao;
 
 public record CriarCartaoPedidoDTO(
 			TipoCartao tipoCartao,

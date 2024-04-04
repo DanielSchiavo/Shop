@@ -12,8 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.produto.CadastrarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProdutoDTO;
+import br.com.danielschiavo.shop.models.produto.dto.CadastrarProdutoDTO;
 
 @ExtendWith(MockitoExtension.class)
 class ValidadorQuantidadeArquivosTest {
@@ -31,7 +31,7 @@ class ValidadorQuantidadeArquivosTest {
 	void ValidadorPrimeiroArquivoImagem_10ArquivosProduto_NaoDeveLancarExcecao() {
         var listaArquivos = new ArrayList<ArquivoProdutoDTO>();
         for (int i = 0; i < MAX_FILES; i++) {
-        	listaArquivos.add(new ArquivoProdutoDTO("arquivo" + i + ".jpeg", i));
+        	listaArquivos.add(new ArquivoProdutoDTO("arquivo" + i + ".jpeg", (byte) i));
         }
 		BDDMockito.given(cadastrarProdutoDTO.arquivos()).willReturn(listaArquivos);
 	
@@ -43,7 +43,7 @@ class ValidadorQuantidadeArquivosTest {
 	void ValidadorPrimeiroArquivoImagem_MaiorQue10ArquivosProduto_DeveLancarExcecao() {
         var listaArquivos = new ArrayList<ArquivoProdutoDTO>();
         for (int i = 0; i < MAX_FILES + 1; i++) {
-        	listaArquivos.add(new ArquivoProdutoDTO("arquivo" + i + ".jpeg", i));
+        	listaArquivos.add(new ArquivoProdutoDTO("arquivo" + i + ".jpeg",  (byte) i));
         }
 		BDDMockito.given(cadastrarProdutoDTO.arquivos()).willReturn(listaArquivos);
 	

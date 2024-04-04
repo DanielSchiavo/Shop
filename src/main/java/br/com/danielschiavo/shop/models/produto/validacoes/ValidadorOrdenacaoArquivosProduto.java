@@ -7,15 +7,15 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.produto.CadastrarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProdutoDTO;
+import br.com.danielschiavo.shop.models.produto.dto.CadastrarProdutoDTO;
 
 @Service
 public class ValidadorOrdenacaoArquivosProduto implements ValidadorCadastrarNovoProduto {
 
 	@Override
 	public void validar(CadastrarProdutoDTO cadastrarProdutoDTO) {
-        List<Integer> posicoesOrdenadas = cadastrarProdutoDTO.arquivos().stream()
+        List<Byte> posicoesOrdenadas = cadastrarProdutoDTO.arquivos().stream()
 									                .map(ArquivoProdutoDTO::posicao)
 									                .sorted()
 									                .collect(Collectors.toList());

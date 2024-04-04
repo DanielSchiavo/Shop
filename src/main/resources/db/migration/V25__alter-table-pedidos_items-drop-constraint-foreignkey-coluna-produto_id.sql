@@ -1,0 +1,1 @@
+ALTER TABLE pedidos_items DROP CONSTRAINT pedidos_items_produto_id_fkey;

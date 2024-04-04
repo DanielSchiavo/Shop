@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.produto.CadastrarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProdutoDTO;
+import br.com.danielschiavo.shop.models.produto.dto.CadastrarProdutoDTO;
 
 @Service
 public class ValidadorPrimeiroArquivoImagem implements ValidadorCadastrarNovoProduto {

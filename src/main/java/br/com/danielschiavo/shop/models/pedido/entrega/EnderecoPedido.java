@@ -1,8 +1,9 @@
 package br.com.danielschiavo.shop.models.pedido.entrega;
 
-import br.com.danielschiavo.shop.models.endereco.Endereco;
+import br.com.danielschiavo.shop.models.cliente.endereco.Endereco;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@Builder
 public class EnderecoPedido {
 
 	private String cep;

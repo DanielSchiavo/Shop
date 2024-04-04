@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.danielschiavo.shop.infra.exceptions.ValidacaoException;
-import br.com.danielschiavo.shop.models.produto.CadastrarProdutoDTO;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProdutoDTO;
+import br.com.danielschiavo.shop.models.produto.dto.CadastrarProdutoDTO;
 
 @ExtendWith(MockitoExtension.class)
 class ValidadorOrdenacaoArquivosProdutoTest {
@@ -29,9 +29,9 @@ class ValidadorOrdenacaoArquivosProdutoTest {
 	@DisplayName("Validador ordenacao arquivos produto não deve lançar exceção quando lista está corretamente ordenada")
 	void ValidadorOrdenacaoArquivosProduto_ListaCorretamenteOrdenada_NaoDeveLancarExcecao() {
 		List<ArquivoProdutoDTO> listaArquivoProduto = new ArrayList<>();
-		ArquivoProdutoDTO arquivoProdutoDTO = new ArquivoProdutoDTO("Arquivo 1", 0);
-		ArquivoProdutoDTO arquivoProdutoDTO2 = new ArquivoProdutoDTO("Arquivo 2", 1);
-		ArquivoProdutoDTO arquivoProdutoDTO3 = new ArquivoProdutoDTO("Arquivo 3", 2);
+		ArquivoProdutoDTO arquivoProdutoDTO = new ArquivoProdutoDTO("Arquivo 1", (byte) 0);
+		ArquivoProdutoDTO arquivoProdutoDTO2 = new ArquivoProdutoDTO("Arquivo 2", (byte) 1);
+		ArquivoProdutoDTO arquivoProdutoDTO3 = new ArquivoProdutoDTO("Arquivo 3", (byte) 2);
 		listaArquivoProduto.addAll(List.of(arquivoProdutoDTO, arquivoProdutoDTO2, arquivoProdutoDTO3));
 		BDDMockito.given(cadastrarProdutoDTO.arquivos()).willReturn(listaArquivoProduto);
 		
@@ -42,9 +42,9 @@ class ValidadorOrdenacaoArquivosProdutoTest {
 	@DisplayName("Validador ordenacao arquivos produto deve lançar exceção quando lista está erroneamente ordenada")
 	void ValidadorOrdenacaoArquivosProduto_ListaErroneamenteOrdenada_DeveLancarExcecao() {
 		List<ArquivoProdutoDTO> listaArquivoProduto = new ArrayList<>();
-		ArquivoProdutoDTO arquivoProdutoDTO = new ArquivoProdutoDTO("Arquivo 1", 0);
-		ArquivoProdutoDTO arquivoProdutoDTO2 = new ArquivoProdutoDTO("Arquivo 2", 2);
-		ArquivoProdutoDTO arquivoProdutoDTO3 = new ArquivoProdutoDTO("Arquivo 3", 3);
+		ArquivoProdutoDTO arquivoProdutoDTO = new ArquivoProdutoDTO("Arquivo 1", (byte) 0);
+		ArquivoProdutoDTO arquivoProdutoDTO2 = new ArquivoProdutoDTO("Arquivo 2", (byte) 2);
+		ArquivoProdutoDTO arquivoProdutoDTO3 = new ArquivoProdutoDTO("Arquivo 3", (byte) 3);
 		listaArquivoProduto.addAll(List.of(arquivoProdutoDTO, arquivoProdutoDTO2, arquivoProdutoDTO3));
 		BDDMockito.given(cadastrarProdutoDTO.arquivos()).willReturn(listaArquivoProduto);
 		

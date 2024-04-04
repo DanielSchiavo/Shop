@@ -2,14 +2,15 @@ package br.com.danielschiavo.shop.models.produto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import br.com.danielschiavo.shop.models.categoria.Categoria;
-import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivosProduto;
+import br.com.danielschiavo.shop.models.pedido.TipoEntrega;
+import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProduto;
+import br.com.danielschiavo.shop.models.produto.subcategoria.SubCategoria;
 import br.com.danielschiavo.shop.models.produto.tipoentregaproduto.TipoEntregaProduto;
-import br.com.danielschiavo.shop.models.subcategoria.SubCategoria;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,11 +21,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Table(name = "produtos")
@@ -33,6 +36,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @EqualsAndHashCode(of = "id")
 public class Produto {
 
@@ -50,78 +54,129 @@ public class Produto {
 	
 	private Boolean ativo;
 
+    @Getter(value = AccessLevel.NONE)
+    @Setter(value = AccessLevel.NONE)
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL)
     private Set<TipoEntregaProduto> tiposEntrega = new HashSet<>();
 
+    @Getter(value = AccessLevel.NONE)
+    @Setter(value = AccessLevel.NONE)
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL)
-	private List<ArquivosProduto> arquivosProduto = new ArrayList<>();
+	private List<ArquivoProduto> arquivosProduto = new ArrayList<>();
     
-	@JoinColumn(name = "categoria_id")
-	@ManyToOne(fetch = FetchType.EAGER)
-	private Categoria categoria;
-	
 	@JoinColumn(name = "sub_categoria_id")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private SubCategoria subCategoria;
+
 	
-	public Produto(CadastrarProdutoDTO cadastrarProdutoDTO, SubCategoria subCategoria) {
-		this.nome = cadastrarProdutoDTO.nome();
-		this.descricao = cadastrarProdutoDTO.descricao();
-		this.preco = cadastrarProdutoDTO.preco();
-		this.quantidade = cadastrarProdutoDTO.quantidade();
-		this.ativo = cadastrarProdutoDTO.ativo();
-		this.categoria = subCategoria.getCategoria();
-		this.subCategoria = subCategoria;
-		cadastrarProdutoDTO.tipoEntrega().forEach(te -> {
-			this.tiposEntrega.add(new TipoEntregaProduto(null, te, this));
-		});;
-		cadastrarProdutoDTO.arquivos().forEach(a -> {
-			this.arquivosProduto.add(new ArquivosProduto(null, a.nome(), a.posicao().byteValue(), this));
-		});
+	
+	public Set<TipoEntregaProduto> getTiposEntrega() {
+		return Collections.unmodifiableSet(this.tiposEntrega);
 	}
 
-	public void alterarAtributos(AlterarProdutoDTO alterarProdutoDTO, Produto produto) {
-		if (alterarProdutoDTO.nome() != null) {
-			this.nome = alterarProdutoDTO.nome();
-		}
-		if (alterarProdutoDTO.descricao() != null) {
-			this.descricao = alterarProdutoDTO.descricao();
-		}
-		if (alterarProdutoDTO.preco() != null) {
-			this.preco = alterarProdutoDTO.preco();
-		}
-		if (alterarProdutoDTO.quantidade() != null) {
-			this.quantidade = alterarProdutoDTO.quantidade();
-		}
-		if (alterarProdutoDTO.ativo() != null) {
-			this.ativo = alterarProdutoDTO.ativo();
-		}
-		if (alterarProdutoDTO.tipoEntrega() != null) {
-			Set<TipoEntregaProduto> novoTiposEntrega = new HashSet<>();
-			alterarProdutoDTO.tipoEntrega().forEach(tipo -> {
-				novoTiposEntrega.add(new TipoEntregaProduto(null, tipo, produto));
-			});
-			this.tiposEntrega = novoTiposEntrega;
-			
-		}
-		if (alterarProdutoDTO.arquivos() != null) {
-			List<ArquivosProduto> novaListaArquivosProduto = new ArrayList<>();
-			alterarProdutoDTO.arquivos().forEach(arquivoProdutoDTO -> {
-				novaListaArquivosProduto.add(new ArquivosProduto(null, arquivoProdutoDTO.nome(), arquivoProdutoDTO.posicao().byteValue(), produto));
-			});
-			this.arquivosProduto = novaListaArquivosProduto;
-		}
+	public void adicionarTipoEntrega(TipoEntregaProduto tipoEntrega) {
+		this.tiposEntrega.add(tipoEntrega);
 	}
 
-	public void adicionarArquivosProduto(String nomeArquivo, int posicao) {
-		ArquivosProduto arquivo = new ArquivosProduto();
-		arquivo.setNome(nomeArquivo);
-		arquivo.setPosicao((byte) posicao);
-		this.arquivosProduto.add(arquivo);
+	public List<ArquivoProduto> getArquivosProduto() {
+		return Collections.unmodifiableList(arquivosProduto);
+	}
+
+	public void adicionarArquivoProduto(ArquivoProduto arquivoProduto) {
+		this.arquivosProduto.add(arquivoProduto);
 	}
 	
-	public String pegarNomePrimeiraImagem() {
-		ArquivosProduto arquivoProduto = this.arquivosProduto.stream().filter(ap -> ap.getPosicao() == 0).findFirst().get();
-		return arquivoProduto.getNome();
+	
+	
+	
+	public static ProdutoBuilder builder() {
+		return new ProdutoBuilder();
+	}
+	
+	public static class ProdutoBuilder {
+		
+		private Produto produto;
+		private List<Produto> listaProdutos = new ArrayList<>();
+		
+		public ProdutoBuilder id(Long id) {
+	        if(this.produto != null) {
+	            listaProdutos.add(this.produto);
+	        }
+			this.produto = new Produto();
+	        this.produto.setId(id);
+			return this;
+		}
+
+		public ProdutoBuilder nome(String nome) {
+	        this.produto.setNome(nome);
+			return this;
+		}
+		
+		public ProdutoBuilder descricao(String descricao) {
+	        this.produto.setDescricao(descricao);
+			return this;
+		}
+		
+		public ProdutoBuilder preco(double preco) {
+	        this.produto.setPreco(BigDecimal.valueOf(preco));
+			return this;
+		}
+		
+		public ProdutoBuilder quantidade(Integer quantidade) {
+	        this.produto.setQuantidade(quantidade);
+			return this;
+		}
+
+		public ProdutoBuilder ativo(boolean ativo) {
+	        this.produto.setAtivo(ativo);
+			return this;
+		}
+		
+		public ProdutoBuilder tipoEntregaIdTipo(Long id, TipoEntrega tipoEntrega) {
+			this.produto.adicionarTipoEntrega(new TipoEntregaProduto(id, tipoEntrega, this.produto));
+			return this;
+		}
+		
+		public ProdutoBuilder arquivoProdutoIdNomePosicao(Long id, String nome, Byte posicao) {
+			this.produto.adicionarArquivoProduto(new ArquivoProduto(id, nome, posicao, this.produto));
+			return this;
+		}
+		
+	    public ProdutoBuilder subCategoria(SubCategoria subCategoria) {
+	        this.produto.setSubCategoria(subCategoria);
+	        return this;
+	    }
+	    
+	    public Produto getProduto() {
+	        if(this.produto != null) {
+	        	Produto copiaProduto = new Produto();
+	        	copiaProduto.setId(this.produto.getId());
+	        	copiaProduto.setNome(this.produto.getNome());
+	        	copiaProduto.setDescricao(this.produto.getDescricao());
+	        	copiaProduto.setPreco(this.produto.getPreco());
+	        	copiaProduto.setQuantidade(this.produto.getQuantidade());
+	        	copiaProduto.setAtivo(this.produto.getAtivo());
+	        	copiaProduto.setSubCategoria(this.produto.getSubCategoria());
+	        	this.produto.getTiposEntrega().forEach(tipo -> {
+	        		copiaProduto.adicionarTipoEntrega(new TipoEntregaProduto(tipo.getId(), tipo.getTipoEntrega(), copiaProduto));
+	        	});
+	        	this.produto.getArquivosProduto().forEach(arquivo -> {
+	        		copiaProduto.adicionarArquivoProduto(new ArquivoProduto(arquivo.getId(), arquivo.getNome(), arquivo.getPosicao(), copiaProduto));
+	        	});
+	        	this.produto = null;
+	        	return copiaProduto;
+	        }
+	        return null;
+	    }
+	    
+	    public List<Produto> getProdutos() {
+	        if(this.produto != null) {
+	            listaProdutos.add(this.produto); // Adiciona o último produto configurado à lista
+	            this.produto = null; // Reseta o produto atual da fábrica
+	        }
+	        List<Produto> novaLista = new ArrayList<>(listaProdutos);
+	        listaProdutos.clear();
+	        return novaLista;
+	    }
 	}
 }

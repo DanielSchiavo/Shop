@@ -14,17 +14,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Table(name = "pedidos_pagamento")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@ToString
+@Builder
+@EqualsAndHashCode(of = "id")
 @Entity
 public class Pagamento {
 
@@ -48,10 +52,4 @@ public class Pagamento {
 	@OneToOne(mappedBy = "pagamento")
 	private Pedido pedido;
 	
-	public Pagamento(MetodoPagamento metodoPagamento, StatusPagamento statusPagamento, CartaoPedido cartaoPedido, Pedido pedido) {
-		this.metodoPagamento = metodoPagamento;
-		this.statusPagamento = statusPagamento;
-		this.cartaoPedido = cartaoPedido;
-		this.pedido = pedido;
-	}
 }

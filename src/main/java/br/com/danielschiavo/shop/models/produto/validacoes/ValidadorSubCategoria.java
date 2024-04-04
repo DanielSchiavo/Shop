@@ -3,19 +3,19 @@ package br.com.danielschiavo.shop.models.produto.validacoes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.danielschiavo.shop.models.produto.CadastrarProdutoDTO;
-import br.com.danielschiavo.shop.services.SubCategoriaService;
+import br.com.danielschiavo.shop.models.produto.dto.CadastrarProdutoDTO;
+import br.com.danielschiavo.shop.services.produto.SubCategoriaUtilidadeService;
 
 @Service
 public class ValidadorSubCategoria implements ValidadorCadastrarNovoProduto {
 
 	@Autowired
-	private SubCategoriaService subCategoriaService;
+	private SubCategoriaUtilidadeService subCategoriaUtilidadeService;
 	
 	@Override
 	public void validar(CadastrarProdutoDTO cadastrarProdutoDTO) {
 		Long idSubCategoria = cadastrarProdutoDTO.idSubCategoria();
-		subCategoriaService.verificarSeExisteSubCategoriaPorId(idSubCategoria);
+		subCategoriaUtilidadeService.verificarSeExisteSubCategoriaPorId(idSubCategoria);
 	}
 
 }
