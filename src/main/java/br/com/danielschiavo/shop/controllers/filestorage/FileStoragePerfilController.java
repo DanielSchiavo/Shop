@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Serviço de Armazenamento de Arquivos (Imagens e Vídeos)", description = "Para fazer upload de imagens e videos antes de enviar para cadastro de produto, cadastro de pedido, foto de perfil do usuário.")
+@Tag(name = "Cliente - Serviço de Armazenamento de Arquivos", description = "Para fazer upload da foto de perfil do cliente. Uso exclusivo do backend.")
 public class FileStoragePerfilController {
 
 	@Autowired
@@ -85,7 +86,7 @@ public class FileStoragePerfilController {
 	@Operation(summary = "Deleta o nomeAntigoDoArquivo e salva o arquivo enviado e gera um novo nome")
 	public ResponseEntity<?> alterarFotoPerfil(
 			@RequestPart(name = "foto", required = true) MultipartFile novaFoto,
-			@PathVariable String nomeFotoPerfilAntiga,
+			@RequestParam String nomeFotoPerfilAntiga,
 			UriComponentsBuilder uriBuilder
 			) {
 		ArquivoInfoDTO arquivoInfoDTO = fileStoragePerfilService.alterarFotoPerfil(novaFoto, nomeFotoPerfilAntiga);

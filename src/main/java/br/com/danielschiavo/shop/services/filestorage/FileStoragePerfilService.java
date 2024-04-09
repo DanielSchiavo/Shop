@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
@@ -20,7 +21,7 @@ import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 @Service
 public class FileStoragePerfilService {
 	
-	private final Path raizPerfil = Path.of(System.getProperty("user.home") + "/.shop/" + "imagens/perfil");
+	private final Path raizPerfil = Paths.get("imagens/perfil");
 
 	public void deletarFotoPerfilNoDisco(String nome) throws IOException {
 		if (nome == "Padrao.jpeg") {

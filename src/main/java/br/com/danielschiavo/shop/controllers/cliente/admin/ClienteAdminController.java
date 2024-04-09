@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Cliente", description = "Todos endpoints relacionados com o usuário")
+@Tag(name = "Cliente - Admin", description = "Todos endpoints relacionados com o cliente para uso exclusivo dos administradores")
 public class ClienteAdminController {
 
 	@Autowired

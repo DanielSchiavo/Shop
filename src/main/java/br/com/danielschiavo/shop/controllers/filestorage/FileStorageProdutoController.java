@@ -1,7 +1,6 @@
 package br.com.danielschiavo.shop.controllers.filestorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -23,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.com.danielschiavo.shop.infra.exceptions.FileStorageException;
 import br.com.danielschiavo.shop.infra.exceptions.MensagemErroDTO;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
-import br.com.danielschiavo.shop.models.filestorage.MostrarArquivoProdutoDTO;
 import br.com.danielschiavo.shop.services.filestorage.FileStorageProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -33,7 +30,7 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Serviço de Armazenamento de Arquivos (Imagens e Vídeos)", description = "Para fazer upload de imagens e videos antes de enviar para cadastro de produto, cadastro de pedido, foto de perfil do usuário.")
+@Tag(name = "Produto - Serviço de Armazenamento de Arquivos", description = "Para fazer upload de imagens e videos do produto. Uso exclusivo do backend.")
 public class FileStorageProdutoController {
 
 	@Autowired
@@ -53,10 +50,9 @@ public class FileStorageProdutoController {
 	}
 	
 	@GetMapping("/admin/filestorage/arquivo-produto")
-	@Operation(summary = "Recupera os bytes das imagens enviadas em um array no corpo da requisição")
-	public ResponseEntity<?> mostrarArquivoProdutoPorListaDeNomes(@RequestBody List<MostrarArquivoProdutoDTO> listaMostrarArquivoProdutoDTO) {
-		List<String> listaNomes = listaMostrarArquivoProdutoDTO.stream().map(lmap -> lmap.nome()).collect(Collectors.toList());
-		List<ArquivoInfoDTO> listArquivos = fileStorageService.mostrarArquivoProdutoPorListaDeNomes(listaNomes);
+	@Operation(summary = "Recupera os bytes do nome de todas imagens enviadas no parâmetro da requisição")
+	public ResponseEntity<?> mostrarArquivoProdutoPorListaDeNomes(@RequestParam(name = "arquivo") List<String> listaMostrarArquivoProdutoDTO) {
+		List<ArquivoInfoDTO> listArquivos = fileStorageService.mostrarArquivoProdutoPorListaDeNomes(listaMostrarArquivoProdutoDTO);
 		return ResponseEntity.ok(listArquivos);
 	}
 	
@@ -93,7 +89,7 @@ public class FileStorageProdutoController {
 	}
 	
 	@PutMapping("/admin/filestorage/arquivo-produto")
-	@Operation(summary = "Deleta o nomeAntigoDoArquivo e salva o arquivo enviado e gera um novo nome")
+	@Operation(summary = "Deleta todos os arquivos enviados no campo nomesArquivosASeremExcluidos e salva todos os arquivos enviados e gera um nome a cada um deles")
 	public ResponseEntity<?> alterarArrayArquivoProduto(
 			@RequestPart(name = "arquivo", required = true) MultipartFile[] arquivos,
 			@RequestParam(name = "nomeAntigoDoArquivo", required = true) String nomesArquivosASeremExcluidos,

@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 @Service
 public class FileStorageProdutoService {
 	
-	private final Path raizProduto = Path.of(System.getProperty("user.home") + "/.shop/" + "imagens/produto");
+	private final Path raizProduto = Paths.get("imagens/produto");
 	
 	public void deletarArquivoProdutoNoDisco(String nome) {
 		try {

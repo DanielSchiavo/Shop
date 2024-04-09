@@ -12,9 +12,9 @@
 	<packaging>jar</packaging>
 	<groupId>br.com.danielschiavo</groupId>
 	<artifactId>shop</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>shop</name>
-	<description>Demo project for WebShoppping</description>
+	<description>API RESTful de uma loja</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -108,6 +108,11 @@
 			                <artifactId>mapstruct-processor</artifactId>
 			                <version>1.4.2.Final</version>
 			            </path>
+			            <path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.30</version>
+						</path>
 			        </annotationProcessorPaths>
 			    </configuration>
 			</plugin>

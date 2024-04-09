@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/shop")
-@Tag(name = "Categorias", description = "Todos endpoints relacionados com as categorias")
+@Tag(name = "Categorias - User", description = "Todos endpoints relacionados com as categorias, de uso publico")
 public class CategoriaUserController {
 	
 	@Autowired

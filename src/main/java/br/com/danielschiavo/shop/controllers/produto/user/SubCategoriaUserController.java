@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/shop")
-@Tag(name = "Sub Categorias", description = "Todos endpoints relacionados com as subcategorias, uma subcategoria é dependente de uma categoria")
+@Tag(name = "Sub Categorias - User", description = "Todos endpoints relacionados com as subcategorias, de uso publico")
 public class SubCategoriaUserController {
 	
 	@Autowired
