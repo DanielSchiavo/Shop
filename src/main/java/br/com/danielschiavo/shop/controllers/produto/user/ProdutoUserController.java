@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/shop")
-@Tag(name = "Produto", description = "Todos endpoints relacionados com os produtos da loja")
+@Tag(name = "Produto - User", description = "Todos endpoints relacionados com os produtos da loja, de uso publico")
 public class ProdutoUserController {
 
 	@Autowired

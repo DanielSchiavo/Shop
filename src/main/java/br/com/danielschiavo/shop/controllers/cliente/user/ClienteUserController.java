@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Cliente", description = "Todos endpoints relacionados com o usuário")
+@Tag(name = "Cliente - User", description = "Todos endpoints relacionados com o cliente, que o próprio poderá utilizar")
 public class ClienteUserController {
 
 	@Autowired

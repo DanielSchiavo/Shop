@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Serviço de Armazenamento de Arquivos (Imagens e Vídeos)", description = "Para fazer upload de imagens e videos antes de enviar para cadastro de produto, cadastro de pedido, foto de perfil do usuário.")
+@Tag(name = "Pedido - Serviço de Armazenamento de Arquivos", description = "Para fazer upload da imagem do pedido. Uso exclusivo do backend.")
 public class FileStoragePedidoController {
 
 	@Autowired

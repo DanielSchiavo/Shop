@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!/build/shop-1.0.0.jar
 *.war
 *.nar
 *.ear

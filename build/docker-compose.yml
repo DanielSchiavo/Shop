@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16.2
+    container_name: postgresdb
+    networks:
+      - compose-shop
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  shop:
+    image: danielschiavo/shop:1.0.0
+    container_name: shop
+    networks:
+      - compose-shop
+    ports:
+      - "8080:8080"
+    volumes:
+      - filestorage:/home/shop/imagens
+    depends_on:
+      - postgres
+
+networks:
+  compose-shop:
+    driver: bridge
+    
+volumes:
+  filestorage:
+

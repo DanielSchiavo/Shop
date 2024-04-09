@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/shop")
-@Tag(name = "Sub Categorias", description = "Todos endpoints relacionados com as subcategorias, uma subcategoria é dependente de uma categoria")
+@Tag(name = "Sub Categorias - Admin", description = "Todos endpoints relacionados com as subcategorias para uso exclusivo dos administradores")
 public class SubCategoriaAdminController {
 	
 	@Autowired

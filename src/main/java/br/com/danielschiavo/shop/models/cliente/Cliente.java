@@ -285,6 +285,9 @@ public class Cliente implements UserDetails {
 	        	copiaCliente.setSenha(this.cliente.getSenha());
 	        	copiaCliente.setCelular(this.cliente.getCelular());
 	        	copiaCliente.setFotoPerfil(this.cliente.getFotoPerfil());
+	        	this.cliente.getRoles().forEach(role -> {
+	        		copiaCliente.adicionarRole(new Role(role.getId(), role.getDataAtribuicao(), role.getRole(), copiaCliente));
+	        	});
 	        	this.cliente.getEnderecos().forEach(endereco -> {
 	        		copiaCliente.adicionarEndereco(new Endereco(endereco.getId(), endereco.getCep(), endereco.getRua(), endereco.getNumero(), endereco.getComplemento(), endereco.getBairro(), endereco.getCidade(), endereco.getEstado(), endereco.getEnderecoPadrao(), copiaCliente));
 	        	});

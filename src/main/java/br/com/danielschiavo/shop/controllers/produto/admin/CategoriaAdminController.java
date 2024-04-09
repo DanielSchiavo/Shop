@@ -24,7 +24,7 @@ import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/shop")
-@Tag(name = "Categorias", description = "Todos endpoints relacionados com as categorias")
+@Tag(name = "Categorias - Admin", description = "Todos endpoints relacionados com as categorias dos produtos da loja, para uso exclusivo dos administradores")
 public class CategoriaAdminController {
 	
 	@Autowired

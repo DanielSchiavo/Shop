@@ -6,6 +6,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
@@ -19,7 +20,7 @@ import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
 @Service
 public class FileStoragePedidoService {
 	
-	private final Path raizPedido = Path.of(System.getProperty("user.home") + "/.shop/" + "imagens/pedido");
+	private final Path raizPedido = Paths.get("imagens/pedido");
 	
 	@Autowired
 	private FileStorageProdutoService fileProdutoService;

@@ -19,20 +19,21 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/shop")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Role", description = "Todos endpoints relacionados com a role do cliente")
+@Tag(name = "Cliente - Admin Roles", description = "Todos endpoints relacionados com a role dos clientes para uso exclusivo dos administradores")
 public class RoleAdminController {
 	
 	@Autowired
 	private RoleAdminService roleAdminService;
 	
 	@PostMapping("/admin/cliente")
-	@Operation(summary = "Adiciona role a um cliente cadastrado")
+	@Operation(summary = "Adiciona role de um cliente cadastrado")
 	public ResponseEntity<?> adicionarRole(@RequestBody @Valid AdicionarRoleDTO adicionarRoleDTO) {
 		roleAdminService.adicionarRole(adicionarRoleDTO);
 		return ResponseEntity.ok("Promovido com sucesso");
 	}
 	
 	@DeleteMapping("/admin/cliente/{idCliente}/role/{nomeRole}")
+	@Operation(summary = "Remove role de um cliente cadastrado")
 	public ResponseEntity<?> removerRoleDoCliente(@PathVariable Long idCliente, @PathVariable String nomeRole) {
 	    roleAdminService.removerRole(idCliente, nomeRole);
 		return ResponseEntity.ok().build();
