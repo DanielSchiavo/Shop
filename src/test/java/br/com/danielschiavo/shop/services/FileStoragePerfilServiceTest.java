@@ -54,14 +54,15 @@ class FileStoragePerfilServiceTest {
     @DisplayName("Deletar foto perfil no disco deve executar normalmente quando foto existe")
     void deletarFotoPerfilNoDisco_FotoPerfilExiste_NaoDeveLancarExcecao() throws IOException {
     	//ARRANGE
-        Path pathEsperado = Paths.get(System.getProperty("user.home"), ".shop", "imagens", "perfil", "teste.jpeg");
+        Path pathEsperado = Paths.get("imagens/perfil");
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
         	
         	//ACT
+        	String arquivo = "teste.jpeg";
         	fileStoragePerfilService.deletarFotoPerfilNoDisco("teste.jpeg");
 
         	//ASSERT
-            mockedFiles.verify(() -> Files.delete(pathEsperado));
+            mockedFiles.verify(() -> Files.delete(pathEsperado.resolve(arquivo)));
         }
     }
     
@@ -69,7 +70,7 @@ class FileStoragePerfilServiceTest {
     @DisplayName("Deletar foto perfil no disco deve lançar exceção quando foto perfil não existe")
     void deletarFotoPerfilNoDisco_FotoPerfilNaoExiste_DeveLancarExcecao() throws IOException {
     	//ARRANGE
-    	Path pathEsperado = Paths.get(System.getProperty("user.home"), ".shop", "imagens", "perfil", "teste.jpeg");
+    	Path pathEsperado = Paths.get("imagens/perfil/teste.jpeg");
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
         	mockedFiles.when(() -> Files.delete(pathEsperado)).thenThrow(IOException.class);
 

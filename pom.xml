@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	<groupId>br.com.danielschiavo</groupId>
 	<artifactId>shop</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>shop</name>
 	<description>API RESTful de uma loja</description>
 	<properties>

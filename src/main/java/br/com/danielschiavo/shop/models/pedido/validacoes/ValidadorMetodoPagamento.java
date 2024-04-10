@@ -21,27 +21,18 @@ public class ValidadorMetodoPagamento implements ValidadorCriarNovoPedido {
 		MetodoPagamento metodoPagamentoDTO = pedidoDTO.pagamento().metodoPagamento();
 		Long idCartao = pedidoDTO.pagamento().idCartao();
 		String numeroParcelas = pedidoDTO.pagamento().numeroParcelas();
-		if (metodoPagamentoDTO == MetodoPagamento.CARTAO_CREDITO || metodoPagamentoDTO == MetodoPagamento.CARTAO_DEBITO) {
-			if (idCartao == null) {
-				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, é necessário enviar o ID do cartão juntamente.");
-			}
+		
+		if ((metodoPagamentoDTO.precisaDeCartao() == true && idCartao == null) || (metodoPagamentoDTO.podeParcelar() == true && numeroParcelas == null)) {
+			throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, é necessário enviar o idCartao do cliente e o numeroParcelas juntamente.");
+		}
+		if ((metodoPagamentoDTO.precisaDeCartao() == false && idCartao != null) || (metodoPagamentoDTO.podeParcelar() == false && numeroParcelas != null)) {
+			throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, você não deve enviar um idCartao nem o numeroParcelas junto.");
+		}
+		
+		if (idCartao != null) {
 			Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao, cliente);
 			if (!metodoPagamentoDTO.toString().endsWith(cartao.getTipoCartao().toString())) {
 				throw new ValidacaoException("O cartão cadastrado de id número " + cartao.getId() + ", foi cadastrado como um cartão de " + cartao.getTipoCartao().toString() + ", não condiz com o método de pagamento fornecido, que é: " + metodoPagamentoDTO.toString());
-			}
-			if (metodoPagamentoDTO == MetodoPagamento.CARTAO_CREDITO && numeroParcelas == null) {
-				throw new ValidacaoException("É necessário enviar também o número de parcelas, mesmo que seja em 1x");
-			}
-			if ((metodoPagamentoDTO == MetodoPagamento.CARTAO_DEBITO && numeroParcelas != null)) {
-				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, você não pode parcelar uma compra no débito, remova o campo numeroParcelas");
-			}
-		}
-		else {
-			if (idCartao != null) {
-				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, você não deve enviar um ID de cartão junto.");
-			}
-			if (numeroParcelas != null) {
-				throw new ValidacaoException("O método de pagamento escolhido foi " + metodoPagamentoDTO + ", portanto, você não deve enviar o número de parcelas junto.");
 			}
 		}
 	}

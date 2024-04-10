@@ -30,7 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.danielschiavo.shop.JwtUtilTest;
 import br.com.danielschiavo.shop.models.filestorage.ArquivoInfoDTO;
-import br.com.danielschiavo.shop.models.filestorage.MostrarArquivoProdutoDTO;
 import br.com.danielschiavo.shop.services.filestorage.FileStorageProdutoService;
 
 @SpringBootTest
@@ -48,9 +47,6 @@ class FileStorageProdutoControllerTest {
 
 	@MockBean
 	private FileStorageProdutoService fileStorageService;
-	
-	@Autowired
-	private JacksonTester<List<MostrarArquivoProdutoDTO>> listaMostrarArquivoProdutoDTOJson;
 	
 	@Autowired
 	private JacksonTester<List<ArquivoInfoDTO>> listaArquivoInfoDTOJson;
@@ -110,14 +106,11 @@ class FileStorageProdutoControllerTest {
 		when(fileStorageService.mostrarArquivoProdutoPorListaDeNomes(any())).thenReturn(listaArquivoInfoDTO);
 		
 		//ACT
-		MostrarArquivoProdutoDTO mostrarArquivoProdutoDTO = new MostrarArquivoProdutoDTO("Imagemum.jpeg");
-		MostrarArquivoProdutoDTO mostrarArquivoProdutoDTO2 = new MostrarArquivoProdutoDTO("Imagemdois.jpeg");
-		List<MostrarArquivoProdutoDTO> listaMostrarArquivoProdutoDTO = new ArrayList<>(List.of(mostrarArquivoProdutoDTO, mostrarArquivoProdutoDTO2));
-		var response = mvc.perform(get("/shop/admin/filestorage/arquivo-produto")
+		String imagem1 = "Imagemum.jpeg";
+		String imagem2 = "Imagemdois.jpeg";
+		var response = mvc.perform(get("/shop/admin/filestorage/arquivo-produto?arquivo={imagem1}&arquivo={imagem2}", imagem1, imagem2)
 				  				  .header("Authorization", "Bearer " + tokenAdmin)
-								  .contentType(MediaType.APPLICATION_JSON)
-								  .content(listaMostrarArquivoProdutoDTOJson.write(listaMostrarArquivoProdutoDTO)
-								  .getJson()))
+								  .contentType(MediaType.APPLICATION_JSON))
 								  .andReturn().getResponse();
 		
 		//ASSERT

@@ -14,15 +14,15 @@ public class ValidadorTipoEntrega implements ValidadorCriarNovoPedido {
 	public void validar(CriarPedidoDTO pedidoDTO, Cliente cliente) {
 		TipoEntrega tipoEntregaDTO = pedidoDTO.entrega().tipoEntrega();
 		Long idEnderecoDTO = pedidoDTO.entrega().idEndereco();
-		if ((tipoEntregaDTO == TipoEntrega.CORREIOS || tipoEntregaDTO == TipoEntrega.ENTREGA_EXPRESSA) && idEnderecoDTO == null) {
+		
+		if (tipoEntregaDTO.precisaDeEndereco() == true && idEnderecoDTO == null) {
 			throw new ValidacaoException("O tipo de entrega definido foi " + tipoEntregaDTO + ", portanto, é necessário que envie o endereço do local de entrega.");
 		}
 		
-		if (tipoEntregaDTO == TipoEntrega.ENTREGA_DIGITAL || tipoEntregaDTO == TipoEntrega.RETIRADA_NA_LOJA) {
-			if (idEnderecoDTO != null) {
-				throw new ValidacaoException("O tipo de entrega definido foi " + tipoEntregaDTO + ", portanto, não é necessário que envie o idEndereco.");
-			}
+		if (tipoEntregaDTO.precisaDeEndereco() == false && idEnderecoDTO != null) {
+			throw new ValidacaoException("O tipo de entrega definido foi " + tipoEntregaDTO + ", portanto, não é necessário que envie o idEndereco.");
 		}
+		
 	}
 
 }

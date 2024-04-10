@@ -55,14 +55,15 @@ class FileStorageProdutoServiceTest {
     @DisplayName("Deletar arquivo produto no disco deve executar normalmente quando arquivo existe")
     void deletarArquivoProdutoNoDisco_ArquivoExiste_NaoDeveLancarExcecao() throws IOException {
     	//ARRANGE
-        Path pathEsperado = Paths.get(System.getProperty("user.home"), ".shop", "imagens", "produto", "teste.txt");
+        Path pathEsperado = Paths.get("imagens/produto");
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
         	
         	//ACT
-        	fileStorageProdutoService.deletarArquivoProdutoNoDisco("teste.txt");
+        	String arquivo = "teste.jpeg";
+        	fileStorageProdutoService.deletarArquivoProdutoNoDisco(arquivo);
 
         	//ASSERT
-            mockedFiles.verify(() -> Files.delete(pathEsperado), Mockito.times(1));
+            mockedFiles.verify(() -> Files.delete(pathEsperado.resolve(arquivo)), Mockito.times(1));
         }
     }
     
@@ -70,12 +71,12 @@ class FileStorageProdutoServiceTest {
     @DisplayName("Deletar arquivo produto no disco deve lançar exceção quando arquivo não existe")
     void deletarArquivoProdutoNoDisco_ArquivoNaoExiste_DeveLancarExcecao() throws IOException {
     	//ARRANGE
-        Path pathEsperado = Paths.get(System.getProperty("user.home"), ".shop", "imagens", "produto", "teste.txt");
+        Path pathEsperado = Paths.get("imagens/produto/teste.jpeg");
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
         	mockedFiles.when(() -> Files.delete(pathEsperado)).thenThrow(IOException.class);
 
         	//ASSERT + ACT
-        	Assertions.assertThrows(FileStorageException.class, () -> fileStorageProdutoService.deletarArquivoProdutoNoDisco("teste.txt"));
+        	Assertions.assertThrows(FileStorageException.class, () -> fileStorageProdutoService.deletarArquivoProdutoNoDisco("teste.jpeg"));
         }
     }
     
