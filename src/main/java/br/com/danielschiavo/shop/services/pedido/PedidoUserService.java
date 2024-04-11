@@ -1,10 +1,8 @@
 package br.com.danielschiavo.shop.services.pedido;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +17,13 @@ import br.com.danielschiavo.shop.models.cliente.Cliente;
 import br.com.danielschiavo.shop.models.cliente.cartao.Cartao;
 import br.com.danielschiavo.shop.models.cliente.endereco.Endereco;
 import br.com.danielschiavo.shop.models.pedido.Pedido;
-import br.com.danielschiavo.shop.models.pedido.StatusPedido;
+import br.com.danielschiavo.shop.models.pedido.Pedido.PedidoBuilder;
 import br.com.danielschiavo.shop.models.pedido.dto.CriarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.dto.MostrarPedidoDTO;
 import br.com.danielschiavo.shop.models.pedido.dto.MostrarProdutoDoPedidoDTO;
-import br.com.danielschiavo.shop.models.pedido.entrega.EnderecoPedido;
-import br.com.danielschiavo.shop.models.pedido.entrega.Entrega;
 import br.com.danielschiavo.shop.models.pedido.itempedido.ItemPedido;
-import br.com.danielschiavo.shop.models.pedido.pagamento.CartaoPedido;
+import br.com.danielschiavo.shop.models.pedido.itempedido.ItemPedido.ItemPedidoBuilder;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
-import br.com.danielschiavo.shop.models.pedido.pagamento.Pagamento;
-import br.com.danielschiavo.shop.models.pedido.pagamento.StatusPagamento;
 import br.com.danielschiavo.shop.models.pedido.validacoes.ValidadorCriarNovoPedido;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.repositories.PedidoRepository;
@@ -71,20 +65,23 @@ public class PedidoUserService {
 	
 	@Autowired
 	private PedidoMapper pedidoMapper;
+	
+	private PedidoBuilder pedidoBuilder = Pedido.builder();
+	
+	private ItemPedidoBuilder itemPedidoBuilder = ItemPedido.builder();
 
 	public Page<MostrarPedidoDTO> pegarPedidosClientePorIdToken(Pageable pageable) {
 		Cliente cliente = usuarioAutenticadoService.getCliente();
-		
 		Page<Pedido> pagePedidos = pedidoRepository.findAllByCliente(cliente, pageable);
 
 		List<MostrarPedidoDTO> list = new ArrayList<>();
-
 		for (Pedido pedido : pagePedidos) {
 			List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = pedidoMapper.pedidoParaMostrarProdutoDoPedidoDTO(pedido, fileStoragePedidoService);
 
 			var mostrarPedidoDTO = new MostrarPedidoDTO(pedido, listaMostrarProdutoDoPedidoDTO);
 			list.add(mostrarPedidoDTO);
 		}
+		
 		return new PageImpl<>(list, pagePedidos.getPageable(),
 				pagePedidos.getTotalElements());
 	}
@@ -99,8 +96,10 @@ public class PedidoUserService {
 			List<Long> ids = pedidoDTO.items().stream().map(item -> item.idProduto()).collect(Collectors.toList());
 			carrinhoUtilidadeService.deletarItemsCarrinhoAposPedidoGerado(ids, cliente);
 		}
-		processarPagamento(pedidoDTO);
-		processarEntrega(pedidoDTO);
+		
+		pedidoDTO.pagamento().metodoPagamento().getProcessador(pedidoDTO, cliente).executa();
+		pedidoDTO.entrega().tipoEntrega().getProcessador(pedidoDTO, cliente).executa();
+		
 		pedidoRepository.save(pedido);
 		
 		List<MostrarProdutoDoPedidoDTO> listaMostrarProdutoDoPedidoDTO = pedidoMapper.pedidoParaMostrarProdutoDoPedidoDTO(pedido, fileStoragePedidoService);
@@ -114,128 +113,55 @@ public class PedidoUserService {
 //	------------------------------
 //	------------------------------
 	
-	private void processarEntrega(CriarPedidoDTO pedidoDTO) {
-		switch (pedidoDTO.entrega().tipoEntrega()) {
-		case CORREIOS: {
-			System.out.println("Processar entrega via Correios");
-			break;
-		}
-
-		case ENTREGA_DIGITAL: {
-			System.out.println("Processar entrega via digital");
-			break;
-		}
-
-		case ENTREGA_EXPRESSA: {
-			System.out.println("Processar entrega via entrega expressa");
-			break;
-		}
-
-		case RETIRADA_NA_LOJA: {
-			System.out.println("Processar entrega via retirada na loja");
-			break;
-		}
-		}
-	}
-
-	private void processarPagamento(CriarPedidoDTO pedidoDTO) {
-		switch (pedidoDTO.pagamento().metodoPagamento()) {
-		case BOLETO: {
-			System.out.println("Gerar boleto");
-			break;
-		}
-
-		case CARTAO_CREDITO: {
-			System.out.println("Efetivar compra cartão de crédito");
-			break;
-		}
-
-		case CARTAO_DEBITO: {
-			System.out.println("Efetivar compra cartão de débito");
-			break;
-		}
-
-		case PIX: {
-			System.out.println("Gerar QR Code Píx");
-			break;
-		}
-		}
-	}
-
+	
 	private Pedido criarEntidadePedidoERelacionamentos(CriarPedidoDTO pedidoDTO, Cliente cliente) {
-		Pedido pedido = criarPedido(cliente);
-		criarESetarPagamento(pedidoDTO, pedido, cliente);
-		criarESetarEntrega(pedidoDTO, pedido, cliente);
-		criarESetarItemsPedido(pedidoDTO, pedido);
-		calcularESetarValorTotal(pedido);
-		return pedido;
+		PedidoBuilder pedidoBuilder = this.pedidoBuilder.cliente(cliente);
+		criarESetarPagamento(pedidoDTO, pedidoBuilder, cliente);
+		criarESetarEntrega(pedidoDTO, pedidoBuilder, cliente);
+		criarESetarItemsPedido(pedidoDTO, pedidoBuilder);
+		return pedidoBuilder.getPedido();
 	}
 
-	private Entrega criarESetarEntrega(CriarPedidoDTO pedidoDTO, Pedido pedido, Cliente cliente) {
+	private PedidoBuilder criarESetarEntrega(CriarPedidoDTO pedidoDTO, PedidoBuilder pedidoBuilder, Cliente cliente) {
 		Long idEndereco = pedidoDTO.entrega().idEndereco();
-		EnderecoPedido enderecoPedido = null;
+
+		pedidoBuilder.entregaIdTipo(null, pedidoDTO.entrega().tipoEntrega());
 		if (idEndereco != null) {
 			Endereco endereco = enderecoService.verificarSeEnderecoExistePorIdEnderecoECliente(idEndereco, cliente);
-			enderecoPedido = new EnderecoPedido(endereco);
+			pedidoBuilder.entregaEndereco(endereco);
 		}
-		Entrega entrega = new Entrega(null, pedidoDTO.entrega().tipoEntrega(), enderecoPedido, pedido);
-		pedido.setEntrega(entrega);
-		return entrega;
+		return pedidoBuilder;
 	}
 
-	private Pedido criarPedido(Cliente cliente) {
-		return new Pedido(null,
-						  null,
-						  LocalDateTime.now(),
-						  cliente.getNome() + " " + cliente.getSobrenome(),
-						  cliente.getCpf(),
-						  StatusPedido.A_PAGAR,
-						  new ArrayList<ItemPedido>(),
-						  null,
-						  null,
-						  cliente);
-		
-	}
-
-	private void calcularESetarValorTotal(Pedido pedido) {
-		 AtomicReference<BigDecimal> valorTotal = new AtomicReference<>(BigDecimal.ZERO);
-		 pedido.getItemsPedido().forEach(item -> {
-			 valorTotal.updateAndGet(v -> v.add(item.getSubTotal()));
-		 });
-		 pedido.setValorTotal(valorTotal.get());
-	}
-
-	private void criarESetarItemsPedido(CriarPedidoDTO pedidoDTO, Pedido pedido) {
+	private void criarESetarItemsPedido(CriarPedidoDTO pedidoDTO, PedidoBuilder pedidoBuilder) {
 		pedidoDTO.items().forEach(item -> {
 			Produto produto = produtoUtilidadeService.verificarSeProdutoExistePorIdEAtivoTrue(item.idProduto());
 			String first = produtoUtilidadeService.pegarNomePrimeiraImagem(produto);
 			String nomeImagemPedido = fileStoragePedidoService.persistirOuRecuperarImagemPedido(first, produto.getId());
-			ItemPedido itemPedido = new ItemPedido(null, produto.getPreco(), item.quantidade(), produto.getNome(), nomeImagemPedido, null, produto.getId(), pedido);
-			pedido.adicionarItemPedido(itemPedido);
-
-			BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(item.quantidade()));
-			itemPedido.setSubTotal(subTotal);
+			ItemPedido itemPedido = itemPedidoBuilder.preco(produto.getPreco())
+							 .quantidade(item.quantidade())
+							 .nomeProduto(produto.getNome())
+							 .primeiraImagem(nomeImagemPedido)
+							 .subTotal(produto.getPreco().multiply(BigDecimal.valueOf(item.quantidade())))
+							 .produtoId(produto.getId()).build();
+			pedidoBuilder.comItemPedido(itemPedido);
 		});
 	}
 
-	private Pagamento criarESetarPagamento(CriarPedidoDTO pedidoDTO, Pedido pedido, Cliente cliente) {
+	private PedidoBuilder criarESetarPagamento(CriarPedidoDTO pedidoDTO, PedidoBuilder pedidoBuilder, Cliente cliente) {
 		MetodoPagamento metodoPagamentoDTO = pedidoDTO.pagamento().metodoPagamento();
-		System.out.println("TESTE" + metodoPagamentoDTO);
-		Pagamento pagamento = new Pagamento(null, metodoPagamentoDTO, null, null, null, pedido);
-		if (metodoPagamentoDTO == MetodoPagamento.BOLETO || metodoPagamentoDTO == MetodoPagamento.PIX) {
-			pagamento.setStatusPagamento(StatusPagamento.PENDENTE);
-		}
-		if (metodoPagamentoDTO == MetodoPagamento.CARTAO_CREDITO || metodoPagamentoDTO == MetodoPagamento.CARTAO_DEBITO) {
-			pagamento.setStatusPagamento(StatusPagamento.EM_PROCESSAMENTO);
-			Long idCartao = pedidoDTO.pagamento().idCartao();
-			CartaoPedido cartaoPedido = null;
-			if (idCartao != null) {
-				Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao, cliente);
-				cartaoPedido = new CartaoPedido(cartao, pedidoDTO.pagamento().numeroParcelas());
-				pagamento.setCartaoPedido(cartaoPedido);
+		pedidoBuilder.pagamentoIdMetodo(null, metodoPagamentoDTO);
+		
+		Long idCartao = pedidoDTO.pagamento().idCartao();
+		if (idCartao != null) {
+			Cartao cartao = cartaoService.verificarSeCartaoExistePorIdCartaoECliente(idCartao, cliente);
+			pedidoBuilder.pagamentoCartao(cartao);
+			String numeroParcelas = pedidoDTO.pagamento().numeroParcelas();
+			if (numeroParcelas != null) {
+				pedidoBuilder.pagamentoNumeroDeParcelas(numeroParcelas);
 			}
 		}
-		pedido.setPagamento(pagamento);
-		return pagamento;
+		
+		return pedidoBuilder;
 	}
 }

@@ -28,7 +28,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "cliente")
 @Builder
 @EqualsAndHashCode
 public class Role {

@@ -14,7 +14,7 @@ services:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
   shop:
-    image: danielschiavo/shop:1.0.1
+    image: danielschiavo/shop:1.0.2
     container_name: shop
     networks:
       - compose-shop

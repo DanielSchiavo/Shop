@@ -26,7 +26,7 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "pedido")
 @Builder
 @EqualsAndHashCode(of = "id")
 @Entity

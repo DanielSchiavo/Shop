@@ -141,8 +141,8 @@ class PedidoUserServiceTest {
 		//Endereco
 		Endereco endereco = enderecoBuilder.cep("12345678").rua("Divinopolis").numero("15").complemento("Sem complemento").bairro("Bela vista").cidade("Cariacica").estado("ES").build();
 		//Pedido
-		Pedido pedido = pedidoBuilder.cliente(cliente).comItemPedido(1L, 5, produto).comItemPedido(2L, 3, produto2).pagamentoIdMetodo(1L, MetodoPagamento.BOLETO).entregaIdTipo(1L, TipoEntrega.CORREIOS).entregaEndereco(endereco).getPedido();
-		Pedido pedido2 = pedidoBuilder.cliente(cliente).comItemPedido(2L, 3, produto2).pagamentoIdMetodo(1L, MetodoPagamento.BOLETO).entregaIdTipo(1L, TipoEntrega.CORREIOS).entregaEndereco(endereco).getPedido();
+		Pedido pedido = pedidoBuilder.cliente(cliente).comItemPedidoIdQuantidadeProduto(1L, 5, produto).comItemPedidoIdQuantidadeProduto(2L, 3, produto2).pagamentoIdMetodo(1L, MetodoPagamento.BOLETO).entregaIdTipo(1L, TipoEntrega.CORREIOS).entregaEndereco(endereco).getPedido();
+		Pedido pedido2 = pedidoBuilder.cliente(cliente).comItemPedidoIdQuantidadeProduto(2L, 3, produto2).pagamentoIdMetodo(1L, MetodoPagamento.BOLETO).entregaIdTipo(1L, TipoEntrega.CORREIOS).entregaEndereco(endereco).getPedido();
 		List<Pedido> listaPedido = new ArrayList<>(List.of(pedido, pedido2));
 		Page<Pedido> pagePedido =  new PageImpl<>(listaPedido);
 		

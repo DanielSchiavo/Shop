@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,7 +19,6 @@ import br.com.danielschiavo.shop.models.pedido.itempedido.ItemPedido;
 import br.com.danielschiavo.shop.models.pedido.pagamento.CartaoPedido;
 import br.com.danielschiavo.shop.models.pedido.pagamento.MetodoPagamento;
 import br.com.danielschiavo.shop.models.pedido.pagamento.Pagamento;
-import br.com.danielschiavo.shop.models.pedido.pagamento.StatusPagamento;
 import br.com.danielschiavo.shop.models.produto.Produto;
 import br.com.danielschiavo.shop.models.produto.arquivosproduto.ArquivoProduto;
 import jakarta.persistence.CascadeType;
@@ -90,6 +91,29 @@ public class Pedido {
 		this.itemsPedido.add(itemPedido);
 	}
 	
+    public void verificarEAtualizarItemsPedidoDuplicados() {
+        Map<Long, ItemPedido> mapIdProdutoParaItemPedido = new HashMap<>();
+
+        for (ItemPedido itemPedido : itemsPedido) {
+            Long idProduto = itemPedido.getProdutoId();
+            int quantidade = itemPedido.getQuantidade();
+
+            if (mapIdProdutoParaItemPedido.containsKey(idProduto)) {
+                ItemPedido itemExistente = mapIdProdutoParaItemPedido.get(idProduto);
+                int novaQuantidade = itemExistente.getQuantidade() + quantidade;
+                itemExistente.setQuantidade(novaQuantidade);
+                itemExistente.setSubTotal(itemExistente.getSubTotal().add(itemPedido.getSubTotal()));
+            } else {
+                mapIdProdutoParaItemPedido.put(idProduto, itemPedido);
+            }
+        }
+
+        itemsPedido = new ArrayList<>(mapIdProdutoParaItemPedido.values());
+    }
+	
+	
+	
+	
 	public static PedidoBuilder builder() {
 		return new PedidoBuilder();
 	}
@@ -119,7 +143,7 @@ public class Pedido {
 	        return this;
 	    }
 
-	    public PedidoBuilder comItemPedido(Long id, Integer quantidade, Produto produto) {
+	    public PedidoBuilder comItemPedidoIdQuantidadeProduto(Long id, Integer quantidade, Produto produto) {
 			ArquivoProduto arquivoProduto = produto.getArquivosProduto().stream().filter(ap -> ap.getPosicao() == 0).findFirst().get();
 	        ItemPedido itemPedido = new ItemPedido(id, produto.getPreco(), quantidade, produto.getNome(), arquivoProduto.getNome(), null, produto.getId(), this.pedido);
 	        BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(quantidade));
@@ -128,15 +152,15 @@ public class Pedido {
 	        return this;
 	    }
 	    
+	    public PedidoBuilder comItemPedido(ItemPedido itemPedido) {
+	    	this.pedido.adicionarItemPedido(itemPedido);
+	    	return this;
+	    }
+	    
 	    public PedidoBuilder pagamentoIdMetodo(Long id, MetodoPagamento metodoPagamento) {
 	    	this.pedido.getPagamento().setId(id);
 	    	this.pedido.getPagamento().setMetodoPagamento(metodoPagamento);
-	       	if (metodoPagamento == MetodoPagamento.PIX || metodoPagamento == MetodoPagamento.BOLETO) {
-	    		this.pedido.getPagamento().setStatusPagamento(StatusPagamento.PENDENTE);
-	    	}
-	    	if (metodoPagamento == MetodoPagamento.CARTAO_CREDITO || metodoPagamento == MetodoPagamento.CARTAO_DEBITO) {
-	    		this.pedido.getPagamento().setStatusPagamento(StatusPagamento.EM_PROCESSAMENTO);
-	    	}
+	    	this.pedido.getPagamento().setStatusPagamento(metodoPagamento.statusPagamentoDeveSer());
 	        return this;
 	    }
 	    
@@ -170,15 +194,23 @@ public class Pedido {
 	    
 	    public Pedido getPedido() {
 	    	if (this.pedido != null) {
+	    		this.pedido.verificarEAtualizarItemsPedidoDuplicados();
 	    		Pagamento pagamentoDto = this.pedido.getPagamento();
+	    		
 	    		CartaoPedido cartaoPedidoDTO = this.pedido.getPagamento().getCartaoPedido();
-	            Pagamento pagamento = new Pagamento(pagamentoDto.getId(), pagamentoDto.getMetodoPagamento(), pagamentoDto.getStatusPagamento(), pagamentoDto.getDataPagamento(), 
-	            		cartaoPedidoDTO != null ? new CartaoPedido(cartaoPedidoDTO.getNomeBanco(), cartaoPedidoDTO.getNumeroCartao(), cartaoPedidoDTO.getNomeNoCartao(), cartaoPedidoDTO.getValidadeCartao(), cartaoPedidoDTO.getNumeroDeParcelas(), cartaoPedidoDTO.getTipoCartao()) : null, null);
+	            Pagamento pagamento = new Pagamento();
+	            pagamento.setId(pagamentoDto.getId());;
+	            pagamento.setMetodoPagamento(pagamentoDto.getMetodoPagamento());
+	    		pagamento.setStatusPagamento(pagamentoDto.getStatusPagamento());
+	    		pagamento.setDataPagamento(pagamentoDto.getDataPagamento());
+	    		pagamento.setCartaoPedido(cartaoPedidoDTO != null ? new CartaoPedido(cartaoPedidoDTO.getNomeBanco(), cartaoPedidoDTO.getNumeroCartao(), cartaoPedidoDTO.getNomeNoCartao(), cartaoPedidoDTO.getValidadeCartao(), cartaoPedidoDTO.getNumeroDeParcelas(), cartaoPedidoDTO.getTipoCartao()) : null);
 	            
 	            Entrega entregaDto = this.pedido.getEntrega();
 	            EnderecoPedido enderecoPedidoDto = this.pedido.getEntrega().getEnderecoPedido();
-	            Entrega entrega = new Entrega(entregaDto.getId(), entregaDto.getTipoEntrega(), 
-	            		enderecoPedidoDto != null ? new EnderecoPedido(enderecoPedidoDto.getCep(), enderecoPedidoDto.getRua(), enderecoPedidoDto.getNumero(), enderecoPedidoDto.getComplemento(), enderecoPedidoDto.getBairro(), enderecoPedidoDto.getCidade(), enderecoPedidoDto.getEstado()) : null, null);
+	            Entrega entrega = new Entrega();
+	            entrega.setId(entregaDto.getId());
+	            entrega.setTipoEntrega(entregaDto.getTipoEntrega());
+	            entrega.setEnderecoPedido(enderecoPedidoDto != null ? new EnderecoPedido(enderecoPedidoDto.getCep(), enderecoPedidoDto.getRua(), enderecoPedidoDto.getNumero(), enderecoPedidoDto.getComplemento(), enderecoPedidoDto.getBairro(), enderecoPedidoDto.getCidade(), enderecoPedidoDto.getEstado()) : null);
 	            
 	            Pedido copiaPedido = new Pedido();
 	            copiaPedido.setId(this.pedido.getId());
@@ -186,12 +218,14 @@ public class Pedido {
 	            copiaPedido.setNomeCliente(this.pedido.getNomeCliente());
 	            copiaPedido.setCpf(this.pedido.getCpf());
 	            copiaPedido.setStatusPedido(this.pedido.getStatusPedido());
-	            AtomicReference<BigDecimal> valorTotal = new AtomicReference<>(BigDecimal.ZERO);
-	            this.pedido.getItemsPedido().forEach(item -> {
-	            	copiaPedido.adicionarItemPedido(new ItemPedido(item.getId(), item.getPreco(), item.getQuantidade(), item.getNomeProduto(), item.getPrimeiraImagem(), item.getSubTotal(), item.getProdutoId(), null));
-	            	valorTotal.updateAndGet(v -> v.add(item.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade()))));
-	            });
-	            copiaPedido.setValorTotal(valorTotal.get());
+	            if (this.pedido.getItemsPedido().size() >= 1) {
+	            	AtomicReference<BigDecimal> valorTotal = new AtomicReference<>(BigDecimal.ZERO);
+	            	this.pedido.getItemsPedido().forEach(item -> {
+	            		copiaPedido.adicionarItemPedido(new ItemPedido(item.getId(), item.getPreco(), item.getQuantidade(), item.getNomeProduto(), item.getPrimeiraImagem(), item.getSubTotal(), item.getProdutoId(), null));
+	            		valorTotal.updateAndGet(v -> v.add(item.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade()))));
+	            	});
+	            	copiaPedido.setValorTotal(valorTotal.get());
+	            }
 	            copiaPedido.setPagamento(pagamento);
 	            copiaPedido.setEntrega(entrega);
 	            copiaPedido.setCliente(this.pedido.getCliente());

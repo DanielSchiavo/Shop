@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -19,22 +18,18 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.danielschiavo.shop.JwtUtilTest;
-import br.com.danielschiavo.shop.infra.security.TokenJWTService;
 import br.com.danielschiavo.shop.models.cliente.dto.MostrarClienteDTO;
 import br.com.danielschiavo.shop.models.cliente.dto.MostrarClienteDTO.MostrarClienteDTOBuilder;
-import br.com.danielschiavo.shop.repositories.cliente.ClienteRepository;
 import br.com.danielschiavo.shop.services.cliente.admin.ClienteAdminService;
 
 @SpringBootTest
@@ -61,7 +56,7 @@ class ClienteAdminControllerTest {
 	@Test
 	@DisplayName("Admin deletar cliente deve retornar http 201 quando informacoes estão válidas")
 	void deletarClientePorId_AdminValido_DeveRetornarNoContent() throws IOException, Exception {
-		//ARRANGE
+		//ARRANGE 
 		doNothing().when(clienteService).adminDeletarClientePorId(any());
 		
 		//ACT

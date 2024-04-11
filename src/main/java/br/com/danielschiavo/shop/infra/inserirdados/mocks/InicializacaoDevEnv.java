@@ -84,8 +84,8 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 				.getCategorias();
 		categoriaRepository.saveAll(categorias);
 		
-		Produto produto = produtoBuilder
-						  .id(null)
+		List<Produto> produtos = produtoBuilder
+					.id(null)
 					 	  .nome("Teclado RedDragon switch vermelho")
 						  .descricao("Teclado reddragon, switch vermelho, sem teclado numérico pt-br, com leds, teclas macro, switch óptico, teclas anti-desgaste")
 						  .preco(200.00)
@@ -94,9 +94,18 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 						  .tipoEntregaIdTipo(null, TipoEntrega.RETIRADA_NA_LOJA)
 						  .arquivoProdutoIdNomePosicao(null, "Padrao.jpeg", (byte) 0)
 						  .subCategoria(categorias.get(0).getSubCategorias().get(0))
-						  .getProduto();
+					.id(null)
+					 	  .nome("Mouse RedDragon")
+						  .descricao("Descricao mouse reddragon")
+						  .preco(200.00)
+						  .quantidade(999)
+						  .ativo(true)
+						  .tipoEntregaIdTipo(null, TipoEntrega.RETIRADA_NA_LOJA)
+						  .arquivoProdutoIdNomePosicao(null, "Padrao.jpeg", (byte) 0)
+						  .subCategoria(categorias.get(0).getSubCategorias().get(0))
+						  .getProdutos();
 						  
-		produtoRepository.save(produto);
+		produtoRepository.saveAll(produtos);
 
 		List<Cliente> clientes = clienteBuilder
 				.id(1L)
@@ -112,7 +121,7 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 						.adicionarRole(roleBuilder.id(null)
 												  .role(NomeRole.ADMIN).build())
 						.carrinho(true)
-						.comItemCarrinhoIdQuantidadeProduto(null, 3, produto)
+						.comItemCarrinhoIdQuantidadeProduto(null, 3, produtos.get(0))
 						.adicionarEndereco(enderecoBuilder.id(null)
 														  .cep("29142298")
 														  .rua("NaoSeiONome")
@@ -161,11 +170,11 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 		
 		List<Pedido> pedidos = pedidoBuilder
 				.cliente(clientes.get(0))
-					 .comItemPedido(null, 2, produto)
+					 .comItemPedidoIdQuantidadeProduto(null, 2, produtos.get(0))
 					 .pagamentoIdMetodo(null, MetodoPagamento.PIX)
 					 .entregaIdTipo(null, TipoEntrega.ENTREGA_DIGITAL)
 				.cliente(clientes.get(1))
-					 .comItemPedido(null, 2, produto)
+					 .comItemPedidoIdQuantidadeProduto(null, 2, produtos.get(1))
 					 .pagamentoIdMetodo(null, MetodoPagamento.PIX)
 					 .entregaIdTipo(null, TipoEntrega.ENTREGA_DIGITAL)
 					 .getPedidos();

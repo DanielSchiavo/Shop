@@ -26,7 +26,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "pedido")
 @Builder
 @Entity
 public class Entrega {
