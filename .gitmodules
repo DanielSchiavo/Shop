@@ -1,0 +1,12 @@
+[submodule "shop-compartilhado"]
+	path = shop-compartilhado
+	url = git@github.com:DanielSchiavo/shop-compartilhado.git
+[submodule "shop-admin"]
+	path = shop-admin
+	url = git@github.com:DanielSchiavo/shop-admin.git
+[submodule "shop-user"]
+	path = shop-user
+	url = git@github.com:DanielSchiavo/shop-user.git
+[submodule "shop-dominio"]
+	path = shop-dominio
+	url = git@github.com:DanielSchiavo/shop-dominio.git

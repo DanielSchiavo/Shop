@@ -1,5 +1,0 @@
-ALTER TABLE clientes
-ALTER COLUMN celular SET NOT NULL;
-
-ALTER TABLE clientes
-ALTER COLUMN foto_perfil SET NOT NULL;
