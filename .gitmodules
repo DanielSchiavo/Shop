@@ -10,3 +10,7 @@
 [submodule "shop-dominio"]
 	path = shop-dominio
 	url = git@github.com:DanielSchiavo/shop-dominio.git
+[submodule "shop-filestorage"]
+	path = shop-filestorage
+	url = git@github.com:DanielSchiavo/shop-filestorage.git
+	branch = main

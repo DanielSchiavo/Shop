@@ -11,11 +11,12 @@ Para executar o projeto basta fazer o pull do projeto, no prompt de comando nave
 
 ## Demonstração
 #### Esse projeto foi desenvolvido para mostrar conhecimento em:
+- Eclipse
 - RESTful API
 - MVC com camada Service
 - JDK 17
-- Spring Boot 3.2.4
-- Maven
+- Spring Boot 3.2.5
+- Maven / Modulos
 - JPA / Hibernate
 - PostgreSQL
 - Lombok
@@ -26,5 +27,5 @@ Para executar o projeto basta fazer o pull do projeto, no prompt de comando nave
 - Spring Validation
 - Swagger
 - Postman
-- Git/GitHub
+- Git / GitHub / SubModulos
 - Docker
