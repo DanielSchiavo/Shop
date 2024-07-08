@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="shop-compartilhado-1.0.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/shop-compartilhado/target/shop-compartilhado-1.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

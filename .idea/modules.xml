@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/src/Shop.iml" filepath="$PROJECT_DIR$/src/Shop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-admin/src/main/main.iml" filepath="$PROJECT_DIR$/shop-admin/src/main/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-filestorage/src/main/main1.iml" filepath="$PROJECT_DIR$/shop-filestorage/src/main/main1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-user/src/main/main2.iml" filepath="$PROJECT_DIR$/shop-user/src/main/main2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-compartilhado/src/shop-compartilhado.iml" filepath="$PROJECT_DIR$/shop-compartilhado/src/shop-compartilhado.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-dominio/shop-dominio.iml" filepath="$PROJECT_DIR$/shop-dominio/shop-dominio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-admin/target/target.iml" filepath="$PROJECT_DIR$/shop-admin/target/target.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-compartilhado/target/target1.iml" filepath="$PROJECT_DIR$/shop-compartilhado/target/target1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-user/target/target2.iml" filepath="$PROJECT_DIR$/shop-user/target/target2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-filestorage/src/test/test.iml" filepath="$PROJECT_DIR$/shop-filestorage/src/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-admin/src/test/test1.iml" filepath="$PROJECT_DIR$/shop-admin/src/test/test1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-user/src/test/test2.iml" filepath="$PROJECT_DIR$/shop-user/src/test/test2.iml" />
+    </modules>
+  </component>
+</project>
