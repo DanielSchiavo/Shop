@@ -1,6 +1,8 @@
 package br.com.danielschiavo.produto.controller.user;
 
-import br.com.danielschiavo.produto.service.user.CategoriaUserService;
+import br.com.danielschiavo.produto.model.entity.Categoria;
+import br.com.danielschiavo.produto.service.CategoriaService;
+import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,12 +20,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class CategoriaUserController {
 	
 	@Autowired
-	private CategoriaUserService categoriaService;
+	private CategoriaService categoriaService;
 	
 	@GetMapping("/publico/categoria")
 	@Operation(summary = "Lista todas as categorias existentes")
 	public ResponseEntity<?> listarCategorias(Pageable pageable){		
-		Page<?> lista = categoriaService.listarCategorias(pageable);
-		return ResponseEntity.ok(lista);
+		Page<Categoria> pageCategorias = categoriaService.listarCategorias(pageable);
+		return ResponseEntity.ok(Response.success("Sucesso ao recuperar as categorias", pageCategorias));
 	}
 }

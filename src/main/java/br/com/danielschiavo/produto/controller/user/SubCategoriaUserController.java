@@ -1,8 +1,7 @@
 package br.com.danielschiavo.produto.controller.user;
 
-import br.com.danielschiavo.produto.model.categoria.subcategoria.MostrarSubCategoriaComCategoriaResponse;
-import br.com.danielschiavo.produto.model.categoria.subcategoria.SubCategoria;
-import br.com.danielschiavo.produto.service.user.SubCategoriaUserService;
+import br.com.danielschiavo.produto.model.entity.SubCategoria;
+import br.com.danielschiavo.produto.service.SubCategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class SubCategoriaUserController {
 	
 	@Autowired
-	private SubCategoriaUserService subCategoriaService;
+	private SubCategoriaService subCategoriaService;
 	
 	@GetMapping("/publico/sub-categoria")
 	@Operation(summary = "Lista todas as subcategorias existentes")

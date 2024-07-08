@@ -1,9 +1,10 @@
 package br.com.danielschiavo.produto.controller.admin;
 
-import br.com.danielschiavo.produto.model.AlterarProdutoRequest;
-import br.com.danielschiavo.produto.model.CadastrarProdutoRequest;
-import br.com.danielschiavo.produto.model.Produto;
-import br.com.danielschiavo.produto.service.admin.ProdutoAdminService;
+import br.com.danielschiavo.produto.dto.request.AlterarProdutoRequest;
+import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
+import br.com.danielschiavo.produto.model.entity.Produto;
+import br.com.danielschiavo.produto.service.produto.ProdutoService;
+import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,55 +24,41 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping
+@RequestMapping("/admin/produtos")
 @Tag(name = "Produto - Admin", description = "Todos endpoints relacionados com os produtos da loja, para uso exclusivo dos administradores")
 public class ProdutoAdminController {
 
 	@Autowired
-	private ProdutoAdminService produtoService;
-	
-	@DeleteMapping("/admin/produto/{idProduto}")
-	@Operation(summary = "Deleta um produto com o id fornecido no parametro da requisição")
+	private ProdutoService produtoService;
+
+	@DeleteMapping("/{produtoId}")
 	@SecurityRequirement(name = "bearer-key")
-	public ResponseEntity<?> deletarProdutoPorId(@PathVariable @NotNull Long idProduto) {
-		produtoService.deletarProdutoPorId(idProduto);
-		return ResponseEntity.ok("Produto deletado com sucesso!");
+	@Operation(summary = "Deleta um produto com o id fornecido no parametro da requisição")
+	public ResponseEntity<?> deletarProduto(@PathVariable @NotNull Long produtoId) {
+		produtoService.deletarProdutoPorId(produtoId);
+		return ResponseEntity.ok(Response.success("Produto deletado com sucesso!", null));
 	}
-	
-	@PostMapping(path = "/admin/produto")
-	@ResponseBody
+
+	@PostMapping
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cadastra um novo produto")
 	public ResponseEntity<?> cadastrarProduto(
-			@RequestBody @Valid CadastrarProdutoRequest cadastrarProdutoDTO,
-			UriComponentsBuilder uriBuilder
- 			) {
-		try {
-			Produto produto = produtoService.cadastrarProduto(cadastrarProdutoDTO);
-
-			var uri = uriBuilder.path("/products/{id}").buildAndExpand(produto.getId()).toUri();
-			return ResponseEntity.created(uri).body("Produto cadastrado com sucesso!");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+			@RequestBody @Valid CadastrarProdutoRequest request,
+			UriComponentsBuilder uriBuilder) {
+		Produto produto = produtoService.cadastrarProduto(request);
+		var uri = uriBuilder.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
+		return ResponseEntity.created(uri).body(Response.success("Produto cadastrado com sucesso!", null));
 	}
 
-	@PutMapping("/admin/produto/{idProduto}")
+	@PutMapping("/{produtoId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Altera um produto com o id fornecido no parametro da requisição")
 	public ResponseEntity<?> alterarProdutoPorId(
-			@PathVariable Long idProduto,
-			@RequestBody AlterarProdutoRequest request
-			) {
-		try {
-			Produto respostaAlterarProduto = produtoService.alterarProdutoPorId(idProduto, request);
+			@PathVariable Long produtoId,
+			@RequestBody AlterarProdutoRequest request) {
+		Produto produto = produtoService.alterarProdutoPorId(produtoId, request);
 			
-			return ResponseEntity.ok(respostaAlterarProduto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		return ResponseEntity.ok(Response.success("Produto alterado com sucesso!", null));
 	}
 
 }

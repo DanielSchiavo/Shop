@@ -1,10 +1,10 @@
 package br.com.danielschiavo.produto.controller.admin;
 
-import br.com.danielschiavo.produto.model.categoria.subcategoria.AlterarSubCategoriaRequest;
-import br.com.danielschiavo.produto.model.categoria.subcategoria.CadastrarSubCategoriaRequest;
-import br.com.danielschiavo.produto.model.categoria.subcategoria.MostrarSubCategoriaResponse;
-import br.com.danielschiavo.produto.model.categoria.subcategoria.SubCategoria;
-import br.com.danielschiavo.produto.service.admin.SubCategoriaAdminService;
+import br.com.danielschiavo.produto.dto.request.AlterarSubCategoriaRequest;
+import br.com.danielschiavo.produto.dto.request.CadastrarSubCategoriaRequest;
+import br.com.danielschiavo.produto.model.entity.SubCategoria;
+import br.com.danielschiavo.produto.service.SubCategoriaService;
+import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,31 +28,31 @@ import jakarta.validation.Valid;
 public class SubCategoriaAdminController {
 	
 	@Autowired
-	private SubCategoriaAdminService subCategoriaAdminService;
+	private SubCategoriaService subCategoriaService;
 	
-	@DeleteMapping("/admin/sub-categoria/{idSubCategoria}")
+	@DeleteMapping("/admin/sub-categoria/{subCategoriaId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Deleta uma subcategoria com o id fornecido no parametro da requisição")
-	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long idSubCategoria){		
-		subCategoriaAdminService.deletarSubCategoriaPorId(idSubCategoria);
-		return ResponseEntity.noContent().build();
+	public ResponseEntity<?> deletarSubCategoriaPorId(@PathVariable Long subCategoriaId){
+		subCategoriaService.deletarSubCategoriaPorId(subCategoriaId);
+		return ResponseEntity.ok(Response.success("Sub Categoria deletada com sucesso!", null));
 	}
 	
 	@PostMapping("/admin/sub-categoria")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cria uma nova subcategoria, uma subcategoria tem que ter uma categoria a qual ela está relacionada")
 	public ResponseEntity<?> cadastrarSubCategoria(@RequestBody @Valid CadastrarSubCategoriaRequest dto, UriComponentsBuilder uriBuilder) {
-		SubCategoria subCategoria = subCategoriaAdminService.cadastrarSubCategoria(dto);
+		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body("Sub Categoria cadastrada com sucesso!");
+		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Sub Categoria cadastrada com sucesso!", subCategoria));
 	}
 	
-	@PutMapping("/admin/sub-categoria/{idSubCategoria}")
+	@PutMapping("/admin/sub-categoria/{subCategoriaId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Altera o nome de uma subcategoria com o id fornecido no parametro da requisição")
-	public ResponseEntity<?> alterarSubCategoriaPorId(@PathVariable Long idSubCategoria, @RequestBody AlterarSubCategoriaRequest categoryDTO) {
-		SubCategoria subCategoria = subCategoriaAdminService.alterarSubCategoriaPorId(idSubCategoria, categoryDTO);
+	public ResponseEntity<?> alterarSubCategoriaPorId(@PathVariable Long subCategoriaId, @RequestBody AlterarSubCategoriaRequest request) {
+		SubCategoria subCategoria = subCategoriaService.alterarSubCategoriaPorId(request, subCategoriaId);
 		
-		return ResponseEntity.ok("Sub Categoria alterada com sucesso!");
+		return ResponseEntity.ok(Response.success("Sub Categoria alterada com sucesso!", null));
 	}
 }

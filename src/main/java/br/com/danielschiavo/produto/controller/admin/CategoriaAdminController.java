@@ -1,9 +1,9 @@
 package br.com.danielschiavo.produto.controller.admin;
 
-import br.com.danielschiavo.produto.model.categoria.Categoria;
-import br.com.danielschiavo.produto.model.categoria.CriarCategoriaRequest;
-import br.com.danielschiavo.produto.service.admin.CategoriaAdminService;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.produto.model.entity.Categoria;
+import br.com.danielschiavo.produto.dto.request.CriarCategoriaRequest;
+import br.com.danielschiavo.produto.service.CategoriaService;
+import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,37 +27,32 @@ import jakarta.validation.constraints.NotNull;
 public class CategoriaAdminController {
 	
 	@Autowired
-	private CategoriaAdminService categoriaAdminService;
+	private CategoriaService categoriaService;
 	
 	@DeleteMapping("/admin/categoria/{idCategoria}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Deleta uma categoria e todas subcategorias que tiverem vinculado a essa categoria", operationId = "04_deletarCategoriaPorId")
 	public ResponseEntity<?> deletarCategoriaPorId(@PathVariable Long idCategoria) {
-		categoriaAdminService.deletarCategoriaPorId(idCategoria);
-		return ResponseEntity.noContent().build();
+		categoriaService.deletarCategoriaPorId(idCategoria);
+		return ResponseEntity.ok(Response.success("Categoria deletada com sucesso!", null));
 	}
 	
 	@PostMapping("/admin/categoria")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cria uma categoria", 
 	   		   operationId = "03_criarCategoria")
-	public ResponseEntity<?> criarCategoria(@RequestBody @Valid CriarCategoriaRequest categoriaDTO) {
-		try {
-			Categoria categoria = categoriaAdminService.criarCategoria(categoriaDTO.nome());
-			return ResponseEntity.status(HttpStatus.CREATED).body("Categoria cadastrada com sucesso!");
-		} catch (ValidacaoException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-		}
-		
+	public ResponseEntity<?> cadastrarCategoria(@RequestBody @Valid CriarCategoriaRequest reques) {
+		Categoria categoria = categoriaService.cadastrarCategoria(reques.nome());
+		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Categoria cadastrada com sucesso!", categoria));
 	}
 	
-	@PutMapping("/admin/categoria/{idCategoriaASerAlterada}")
+	@PutMapping("/admin/categoria/{categoriaId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Altera o nome da categoria", 
 	   		   operationId = "02_alterarNomeCategoriaPorId")
-	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long idCategoriaASerAlterada, @RequestBody @NotNull CriarCategoriaRequest request) {
-		categoriaAdminService.alterarNomeCategoriaPorId(idCategoriaASerAlterada, request);
-		
-		return ResponseEntity.status(HttpStatus.OK).body("Categoria alterada com sucesso!");
+	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long categoriaId, @RequestBody @NotNull CriarCategoriaRequest request) {
+		Categoria categoria = categoriaService.alterarNomeCategoriaPorId(request, categoriaId);
+
+		return ResponseEntity.status(HttpStatus.OK).body(Response.success("Categoria alterada com sucesso!", null));
 	}
 }
