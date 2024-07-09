@@ -1,14 +1,16 @@
-package br.com.danielschiavo.produto.model.enums;
+package br.com.danielschiavo.pedido.model.entity;
 
+import br.com.danielschiavo.pedido.model.valueobject.EnderecoPedido;
 import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
-import br.com.danielschiavo.produto.model.entity.Produto;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,24 +20,29 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Table(name = "produtos_tipo_entrega")
-@Entity
+@Table(name = "pedidos_entrega")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@EqualsAndHashCode
+@ToString(exclude = "pedido")
 @Builder
-@EqualsAndHashCode(of = {"tipoEntrega"})
-public class TipoEntregaProduto {
-	
+@Entity
+public class Entrega {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(name = "tipo_entrega")
 	private TipoEntrega tipoEntrega;
+	
+	@Embedded
+	private EnderecoPedido enderecoPedido;
+	
+	@OneToOne(mappedBy = "entrega")
+	private Pedido pedido;
 
-	@ManyToOne
-	private Produto produto;
 }

@@ -3,7 +3,7 @@ package br.com.danielschiavo.produto.dto.request;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import br.com.danielschiavo.pedido.model.TipoEntrega;
+import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
 import br.com.danielschiavo.produto.dto.ArquivoProdutoDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

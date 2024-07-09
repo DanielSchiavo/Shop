@@ -1,10 +1,9 @@
-package br.com.danielschiavo.produto.model.enums;
+package br.com.danielschiavo.pedido.model.entity;
 
-import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
-import br.com.danielschiavo.produto.model.entity.Produto;
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Table(name = "produtos_tipo_entrega")
+@Table(name = "pedidos_items")
 @Entity
 @Getter
 @Setter
@@ -26,16 +25,26 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Builder
-@EqualsAndHashCode(of = {"tipoEntrega"})
-public class TipoEntregaProduto {
+@EqualsAndHashCode(of = "id")
+public class ItemPedido {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Enumerated(EnumType.STRING)
-	private TipoEntrega tipoEntrega;
+	private BigDecimal preco;
+	
+	private Integer quantidade;
+	
+	private String nomeProduto;
+	
+	private String primeiraImagem;
+	
+	private BigDecimal subTotal;
+	
+	private Long produtoId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Pedido pedido;
 
-	@ManyToOne
-	private Produto produto;
 }

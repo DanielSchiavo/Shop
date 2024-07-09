@@ -5,7 +5,7 @@ import java.util.List;
 import br.com.danielschiavo.vendas.dto.response.MostrarCarrinhoClienteResponse;
 import br.com.danielschiavo.vendas.dto.RemoverProdutoDoCarrinhoDTO;
 import br.com.danielschiavo.vendas.dto.request.AdicionarItemCarrinhoRequest;
-import br.com.danielschiavo.vendas.service.CarrinhoUserService;
+import br.com.danielschiavo.vendas.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 public class CarrinhoController {
 	
 	@Autowired
-	private CarrinhoUserService carrinhoService;
+	private CarrinhoService carrinhoService;
 	
 	@DeleteMapping("/cliente/carrinho/{produtosId}")
 	@Operation(summary = "Deleta um produto do carrinho")

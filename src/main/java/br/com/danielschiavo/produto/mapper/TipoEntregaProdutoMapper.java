@@ -2,7 +2,7 @@ package br.com.danielschiavo.produto.mapper;
 
 import java.util.Set;
 
-import br.com.danielschiavo.pedido.model.TipoEntrega;
+import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

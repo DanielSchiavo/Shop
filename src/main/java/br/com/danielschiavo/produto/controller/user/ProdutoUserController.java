@@ -7,7 +7,6 @@ import br.com.danielschiavo.produto.dto.response.MostrarProdutosResponse;
 import br.com.danielschiavo.produto.mapper.ProdutoMapper;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.service.produto.ProdutoService;
-import br.com.danielschiavo.produto.service.user.ProdutoUserService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
