@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import br.com.danielschiavo.cliente.model.entity.Cliente;
@@ -16,6 +17,7 @@ import br.com.danielschiavo.pedido.repository.PedidoRepository;
 import br.com.danielschiavo.pedido.service.entrega.EntregaService;
 import br.com.danielschiavo.pedido.service.pagamento.PagamentoService;
 import br.com.danielschiavo.produto.service.produto.ProdutoService;
+import br.com.danielschiavo.shared.exception.ValidacaoException;
 import br.com.danielschiavo.vendas.service.CarrinhoService;
 import br.com.danielschiavo.filestorage.service.FileStoragePedidoService;
 import br.com.danielschiavo.pedido.model.entity.Entrega;
@@ -61,7 +63,7 @@ public class PedidoService {
     @Autowired
     private ClienteService clienteService;
 
-	public Page<Pedido> pegarPedidosPorClienteId(Pageable pageable, Long clienteId) {
+	public Page<Pedido> pegarTodosPedidosPorClienteId(Pageable pageable, Long clienteId) {
 		return pedidoRepository.findAllByClienteId(pageable, clienteId);
 	}
 	
@@ -88,8 +90,8 @@ public class PedidoService {
 				.entrega(entrega).build();
 
 		if (request.veioPeloCarrinho()) {
-			List<Long> ids = request.items().stream().map(AdicionarItemPedidoRequest::produtoId).collect(Collectors.toList());
-			carrinhoService.deletarProdutoNoCarrinhoPorIdToken(ids);
+			Long[] ids = request.items().stream().map(AdicionarItemPedidoRequest::produtoId).toArray(Long[]::new);
+			carrinhoService.removerProdutoDoCarrinho(clienteId, ids);
 		}
 
 		return pedidoRepository.save(pedido);
@@ -122,5 +124,9 @@ public class PedidoService {
 		});
 		
 		return itemsPedido;
+	}
+
+	public Pedido pegarPedidoPorId(UUID pedidoId, Long clienteId) {
+		return pedidoRepository.findByIdAndClienteId(pedidoId, clienteId).orElseThrow(() -> new ValidacaoException("Usuário não possui um pedido com esse ID"));
 	}
 }

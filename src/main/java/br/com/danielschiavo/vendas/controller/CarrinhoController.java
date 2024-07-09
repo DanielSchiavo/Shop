@@ -1,10 +1,10 @@
 package br.com.danielschiavo.vendas.controller;
 
-import java.util.List;
-
-import br.com.danielschiavo.vendas.dto.response.MostrarCarrinhoClienteResponse;
-import br.com.danielschiavo.vendas.dto.RemoverProdutoDoCarrinhoDTO;
+import br.com.danielschiavo.shared.Response;
+import br.com.danielschiavo.shared.infra.security.SecurityService;
 import br.com.danielschiavo.vendas.dto.request.AdicionarItemCarrinhoRequest;
+import br.com.danielschiavo.vendas.mapper.CarrinhoMapper;
+import br.com.danielschiavo.vendas.model.entity.Carrinho;
 import br.com.danielschiavo.vendas.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,44 +20,53 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping
+@RequestMapping("/user/carrinhos")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Cliente - Carrinho", description = "Todos endpoints relacionados com o carrinho do cliente, que o próprio poderá utilizar")
 public class CarrinhoController {
 	
 	@Autowired
 	private CarrinhoService carrinhoService;
+
+	@Autowired
+	private SecurityService securityService;
+
+	@Autowired
+	private CarrinhoMapper mapper;
 	
-	@DeleteMapping("/cliente/carrinho/{produtosId}")
-	@Operation(summary = "Deleta um produto do carrinho")
-	public ResponseEntity<?> deletarProdutoNoCarrinhoPorIdToken(@PathVariable List<Long> produtosId, HttpServletRequest request) {
-		List<RemoverProdutoDoCarrinhoDTO> respostaDeletarProdutoNoCarrinho = carrinhoService.deletarProdutoNoCarrinhoPorIdToken(produtosId);
-		return ResponseEntity.ok().body(respostaDeletarProdutoNoCarrinho);
+	@DeleteMapping("/produtos/{produtosId}")
+	@Operation(summary = "Deleta um ou vários produtos do carrinho")
+	public ResponseEntity<?> removerProdutoDoCarrinho(@PathVariable Long[] produtosId) {
+		Long clienteId = securityService.getClienteId();
+		carrinhoService.removerProdutoDoCarrinho(clienteId, produtosId);
+		return ResponseEntity.ok().body(Response.success("Remoção realizada com sucesso!", null));
 	}
 	
 	@GetMapping("/cliente/carrinho")
 	@Operation(summary = "Pega todos os produtos que estão no carrinho do cliente")
-	public ResponseEntity<?> pegarCarrinhoClientePorIdToken(HttpServletRequest request) {
-		MostrarCarrinhoClienteResponse mostrarCarrinhoClienteDTO = carrinhoService.pegarCarrinhoClientePorIdToken();
+	public ResponseEntity<?> pegarCarrinhoClientePorIdToken() {
+		Long clienteId = securityService.getClienteId();
+		Carrinho carrinho = carrinhoService.pegarCarrinhoPorClienteId(clienteId);
 			
-		return ResponseEntity.ok(mostrarCarrinhoClienteDTO);
+		return ResponseEntity.ok(Response.success("Sucesso ao recuperar produtos do carrinho", mapper.toDto(carrinho)));
 	}
 	
 	@PostMapping("/cliente/carrinho")
 	@Operation(summary = "Adiciona um produto no carrinho, se o cliente não tiver um carrinho, também cria automáticamente")
-	public ResponseEntity<Object> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid AdicionarItemCarrinhoRequest itemCarrinhoDTO, HttpServletRequest request) {
-		String respostaAdicionarProdutoNoCarrinho = carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(itemCarrinhoDTO);
-		return ResponseEntity.ok().body(respostaAdicionarProdutoNoCarrinho);
+	public ResponseEntity<?> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid AdicionarItemCarrinhoRequest request) {
+		Long clienteId = securityService.getClienteId();
+		Carrinho carrinho = carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(request, clienteId);
+		return ResponseEntity.ok().body(Response.success("Produto adicionado ao carrinho!", null));
 	}
 	
 	@PutMapping("/cliente/carrinho")
 	@Operation(summary = "Seta a quantidade de determinado produto que está no carrinho")
-	public ResponseEntity<Object> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid AdicionarItemCarrinhoRequest itemCarrinhoDTO, HttpServletRequest request) {
-		carrinhoService.setarQuantidadeProdutoNoCarrinhoPorIdToken(itemCarrinhoDTO);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid AdicionarItemCarrinhoRequest request) {
+		Long clienteId = securityService.getClienteId();
+		carrinhoService.setarQuantidadeProdutoNoCarrinho(request, clienteId);
+		return ResponseEntity.ok(Response.success("Alterado com sucesso!", null));
 	}
 }

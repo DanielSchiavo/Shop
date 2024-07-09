@@ -12,11 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,10 +20,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping
+@RequestMapping("/user/pedidos")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Pedido - User", description = "Todos endpoints relacionados com os pedidos do cliente, que o próprio poderá utilizar")
 public class PedidoUserController {
@@ -40,12 +37,21 @@ public class PedidoUserController {
 
 	@Autowired
 	private PedidoMapper mapper;
-	
-	@GetMapping("/cliente/pedido")
-	@Operation(summary = "Pega todos os pedidos do cliente")
-	public ResponseEntity<?> pegarPedidosClientePorIdToken(Pageable pageable) {
+
+	@GetMapping("/{pedidoId}")
+	@Operation(summary = "Pega um pedido por id, para obter todos os detalhes sobre ele")
+	public ResponseEntity<?> pegarPedidoPorId(@PathVariable UUID pedidoId) {
 		Long clienteId = securityService.getClienteId();
-		Page<Pedido> pagePedidos = pedidoService.pegarPedidosPorClienteId(pageable, clienteId);
+		Pedido pedido = pedidoService.pegarPedidoPorId(pedidoId, clienteId);
+
+		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do cliente", mapper.toDto(pedido)));
+	}
+	
+	@GetMapping
+	@Operation(summary = "Pega todos os pedidos do cliente")
+	public ResponseEntity<?> pegarTodosPedidos(Pageable pageable) {
+		Long clienteId = securityService.getClienteId();
+		Page<Pedido> pagePedidos = pedidoService.pegarTodosPedidosPorClienteId(pageable, clienteId);
 
 		List<MostrarPedidoResponse> listaMostrarPedido = pagePedidos.getContent().stream().map(mapper::toDto).collect(Collectors.toList());
 		var resposta = new PageImpl<>(listaMostrarPedido, pagePedidos.getPageable(), pagePedidos.getTotalElements());
@@ -53,7 +59,7 @@ public class PedidoUserController {
 		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do cliente", resposta));
 	}
 	
-	@PostMapping("/cliente/pedido")
+	@PostMapping
 	@Operation(summary = "Cria um pedido em nome do cliente autenticado que está no token")
 	public ResponseEntity<?> realizarPedido(@RequestBody @Valid FazerPedidoRequest request, Long clienteId) {
 		Pedido pedido = pedidoService.realizarPedido(request, clienteId);

@@ -1,6 +1,7 @@
 package br.com.danielschiavo.pedido.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import br.com.danielschiavo.pedido.model.entity.Pedido;
@@ -18,4 +19,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, UUID>{
 
 	Page<Pedido> findAllByClienteId(Pageable pageable, Long clienteId);
 
+	Optional<Pedido> findByIdAndClienteId(UUID pedidoId, Long clienteId);
 }

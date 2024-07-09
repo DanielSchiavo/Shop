@@ -1,4 +1,4 @@
-package br.com.danielschiavo.vendas.model;
+package br.com.danielschiavo.vendas.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

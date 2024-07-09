@@ -1,4 +1,4 @@
-package br.com.danielschiavo.vendas.model;
+package br.com.danielschiavo.vendas.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -49,21 +49,18 @@ public class Carrinho {
 	@Builder.Default
 	private List<ItemCarrinho> itemsCarrinho = new ArrayList<>();
 	
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "clienteId")
-	private Cliente cliente;
-	
-    
+
 	public List<ItemCarrinho> getItemsCarrinho() {
 		return Collections.unmodifiableList(this.itemsCarrinho);
 	}
 
 	public void adicionarItemCarrinho(ItemCarrinho itemCarrinho) {
+		valorTotal = valorTotal.add(itemCarrinho.getSubTotal());
 		this.itemsCarrinho.add(itemCarrinho);
 	}
 	
 	public void removerItemCarrinho(ItemCarrinho itemCarrinho) {
+		valorTotal = valorTotal.subtract(itemCarrinho.getSubTotal());
 		this.itemsCarrinho.remove(itemCarrinho);
 	}
 	
