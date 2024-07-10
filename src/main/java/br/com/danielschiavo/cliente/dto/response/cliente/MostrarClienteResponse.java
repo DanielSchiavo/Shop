@@ -2,7 +2,6 @@ package br.com.danielschiavo.cliente.dto.response.cliente;
 
 import java.time.LocalDate;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

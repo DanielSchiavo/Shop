@@ -7,7 +7,9 @@ import br.com.danielschiavo.cliente.model.entity.Endereco;
 import br.com.danielschiavo.cliente.model.enums.NomeRole;
 import br.com.danielschiavo.cliente.model.entity.Role;
 import br.com.danielschiavo.cliente.model.entity.Role.RoleBuilder;
+import br.com.danielschiavo.cliente.repository.CartaoRepository;
 import br.com.danielschiavo.cliente.repository.ClienteRepository;
+import br.com.danielschiavo.cliente.repository.EnderecoRepository;
 import br.com.danielschiavo.pedido.model.entity.Pedido;
 import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
 import br.com.danielschiavo.pedido.repository.PedidoRepository;
@@ -17,6 +19,8 @@ import br.com.danielschiavo.produto.model.entity.Categoria;
 import br.com.danielschiavo.produto.model.entity.SubCategoria;
 import br.com.danielschiavo.produto.model.enums.TipoEntregaProduto;
 import br.com.danielschiavo.produto.repository.CategoriaRepository;
+import br.com.danielschiavo.produto.repository.ProdutoRepository;
+import br.com.danielschiavo.produto.repository.SubCategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -47,20 +51,25 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 	@Autowired
 	private LimpadorBancoDeDados limpadorBancoDeDados;
 	
-	private Produto.ProdutoBuilder produtoBuilder = Produto.builder();
+	private final Produto.ProdutoBuilder produtoBuilder = Produto.builder();
 
-	private Categoria.CategoriaBuilder categoriaBuilder = Categoria.builder();
-	private SubCategoria.SubCategoriaBuilder subCategoriaBuilder = SubCategoria.builder();
+	private final Categoria.CategoriaBuilder categoriaBuilder = Categoria.builder();
+	private final SubCategoria.SubCategoriaBuilder subCategoriaBuilder = SubCategoria.builder();
 
 	
-	private Endereco.EnderecoBuilder enderecoBuilder = Endereco.builder();
-	private Cartao.CartaoBuilder cartaoBuilder = Cartao.builder();
-	private Cliente.ClienteBuilder clienteBuilder = Cliente.builder();
-	private RoleBuilder roleBuilder = Role.builder();
+	private final Endereco.EnderecoBuilder enderecoBuilder = Endereco.builder();
+	private final Cartao.CartaoBuilder cartaoBuilder = Cartao.builder();
+	private final Cliente.ClienteBuilder clienteBuilder = Cliente.builder();
+	private final RoleBuilder roleBuilder = Role.builder();
 	
-	private Pedido.PedidoBuilder pedidoBuilder = Pedido.builder();
+	private final Pedido.PedidoBuilder pedidoBuilder = Pedido.builder();
+
     @Autowired
     private SubCategoriaRepository subCategoriaRepository;
+    @Autowired
+    private CartaoRepository cartaoRepository;
+    @Autowired
+    private EnderecoRepository enderecoRepository;
 
 	@Override
 	@Transactional
@@ -167,7 +176,7 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 										  .cidade("Vila Velha")
 										  .estado("ES")
 										  .enderecoPadrao(true)
-										  .cliente(cliente).build();
+										  .clienteId(cliente.getId()).build();
 		
 		Cartao cartao = cartaoBuilder.id(null)
 									  .nomeBanco("Santander")
@@ -176,12 +185,10 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 									  .validadeCartao("03/25")
 									  .cartaoPadrao(true)
 									  .tipoCartao(TipoCartao.CREDITO)
-									  .cliente(cliente).build();
+									  .clienteId(cliente.getId()).build();
 		
 		cliente.adicionarRole(role);
-		cliente.adicionarEndereco(endereco);
-		cliente.adicionarCartao(cartao);
-		
+
 		Cliente cliente2 = clienteBuilder.id(null)
 										.cpf("12345678994")
 										.nome("Silvana")
@@ -202,7 +209,7 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 											  .cidade("Vila Velha")
 											  .estado("ES")
 											  .enderecoPadrao(true)
-											  .cliente(cliente2).build();
+											  .clienteId(cliente2.getId()).build();
 		
 		Cartao cartao2 = cartaoBuilder.id(null)
 									  .nomeBanco("Santander")
@@ -211,13 +218,12 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 									  .validadeCartao("03/28")
 									  .cartaoPadrao(true)
 									  .tipoCartao(TipoCartao.CREDITO)
-									  .cliente(cliente2).build();
+									  .clienteId(cliente2.getId()).build();
 		
-		cliente2.adicionarCartao(cartao2);
-		cliente2.adicionarEndereco(endereco2);
-		
-		
+
 		clienteRepository.saveAll(List.of(cliente, cliente2));
+		enderecoRepository.saveAll(List.of(endereco, endereco2));
+		cartaoRepository.saveAll(List.of(cartao, cartao2));
 //		
 //		List<Pedido> pedidos = pedidoBuilder
 //				.cliente(clientes.get(0))

@@ -1,8 +1,10 @@
 package br.com.danielschiavo.filestorage.controller;
 
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.dto.response.FileInfoResponse;
+import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.service.FileStoragePerfilService;
+import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,36 +36,27 @@ public class FileStoragePerfilController {
 	@Operation(summary = "Deleta a foto de perfil com o nome enviado no parametro da requisição")
 	public ResponseEntity<?> deletarFotoPerfil(@PathVariable String nomeFotoPerfil) {
 		fileStoragePerfilService.deletarFotoPerfilNoDisco(nomeFotoPerfil);
-		return ResponseEntity.ok().body("Foto perfil deletada com sucesso!");
-//		try {
-//		} catch (ValidacaoException e) {
-//			HttpStatus status = HttpStatus.BAD_REQUEST;
-//			return ResponseEntity.status(status).body(ArquivoInfoDTO.comErro(nomeFotoPerfil, e.getMessage()));
-//		} catch (NoSuchFileException e) {
-//			HttpStatus status = HttpStatus.NOT_FOUND;
-//			return ResponseEntity.status(status).body(ArquivoInfoDTO.comErro(nomeFotoPerfil, "O arquivo " + nomeFotoPerfil + " não existe"));
-//		} catch (IOException e) {
-//			System.out.println(" ENTROU AQUI2 ");
-//			HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-//			return ResponseEntity.status(status).body(ArquivoInfoDTO.comErro(nomeFotoPerfil, "Falha interna no servidor ao tentar excluir o arquivo."));
-//		}
+		FileInfoResponse fileInfoResponse = FileInfoResponse.success(nomeFotoPerfil, "Foto de perfil deletada com sucesso!", null);
+		return ResponseEntity.ok().body(Response.success("Requisição realizada com sucesso", fileInfoResponse));
 	}
 	
 	@GetMapping("/cliente/perfil/{nomeFotoPerfil}")
 	@Operation(summary = "Pega uma foto de perfil dado o nome da foto no parametro da requisição")
-	public ResponseEntity<ArquivoInfoDTO> pegarFotoPerfilPorNome(@PathVariable String nomeFotoPerfil) {
-		ArquivoInfoDTO arquivo = fileStoragePerfilService.pegarFotoPerfilPorNome(nomeFotoPerfil);
-		
-		return ResponseEntity.ok(arquivo);
+	public ResponseEntity<?> pegarFotoPerfilPorNome(@PathVariable String nomeFotoPerfil) {
+		File file = fileStoragePerfilService.pegarFotoPerfilPorNome(nomeFotoPerfil);
+
+		FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Sucesso ao recuperar foto de perfil", file.getContent());
+		return ResponseEntity.ok(Response.success("Requisição realizada com sucesso", fileInfoResponse));
 	}
 	
 	@PostMapping("/cliente/perfil/")
 	@Operation(summary = "Cadastra uma foto de perfil enviada através de um formulario html e gera um nome")
 	public ResponseEntity<?> cadastrarFotoPerfil(
 			@RequestPart(name = "foto", required = true) MultipartFile foto) {
-		String respostaPersistirFotoPerfil = fileStoragePerfilService.persistirFotoPerfil(foto);
+		File file = fileStoragePerfilService.persistirFotoPerfil(foto);
 
-		return ResponseEntity.ok().body(respostaPersistirFotoPerfil);
+		FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Sucesso ao persistir foto de perfil", null);
+		return ResponseEntity.ok().body(Response.success("Requisição realizada com sucesso", fileInfoResponse));
 	}
 	
 	@PutMapping("/cliente/{nomeFotoPerfilAntiga}")
@@ -73,8 +66,10 @@ public class FileStoragePerfilController {
 			@RequestParam String nomeFotoPerfilAntiga,
 			UriComponentsBuilder uriBuilder
 			) {
-		String respostaAlterarFotoPerfil = fileStoragePerfilService.alterarFotoPerfil(novaFoto, nomeFotoPerfilAntiga);
-		
-		return ResponseEntity.ok(respostaAlterarFotoPerfil);
+		File file = fileStoragePerfilService.alterarFotoPerfil(novaFoto, nomeFotoPerfilAntiga);
+
+		FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Sucesso ao alterar foto de perfil", null);
+
+		return ResponseEntity.ok(Response.success("Requisição realizada com sucesso", fileInfoResponse));
 	}
 }

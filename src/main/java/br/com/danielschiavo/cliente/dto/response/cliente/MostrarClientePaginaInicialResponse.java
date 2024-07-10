@@ -1,6 +1,6 @@
 package br.com.danielschiavo.cliente.dto.response.cliente;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.dto.response.FileInfoResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -19,5 +19,5 @@ import lombok.Setter;
 public class MostrarClientePaginaInicialResponse {
 	
 	private String nome;
-	private ArquivoInfoDTO fotoPerfil;
+	private String fotoPerfil;
 }

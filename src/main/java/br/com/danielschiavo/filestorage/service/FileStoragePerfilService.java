@@ -1,11 +1,10 @@
 package br.com.danielschiavo.filestorage.service;
 
 import java.io.IOException;
-import java.util.UUID;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.FileStorageUtil;
+import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.repository.FileStoragePerfilRepository;
-import br.com.danielschiavo.filestorage.exception.FileStorageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,41 +17,28 @@ public class FileStoragePerfilService {
 	private FileStoragePerfilRepository repository;
 	
 	public void deletarFotoPerfilNoDisco(String nome) {
-		repository.deletar(nome);
+		repository.deletarPorNome(nome);
 	}
 	
-	public ArquivoInfoDTO pegarFotoPerfilPorNome(String nomeImagem) {
+	public File pegarFotoPerfilPorNome(String nomeImagem) {
 		return repository.pegarFotoPerfilPorNome(nomeImagem);
 	}
 	
-	public String persistirFotoPerfil(MultipartFile arquivo) {
+	public File persistirFotoPerfil(MultipartFile arquivo) {
 		try {
-			String nomeGerado = verificarEGerarNome(arquivo);
-			repository.salvar(nomeGerado, arquivo.getBytes());
-			return nomeGerado;
+			String nomeGerado = new FileStorageUtil().verificarExtensao(arquivo).gerarNome();
+
+			return repository.salvar(nomeGerado, arquivo.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 	}
 
 
-	public String alterarFotoPerfil(MultipartFile novaFoto, String nomeFotoPerfilAntiga) {
-        try {
-			repository.deletar(nomeFotoPerfilAntiga);
-			String nomeGerado = verificarEGerarNome(novaFoto);
-			repository.salvar(nomeGerado, novaFoto.getBytes());
-			return nomeGerado;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+	public File alterarFotoPerfil(MultipartFile novaFoto, String nomeFotoPerfilAntiga) {
+		repository.deletarPorNome(nomeFotoPerfilAntiga);
+
+		return persistirFotoPerfil(novaFoto);
     }
 
-	public String verificarEGerarNome(MultipartFile arquivo) {
-		String[] contentType = arquivo.getContentType().split("/");
-		String extensao = contentType[1];
-		if (!extensao.contains("jpg") && !extensao.contains("jpeg") && !extensao.contains("png"))
-			throw new FileStorageException("Os tipos aceitos são jpg, jpeg, png");
-
-		return UUID.randomUUID() + "." + extensao;
-	}
 }

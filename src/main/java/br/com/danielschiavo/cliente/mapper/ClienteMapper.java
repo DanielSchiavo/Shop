@@ -17,15 +17,13 @@ import br.com.danielschiavo.cliente.dto.response.cliente.MostrarClientePaginaIni
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class ClienteMapper {
 	
-	@Mapping(source = "arquivoInfoDTO", target = "fotoPerfil")
-    @Mapping(source = "cliente.nome", target = "nome")
 	public abstract MostrarClientePaginaInicialResponse toPaginaInicialDto(Cliente cliente);
 
     @Mapping(source = "cliente.nome", target = "nome")
     public abstract MostrarClienteResponse toDto(Cliente cliente);
     
     @Mapping(target = "dataCriacaoConta", expression = "java(java.time.LocalDate.now())")
-    @Mapping(target = "fotoPerfil", source = "cadastrarClienteDTO.fotoPerfil", defaultValue = "Padrao.jpeg")
+    @Mapping(target = "fotoPerfil", source = "request.fotoPerfil", defaultValue = "Padrao.jpeg")
     public abstract Cliente toEntity(CadastrarClienteRequest request);
     
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)

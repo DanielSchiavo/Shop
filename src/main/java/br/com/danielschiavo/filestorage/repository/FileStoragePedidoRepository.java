@@ -1,6 +1,6 @@
 package br.com.danielschiavo.filestorage.repository;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.model.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,16 +18,18 @@ public class FileStoragePedidoRepository extends FileStorageRepository {
 
     private final Path raizPedido = Paths.get("imagens/pedido");
 
-    public ArquivoInfoDTO pegarImagemPorNome(String nomeArquivo) {
-        return (ArquivoInfoDTO) repository.pegar(raizPedido, nomeArquivo);
+    public File pegarImagemPorNome(String nomeArquivo) {
+        byte[] content = repository.pegar(raizPedido, nomeArquivo);
+        return new File(nomeArquivo, content);
     }
 
-    public Optional<String> verificarSeExisteImagemPedidoNoDisco(String nomeImagem) {
+    public Optional<byte[]> verificarSeExisteImagemPedidoNoDisco(String nomeImagem) {
         return repository.verificarSeExisteNoDisco(raizPedido, nomeImagem, "*", "");
     }
 
-    public void salvar(String nomeImagem, byte[] bytesImagem) {
+    public File salvar(String nomeImagem, byte[] bytesImagem) {
         repository.salvar(raizPedido, nomeImagem, bytesImagem);
+        return new File(nomeImagem, bytesImagem);
     }
 }
 

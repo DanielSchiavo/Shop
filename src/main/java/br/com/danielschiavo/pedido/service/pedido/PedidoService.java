@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.cliente.service.ClienteService;
+import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.pedido.dto.request.pedido.FazerPedidoRequest;
 import br.com.danielschiavo.pedido.mapper.PedidoMapper;
 import br.com.danielschiavo.pedido.model.entity.Pedido;
@@ -110,13 +110,13 @@ public class PedidoService {
 			var produto = produtoService.pegarProdutoPorId(item.produtoId());
 			BigDecimal subTotal = produto.getPreco().multiply(new BigDecimal(item.quantidade()));
 
-			String nomeImagemPedido = fileStoragePedidoService.persistirOuRecuperarImagemPedido(produto.pegarNomePrimeiraImagem(), produto.getId());
+			File file = fileStoragePedidoService.handleImagemPedido(produto.pegarNomePrimeiraImagem(), produto.getId());
 
 			ItemPedido itemPedido = ItemPedido.builder()
 					.preco(produto.getPreco())
 					.quantidade(produto.getQuantidade())
 					.nomeProduto(produto.getNome())
-					.primeiraImagem(nomeImagemPedido)
+					.primeiraImagem(file.getFileName())
 					.subTotal(subTotal)
 					.produtoId(produto.getId()).build();
 

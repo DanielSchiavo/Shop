@@ -1,12 +1,13 @@
 package br.com.danielschiavo.filestorage.repository;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.model.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,42 +19,41 @@ public class FileStorageProdutoRepository extends FileStorageRepository {
 
     public static final Path raizProduto = Paths.get("imagens/produto");
 
-    public ArquivoInfoDTO pegarImagemPorNome(String nomeImagem) {
-        return (ArquivoInfoDTO) repository.pegar(raizProduto, nomeImagem);
+    public List<File> pegarImagensPorListaDeNomes(List<String> nomeImagens) {
+        List<File> files = new ArrayList<>();
+        nomeImagens.forEach(nome -> files.add(pegarImagemPorNome(nome)));
+        return files;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ArquivoInfoDTO> pegarImagensPorNome(List<String> nomeImagens) {
-        return (List<ArquivoInfoDTO>) repository.pegar(raizProduto, nomeImagens.toArray(new String[0]));
+    public File pegarImagemPorNome(String nomeImagem) {
+        byte[] content = repository.pegar(raizProduto, nomeImagem);
+        return new File(nomeImagem, content);
     }
 
-    @SuppressWarnings("unchecked")
-    public void deletarImagensPorNome(List<String> nomeImagens) {
-        List<ArquivoInfoDTO> lista = (List<ArquivoInfoDTO>) repository.deletar(raizProduto, nomeImagens.toArray(new String[0]));
-
-        //Programar aqui alguma forma de avisar ao administrador
-        lista.forEach(arquivo -> {
-            if (arquivo.erro() != null) {
-                System.out.println("Erro ao tentar excluir o arquivo nome: " + arquivo.nomeArquivo());
-            }
-        });
+    public void deletarTodasImagensPorNome(List<String> nomeImagens) {
+        nomeImagens.forEach(this::deletarImagemPorNome);
     }
 
     public void deletarImagemPorNome(String nomeImagem) {
-        ArquivoInfoDTO arquivo = (ArquivoInfoDTO) repository.deletar(raizProduto, nomeImagem);
-
-        if (arquivo.erro() != null) {
-            System.out.println("Erro ao tentar excluir o arquivo nome: " + arquivo.nomeArquivo());
-        }
+        repository.deletar(raizProduto, nomeImagem);
     }
 
-    public void salvarTodos(List<ArquivoInfoDTO> arquivos) {
-        arquivos.forEach(arquivo -> {
-            repository.salvar(raizProduto, arquivo.nomeArquivo(), arquivo.bytesArquivo());
-        });
+    public List<File> salvarTodos(List<File> arquivos) {
+        List<File> files = new ArrayList<>();
+        arquivos.forEach(arq -> files.add(salvar(arq)));
+        return files;
     }
 
-    public void salvar(ArquivoInfoDTO arquivo) {
-        repository.salvar(raizProduto, arquivo.nomeArquivo(), arquivo.bytesArquivo());
+    public File salvar(File file) {
+        repository.salvar(raizProduto, file.getFileName(), file.getContent());
+        return file;
+    }
+
+    public boolean verificarSeImagensExistem(List<String> nomesImagens) {
+        return repository.verificarSeImagensExistem(raizProduto, nomesImagens);
+    }
+
+    public boolean verificarSeImagemExiste(String nomeImagem) {
+        return repository.verificarSeImagemExiste(raizProduto, nomeImagem);
     }
 }

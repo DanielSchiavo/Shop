@@ -4,6 +4,7 @@ import br.com.danielschiavo.cliente.dto.request.cliente.AlterarClienteRequest;
 import br.com.danielschiavo.cliente.dto.request.cliente.CadastrarClienteRequest;
 import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.cliente.repository.ClienteRepository;
+import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.service.FileStoragePerfilService;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,10 +72,9 @@ public class ClienteService {
 	public Cliente alterarFotoPerfilPorId(MultipartFile novaFoto, Long clienteId) {
 		Cliente cliente = repository.getReferenceById(clienteId);
 
-		//Não tem tratamento de erro aqui porque a exceção vai ser tratada no general handler se tiver
-		String nomeNovaFotoPerfil = fileStorageService.alterarFotoPerfil(novaFoto, cliente.getFotoPerfil());
+		File file = fileStorageService.alterarFotoPerfil(novaFoto, cliente.getFotoPerfil());
 
-		cliente.setFotoPerfil(nomeNovaFotoPerfil);
+		cliente.setFotoPerfil(file.getFileName());
 		return repository.save(cliente);
 	}
 

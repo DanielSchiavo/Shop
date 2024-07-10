@@ -2,7 +2,7 @@ package br.com.danielschiavo.filestorage.service;
 
 import java.util.Optional;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.repository.FileStoragePedidoRepository;
 import br.com.danielschiavo.filestorage.repository.FileStorageProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +18,19 @@ public class FileStoragePedidoService {
 	@Autowired
 	private FileStorageProdutoRepository produtoRepository;
 	
-	public ArquivoInfoDTO pegarImagemPedidoPorNome(String nomeArquivo) {
+	public File pegarImagemPedidoPorNome(String nomeArquivo) {
 		return repository.pegarImagemPorNome(nomeArquivo);
 	}
 	
-	public String persistirOuRecuperarImagemPedido(String nomeImagem, Long idProduto) {
-		Optional<String> optionalString = repository.verificarSeExisteImagemPedidoNoDisco(nomeImagem);
-		if (optionalString.isPresent()) {
-			return nomeImagem;
+	public File handleImagemPedido(String nomeImagem, Long idProduto) {
+		Optional<byte[]> optional = repository.verificarSeExisteImagemPedidoNoDisco(nomeImagem);
+		if (optional.isPresent()) {
+			return new File(nomeImagem, optional.get());
 		}
 		else {
 			String novoNome = gerarNomeImagemPedido(idProduto, nomeImagem);
-			ArquivoInfoDTO arquivoInfoDTO = produtoRepository.pegarImagemPorNome(novoNome);
-			repository.salvar(novoNome, arquivoInfoDTO.bytesArquivo());
-			return novoNome;
+			File file = produtoRepository.pegarImagemPorNome(nomeImagem);
+			return repository.salvar(novoNome, file.getContent());
 		}
 	}
 	

@@ -3,7 +3,7 @@ package br.com.danielschiavo.produto.dto.response;
 import java.math.BigDecimal;
 import java.util.List;
 
-import br.com.danielschiavo.filestorage.ArquivoInfoDTO;
+import br.com.danielschiavo.filestorage.dto.response.FileInfoResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class DetalharProdutoResponse {
 	private BigDecimal preco;
 	private Integer quantidade;
 	private Boolean ativo;
-	private List<ArquivoInfoDTO> arquivos;
+	private List<FileInfoResponse> arquivos;
 	private Long subCategoria;
 	
 }
