@@ -1,7 +1,8 @@
-package br.com.danielschiavo.cliente.model.entity;
+package br.com.danielschiavo.cliente.model.valueobject;
 
 import java.time.LocalDateTime;
 
+import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.cliente.model.enums.NomeRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

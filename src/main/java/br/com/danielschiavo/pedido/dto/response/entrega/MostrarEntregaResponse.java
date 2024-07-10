@@ -10,7 +10,7 @@ import lombok.Builder;
 @JsonInclude(Include.NON_NULL)
 public record MostrarEntregaResponse(
 		TipoEntrega tipoEntrega,
-		MostrarEnderecoPedidoResponse endereco
+		MostrarEnderecoPedidoResponse enderecoPedido
 		) {
 
 }

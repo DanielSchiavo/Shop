@@ -1,6 +1,7 @@
 package br.com.danielschiavo.cliente.model.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import br.com.danielschiavo.cliente.model.enums.NomeRole;
+import br.com.danielschiavo.cliente.model.valueobject.Role;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +37,8 @@ import lombok.ToString;
 
 @Table(name = "clientes")
 @Entity(name = "Cliente")
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor
@@ -71,7 +77,7 @@ public class Cliente implements UserDetails {
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Singular
 	private final Set<Role> roles = new HashSet<>();
-    
+
 
 	public Set<Role> getRoles() {
 		return Collections.unmodifiableSet(this.roles);
@@ -80,12 +86,24 @@ public class Cliente implements UserDetails {
 	public void adicionarRole(Role role) {
 		this.roles.add(role);
 	}
-	
+
+	public void adicionarRole(NomeRole nomeRole) {
+		this.roles.add(new Role(null, LocalDateTime.now(), nomeRole, this));
+	}
+
 	public void removerRole(Role role) {
 		this.roles.remove(role);
 	}
-	
-	
+
+	public void removerRole(NomeRole nomeRole) {
+		this.roles.forEach(role -> {
+			if (role.getRole().equals(nomeRole)){
+				this.roles.remove(role);
+			}
+		});
+	}
+
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 	    List<GrantedAuthority> authorities = new ArrayList<>();
@@ -98,7 +116,7 @@ public class Cliente implements UserDetails {
 
 	    return authorities;
 	}
-	
+
 	private boolean isAdmin() {
 		return roles.stream().anyMatch(role -> role.getRole() == NomeRole.ADMIN);
 	}
@@ -112,7 +130,7 @@ public class Cliente implements UserDetails {
 	public String getPassword() {
 		return senha;
 	}
-	
+
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
@@ -132,5 +150,4 @@ public class Cliente implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-	
 }

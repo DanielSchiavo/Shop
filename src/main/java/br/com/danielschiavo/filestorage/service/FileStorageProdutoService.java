@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -42,7 +43,7 @@ public class FileStorageProdutoService {
 				String nomeGerado = new FileStorageUtil().verificarExtensao(arquivo).gerarNome();
 				files.add(repository.salvar(new File(nomeGerado, arquivo.getBytes())));
 			} catch (IOException e) {
-				throw new FileStorageException(e.getMessage());
+				throw new FileStorageException("Não foi possivel persistir a imagem", Map.of(arquivo.getOriginalFilename(), e.getMessage()));
 			}
 		}
 

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shared.infra.security.SecurityService;
-import br.com.danielschiavo.produto.service.produto.validacoes.ValidadorCadastrarNovoProduto;
+import br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto.ValidadorCadastrarNovoProduto;
 import lombok.Setter;
 
 @Service
@@ -51,7 +51,7 @@ public class ProdutoService {
 	public Produto cadastrarProduto(CadastrarProdutoRequest request) {
 		validador.forEach(v -> v.validar(request));
 		
-		Produto produto = produtoMapper.cadastrarProdutoDtoParaProduto(request);
+		Produto produto = produtoMapper.toEntity(request);
 		produtoRepository.save(produto);
 		
 		return produto;

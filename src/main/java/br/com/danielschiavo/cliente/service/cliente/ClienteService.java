@@ -1,8 +1,9 @@
-package br.com.danielschiavo.cliente.service;
+package br.com.danielschiavo.cliente.service.cliente;
 
 import br.com.danielschiavo.cliente.dto.request.cliente.AlterarClienteRequest;
 import br.com.danielschiavo.cliente.dto.request.cliente.CadastrarClienteRequest;
 import br.com.danielschiavo.cliente.model.entity.Cliente;
+import br.com.danielschiavo.cliente.model.enums.NomeRole;
 import br.com.danielschiavo.cliente.repository.ClienteRepository;
 import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.service.FileStoragePerfilService;
@@ -29,6 +30,8 @@ public class ClienteService {
 	
 	@Autowired
 	private FileStoragePerfilService fileStorageService;
+    @Autowired
+    private ClienteRepository clienteRepository;
 
 
 	@Transactional
@@ -78,7 +81,21 @@ public class ClienteService {
 		return repository.save(cliente);
 	}
 
-	
+	public void adicionarRole(Long clienteId, NomeRole nomeRole) {
+		Cliente cliente = clienteRepository.getReferenceById(clienteId);
+		cliente.adicionarRole(nomeRole);
+
+		clienteRepository.save(cliente);
+	}
+
+	public void removerRole(Long clienteId, NomeRole nomeRole) {
+		Cliente cliente = clienteRepository.getReferenceById(clienteId);
+		cliente.removerRole(nomeRole);
+
+		clienteRepository.save(cliente);
+	}
+
+
 //	------------------------------
 //	------------------------------
 //	METODOS UTILITARIOS

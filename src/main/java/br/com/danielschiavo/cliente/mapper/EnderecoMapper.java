@@ -14,22 +14,15 @@ import org.mapstruct.NullValueCheckStrategy;
 
 
 @Mapper(componentModel = "spring")
-public abstract class EnderecoMapper {
+public interface EnderecoMapper {
 
-	public abstract MostrarEnderecoResponse toDto(Endereco endereco);
+	MostrarEnderecoResponse toDto(Endereco endereco);
 	
-	public List<MostrarEnderecoResponse> toDto(List<Endereco> enderecos){
-		List<MostrarEnderecoResponse> listaMostrarEnderecoDTO = new ArrayList<>();
-		enderecos.forEach(endereco -> {
-			MostrarEnderecoResponse mostrarEnderecoDTO = toDto(endereco);
-			listaMostrarEnderecoDTO.add(mostrarEnderecoDTO);
-		});
-		return listaMostrarEnderecoDTO;
-	}
+	List<MostrarEnderecoResponse> toDto(List<Endereco> enderecos);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	public abstract Endereco toEntity(CadastrarEnderecoRequest request);
+	Endereco toEntity(CadastrarEnderecoRequest request);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	public abstract void alterarEnderecoDtoParaEndereco(AlterarEnderecoRequest request, @MappingTarget Endereco endereco);
+	void alterarEnderecoDtoParaEndereco(AlterarEnderecoRequest request, @MappingTarget Endereco endereco);
 }

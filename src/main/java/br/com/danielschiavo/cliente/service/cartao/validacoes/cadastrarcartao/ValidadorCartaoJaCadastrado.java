@@ -1,7 +1,6 @@
-package br.com.danielschiavo.cliente.service.validacoes;
+package br.com.danielschiavo.cliente.service.cartao.validacoes.cadastrarcartao;
 
 import br.com.danielschiavo.cliente.model.entity.Cartao;
-import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.cliente.dto.request.cartao.CadastrarCartaoRequest;
 import br.com.danielschiavo.cliente.repository.CartaoRepository;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
@@ -12,7 +11,7 @@ import java.util.List;
 
 
 @Service
-public class ValidadorCartaoJaCadastrado implements ValidadorCadastrarNovoCartao {
+public class ValidadorCartaoJaCadastrado implements ValidadorCadastrarCartao {
 
 	@Autowired
 	private CartaoRepository cartaoRepository;

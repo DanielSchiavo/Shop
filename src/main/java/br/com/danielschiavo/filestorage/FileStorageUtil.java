@@ -4,6 +4,7 @@ import br.com.danielschiavo.filestorage.exception.FileStorageException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 
 public class FileStorageUtil {
@@ -23,7 +24,7 @@ public class FileStorageUtil {
 		String[] contentType = file.getContentType().split("/");
 		String extensao = contentType[1];
 		if (!extensao.contains("jpg") && !extensao.contains("jpeg") && !extensao.contains("png"))
-			throw new FileStorageException("Os tipos aceitos são jpg, jpeg, png");
+			throw new FileStorageException("Não foi possivel prosseguir com a requisição", Map.of(file.getOriginalFilename(), "Os tipos aceitos são jpg, jpeg, png"));
 		this.extensao = extensao;
 		return this;
 	}

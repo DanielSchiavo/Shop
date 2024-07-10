@@ -1,8 +1,8 @@
-package br.com.danielschiavo.pedido.service.pedido.validacoes;
+package br.com.danielschiavo.pedido.service.pedido.validacoes.fazerpedido;
 
 import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.cliente.model.entity.Cartao;
-import br.com.danielschiavo.cliente.service.CartaoService;
+import br.com.danielschiavo.cliente.service.cartao.CartaoService;
 import br.com.danielschiavo.pedido.dto.request.pedido.FazerPedidoRequest;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import br.com.danielschiavo.pedido.model.enums.MetodoPagamento;
 
 @Service
-public class ValidadorMetodoPagamento implements ValidadorCriarNovoPedido {
+public class ValidadorMetodoPagamento implements ValidadorFazerPedido {
 	
 	@Autowired
 	private CartaoService cartaoService;

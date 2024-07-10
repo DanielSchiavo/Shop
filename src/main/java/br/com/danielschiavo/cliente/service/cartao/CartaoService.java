@@ -1,4 +1,4 @@
-package br.com.danielschiavo.cliente.service;
+package br.com.danielschiavo.cliente.service.cartao;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import br.com.danielschiavo.cliente.mapper.CartaoMapper;
-import br.com.danielschiavo.cliente.service.validacoes.ValidadorCadastrarNovoCartao;
+import br.com.danielschiavo.cliente.service.cartao.validacoes.cadastrarcartao.ValidadorCadastrarCartao;
 import lombok.Setter;
 
 @Service
@@ -26,7 +26,7 @@ public class CartaoService {
 	private SecurityService securityService;
 	
 	@Autowired
-	private List<ValidadorCadastrarNovoCartao> validadores;
+	private List<ValidadorCadastrarCartao> validadores;
 	
 	@Autowired
 	private CartaoMapper cartaoMapper;

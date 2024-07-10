@@ -6,7 +6,7 @@ import java.util.List;
 import br.com.danielschiavo.cliente.dto.request.cartao.CadastrarCartaoRequest;
 import br.com.danielschiavo.cliente.mapper.CartaoMapper;
 import br.com.danielschiavo.cliente.model.entity.Cartao;
-import br.com.danielschiavo.cliente.service.CartaoService;
+import br.com.danielschiavo.cliente.service.cartao.CartaoService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

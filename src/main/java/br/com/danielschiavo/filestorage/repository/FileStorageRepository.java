@@ -3,6 +3,7 @@ package br.com.danielschiavo.filestorage.repository;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import br.com.danielschiavo.filestorage.FileStorageUtil;
@@ -15,19 +16,20 @@ import org.springframework.stereotype.Service;
 @Service
 @Qualifier("fileStorageRepository")
 public class FileStorageRepository {
+
+	private static final String nomeImagemPadrao = "Padrao.jpeg";
 	
 	protected void deletar(Path caminho, String nomeImagem) {
 		verificacaoDiretorioAtual();
-
-		if (nomeImagem.equals("Padrao.jpeg"))
-			throw new FileStorageException("O arquivo não pode ser excluido porque é a imagem padrão para produtos sem fotos.");
+		if (nomeImagem.equals(nomeImagemPadrao))
+			throw new FileStorageException("Não foi possivel deletar imagem", Map.of(nomeImagemPadrao, "Você não pode deletar a imagem padrão do sistema"));
 
 		try {
 			boolean deletou = Files.deleteIfExists(caminho.resolve(nomeImagem));
 			if (!deletou)
 				throw new FileNotFoundException("O arquivo não existe, portanto não foi possivel exclui-lo");
 		} catch (IOException e) {
-			throw new FileStorageException(e.getMessage());
+			throw new FileStorageException("Não foi possivel deletar imagem", Map.of(nomeImagem, e.getMessage()));
 		}
 	}
 
@@ -37,7 +39,7 @@ public class FileStorageRepository {
 		try {
 			Files.write(caminho.resolve(nomeImagem), bytes, StandardOpenOption.CREATE_NEW);
 		} catch (IOException e) {
-			throw new FileStorageException("Não foi possivel salvar o arquivo " + nomeImagem + " no disco");
+			throw new FileStorageException("Não foi possivel salvar imagem no disco", Map.of(nomeImagem, e.getMessage()));
 		}
 	}
 
@@ -55,10 +57,10 @@ public class FileStorageRepository {
 			if (!exists)
 				throw new FileNotFoundException("O arquivo especificado não existe");
 
-			byte[] allBytes = Files.readAllBytes(caminho.resolve(nomeImagem));
+            byte[] allBytes = Files.readAllBytes(caminho.resolve(nomeImagem));
 			return FileStorageUtil.codificarParaBase64(allBytes);
 		} catch (IOException e) {
-			throw new FileStorageException(e.getMessage());
+			throw new FileStorageException("Não foi possivel recuperar a imagem", Map.of(nomeImagem, e.getMessage()));
 		}
 	}
 

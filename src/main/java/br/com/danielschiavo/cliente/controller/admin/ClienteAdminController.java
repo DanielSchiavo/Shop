@@ -3,7 +3,8 @@ package br.com.danielschiavo.cliente.controller.admin;
 
 import br.com.danielschiavo.cliente.mapper.ClienteMapper;
 import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.service.ClienteService;
+import br.com.danielschiavo.cliente.model.enums.NomeRole;
+import br.com.danielschiavo.cliente.service.cliente.ClienteService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,8 @@ public class ClienteAdminController {
 
     @Autowired
     private ClienteMapper mapper;
+    @Autowired
+    private ClienteService clienteService;
 
     @GetMapping("/{id}")
     @Operation(summary = "Mostra todos os dados do cliente")
@@ -43,5 +46,19 @@ public class ClienteAdminController {
 		var clientes = service.pegarTodosClientes(pageable);
 		return ResponseEntity.ok(Response.success("Sucesso ao recuperar todos clientes cadastrados", clientes));
 	}
+
+    @PostMapping("/{clienteId}/roles/{nomeRole}")
+    @Operation(summary = "Adiciona role de um cliente cadastrado")
+    public ResponseEntity<?> adicionarRole(@PathVariable Long clienteId, @PathVariable NomeRole nomeRole) {
+        clienteService.adicionarRole(clienteId, nomeRole);
+        return ResponseEntity.ok(Response.success("Permissão concedida ao usuário com sucesso", null));
+    }
+
+    @DeleteMapping("/{clienteId}/roles/{nomeRole}")
+    @Operation(summary = "Remove role de um cliente cadastrado")
+    public ResponseEntity<?> removerRoleDoCliente(@PathVariable Long clienteId, @PathVariable NomeRole nomeRole) {
+        clienteService.removerRole(clienteId, nomeRole);
+        return ResponseEntity.ok().body(Response.success("Permissão do usuário removida com sucesso", null));
+    }
 
 }

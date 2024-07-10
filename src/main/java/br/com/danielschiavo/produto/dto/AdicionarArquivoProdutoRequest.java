@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record ArquivoProdutoDTO(
+public record AdicionarArquivoProdutoRequest(
 		@NotNull
 		String nome,
 		@NotNull

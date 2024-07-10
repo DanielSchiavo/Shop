@@ -1,20 +1,15 @@
-package br.com.danielschiavo.cliente.service.validacoes;
+package br.com.danielschiavo.cliente.service.cartao.validacoes.cadastrarcartao;
 
 import java.util.List;
-import java.util.Optional;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.cliente.dto.request.cartao.CadastrarCartaoRequest;
 import br.com.danielschiavo.cliente.model.entity.Cartao;
-import br.com.danielschiavo.cliente.repository.CartaoRepository;
-import br.com.danielschiavo.cliente.service.CartaoService;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
-public class ValidadorLimiteCartoes implements ValidadorCadastrarNovoCartao {
+public class ValidadorLimiteCartoes implements ValidadorCadastrarCartao {
 
 	@Override
 	public void validar(CadastrarCartaoRequest request, List<Cartao> cartoes, Long clienteId) {

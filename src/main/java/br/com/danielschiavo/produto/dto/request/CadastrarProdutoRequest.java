@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
-import br.com.danielschiavo.produto.dto.ArquivoProdutoDTO;
+import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,7 +28,7 @@ public record CadastrarProdutoRequest(
 		@NotNull
 		Set<TipoEntrega> tiposEntrega,
 		@NotNull
-		Set<ArquivoProdutoDTO> arquivos
+		Set<AdicionarArquivoProdutoRequest> arquivos
 		) {	
 
 

@@ -14,19 +14,21 @@ import org.mapstruct.ReportingPolicy;
 
 import br.com.danielschiavo.cliente.dto.response.cliente.MostrarClientePaginaInicialResponse;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public abstract class ClienteMapper {
+import java.time.LocalDate;
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {LocalDate.class})
+public interface ClienteMapper {
 	
-	public abstract MostrarClientePaginaInicialResponse toPaginaInicialDto(Cliente cliente);
+	MostrarClientePaginaInicialResponse toPaginaInicialDto(Cliente cliente);
 
     @Mapping(source = "cliente.nome", target = "nome")
-    public abstract MostrarClienteResponse toDto(Cliente cliente);
+    MostrarClienteResponse toDto(Cliente cliente);
     
-    @Mapping(target = "dataCriacaoConta", expression = "java(java.time.LocalDate.now())")
+    @Mapping(target = "dataCriacaoConta", expression = "java(LocalDate.now())")
     @Mapping(target = "fotoPerfil", source = "request.fotoPerfil", defaultValue = "Padrao.jpeg")
-    public abstract Cliente toEntity(CadastrarClienteRequest request);
+    Cliente toEntity(CadastrarClienteRequest request);
     
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    public abstract Cliente alterarCliente(AlterarClienteRequest alterarClienteDTO, @MappingTarget Cliente cliente);
+    void alterarCliente(AlterarClienteRequest alterarClienteDTO, @MappingTarget Cliente cliente);
     
 }

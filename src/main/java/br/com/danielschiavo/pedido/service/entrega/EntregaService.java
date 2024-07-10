@@ -1,7 +1,7 @@
 package br.com.danielschiavo.pedido.service.entrega;
 
 import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.service.EnderecoService;
+import br.com.danielschiavo.cliente.service.endereco.EnderecoService;
 import br.com.danielschiavo.pedido.model.valueobject.EnderecoPedido;
 import br.com.danielschiavo.pedido.model.entity.Entrega;
 import br.com.danielschiavo.pedido.dto.request.entrega.FormaEntregaRequest;

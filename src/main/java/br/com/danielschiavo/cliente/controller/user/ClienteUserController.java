@@ -5,7 +5,7 @@ import br.com.danielschiavo.cliente.dto.request.cliente.AlterarClienteRequest;
 import br.com.danielschiavo.cliente.dto.request.cliente.CadastrarClienteRequest;
 import br.com.danielschiavo.cliente.mapper.ClienteMapper;
 import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.service.ClienteService;
+import br.com.danielschiavo.cliente.service.cliente.ClienteService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.service.ClienteService;
+import br.com.danielschiavo.cliente.service.cliente.ClienteService;
 import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.pedido.dto.request.pedido.FazerPedidoRequest;
 import br.com.danielschiavo.pedido.mapper.PedidoMapper;
@@ -29,7 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.danielschiavo.pedido.service.pedido.validacoes.ValidadorCriarNovoPedido;
+import br.com.danielschiavo.pedido.service.pedido.validacoes.fazerpedido.ValidadorFazerPedido;
 import jakarta.transaction.Transactional;
 import lombok.Setter;
 
@@ -56,7 +56,7 @@ public class PedidoService {
 	private EntregaService entregaService;
 
 	@Autowired
-	private List<ValidadorCriarNovoPedido> validador;
+	private List<ValidadorFazerPedido> validador;
 
 	@Autowired
 	private CarrinhoService carrinhoService;

@@ -1,10 +1,9 @@
-package br.com.danielschiavo.cliente.service;
+package br.com.danielschiavo.cliente.service.endereco;
 
 
 import br.com.danielschiavo.cliente.dto.request.endereco.AlterarEnderecoRequest;
 import br.com.danielschiavo.cliente.dto.request.endereco.CadastrarEnderecoRequest;
 import br.com.danielschiavo.cliente.model.entity.Endereco;
-import br.com.danielschiavo.cliente.dto.response.endereco.MostrarEnderecoResponse;
 import br.com.danielschiavo.cliente.repository.EnderecoRepository;
 import br.com.danielschiavo.cliente.mapper.EnderecoMapper;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.danielschiavo.shared.infra.security.SecurityService;
 import lombok.Setter;
 
 import java.util.List;

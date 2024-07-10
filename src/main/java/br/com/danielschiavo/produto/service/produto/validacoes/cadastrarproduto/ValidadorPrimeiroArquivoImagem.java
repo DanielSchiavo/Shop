@@ -1,9 +1,9 @@
-package br.com.danielschiavo.produto.service.produto.validacoes;
+package br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto;
 
 import java.util.Optional;
 
 import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
-import br.com.danielschiavo.produto.dto.ArquivoProdutoDTO;
+import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ public class ValidadorPrimeiroArquivoImagem implements ValidadorCadastrarNovoPro
 
 	@Override
 	public void validar(CadastrarProdutoRequest request) {
-		Optional<ArquivoProdutoDTO> first = request.arquivos().stream().filter(arq -> arq.posicao() == 0).findFirst();
+		Optional<AdicionarArquivoProdutoRequest> first = request.arquivos().stream().filter(arq -> arq.posicao() == 0).findFirst();
 		if (first.isPresent()) {
 			String nomeArquivo = first.get().nome();
 			if(!nomeArquivo.endsWith(".jpeg") && !nomeArquivo.endsWith(".png") && !nomeArquivo.endsWith(".jpg")) {

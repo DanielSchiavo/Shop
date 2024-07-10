@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 public abstract class CarrinhoMapper {
 
 	@Mapping(target = "itemsCarrinho", source = "itemsCarrinho")
-	@Mapping(target = "valorTotal", ignore = true) 
 	public abstract MostrarCarrinhoClienteResponse toDto(Carrinho carrinho);
 	
 }

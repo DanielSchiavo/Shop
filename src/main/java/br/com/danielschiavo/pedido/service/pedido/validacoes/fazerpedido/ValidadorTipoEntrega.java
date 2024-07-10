@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.service.pedido.validacoes;
+package br.com.danielschiavo.pedido.service.pedido.validacoes.fazerpedido;
 
 import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.pedido.dto.request.pedido.FazerPedidoRequest;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class ValidadorTipoEntrega implements ValidadorCriarNovoPedido {
+public class ValidadorTipoEntrega implements ValidadorFazerPedido {
 
 	@Override
 	public void validar(FazerPedidoRequest pedidoDTO, Cliente cliente) {

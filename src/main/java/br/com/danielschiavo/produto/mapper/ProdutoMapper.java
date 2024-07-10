@@ -5,27 +5,32 @@ import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
 import br.com.danielschiavo.produto.dto.response.DetalharProdutoResponse;
 import br.com.danielschiavo.produto.dto.response.MostrarProdutosResponse;
 import br.com.danielschiavo.produto.model.entity.Produto;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Builder;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface ProdutoMapper extends TipoEntregaProdutoMapper, ArquivoProdutoMapper {
+public interface ProdutoMapper extends ArquivoProdutoMapper, TipoEntregaProdutoMapper {
 
-	@Mapping(target = "tiposEntrega", ignore = true)
-	@Mapping(target = "arquivosProduto", ignore = true)
 	@BeanMapping(builder = @Builder(disableBuilder = true))
-	Produto cadastrarProdutoDtoParaProduto(CadastrarProdutoRequest request);
-	
+	@Mapping(target = "tiposEntrega", ignore = true)
+	Produto toEntity(CadastrarProdutoRequest request);
+
+	@AfterMapping
+	default void toEntity(@MappingTarget Produto produto, CadastrarProdutoRequest request) {
+		mapearArquivoProdutoDtoParaArquivoProduto(produto, request.arquivos());
+		mapearTipoEntregaDtoParaTipoEntregaProduto(produto, request.tiposEntrega());
+	}
+
 	@Mapping(target = "tiposEntrega", ignore = true)
 	@Mapping(target = "arquivosProduto", ignore = true)
 	@BeanMapping(builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 	void alterarProdutoDtoParaProduto(AlterarProdutoRequest request, @MappingTarget Produto produto);
+
+	@AfterMapping
+	default void toEntity(@MappingTarget Produto produto, AlterarProdutoRequest request) {
+		mapearArquivoProdutoDtoParaArquivoProduto(produto, request.arquivos());
+		mapearTipoEntregaDtoParaTipoEntregaProduto(produto, request.tiposEntrega());
+	}
 
 	MostrarProdutosResponse toMostrarProdutosDto(Produto produto);
 

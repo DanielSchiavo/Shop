@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.cliente.model.enums.NomeRole;
-import br.com.danielschiavo.cliente.model.entity.Role;
-import br.com.danielschiavo.cliente.model.entity.Role.RoleBuilder;
+import br.com.danielschiavo.cliente.model.valueobject.Role;
+import br.com.danielschiavo.cliente.model.valueobject.Role.RoleBuilder;
 
 @Profile("prod")
 @Component
