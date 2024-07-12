@@ -1,13 +1,10 @@
 package br.com.danielschiavo.produto.service.produto;
 
-import java.util.List;
-
 import br.com.danielschiavo.filestorage.service.FileStorageProdutoService;
-import br.com.danielschiavo.produto.dto.request.AlterarProdutoRequest;
-import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
 import br.com.danielschiavo.produto.mapper.ProdutoMapper;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.repository.ProdutoRepository;
+import br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto.ValidadorCadastrarNovoProduto;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,15 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.danielschiavo.shared.infra.security.SecurityService;
-import br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto.ValidadorCadastrarNovoProduto;
-import lombok.Setter;
+import java.util.List;
 
 @Service
 public class ProdutoService {
-	
-	@Autowired
-	private SecurityService securityService;
 	
 	@Autowired
 	private ProdutoRepository produtoRepository;
@@ -32,11 +24,10 @@ public class ProdutoService {
 	private FileStorageProdutoService fileStorageProdutoService;
 
 	@Autowired
-	private List<ValidadorCadastrarNovoProduto> validador;
-	
-	@Setter
+	private ProdutoMapper mapper;
+
 	@Autowired
-	private ProdutoMapper produtoMapper;
+	private List<ValidadorCadastrarNovoProduto> validador;
 	
 	@Transactional
 	public void deletarProdutoPorId(Long id) {
@@ -48,22 +39,17 @@ public class ProdutoService {
 	}
 	
 	@Transactional
-	public Produto cadastrarProduto(CadastrarProdutoRequest request) {
-		validador.forEach(v -> v.validar(request));
+	public Produto cadastrarProduto(Produto cadastrarProduto) {
+		validador.forEach(v -> v.validar(cadastrarProduto));
 		
-		Produto produto = produtoMapper.toEntity(request);
-		produtoRepository.save(produto);
-		
-		return produto;
+		return produtoRepository.save(cadastrarProduto);
 	}
 
 	@Transactional
-	public Produto alterarProdutoPorId(Long id, AlterarProdutoRequest request) {
+	public Produto alterarProdutoPorId(Long id, Produto produtoAtualizado) {
 		Produto produto = pegarProdutoPorId(id);
-		produtoMapper.alterarProdutoDtoParaProduto(request, produto);
-		produtoRepository.save(produto);
-
-		return produto;
+		mapper.alterarProdutoDtoParaProduto(produtoAtualizado, produto);
+		return produtoRepository.save(produto);
 	}
 
 	public Page<Produto> listarProdutos(Pageable pageable) {
@@ -71,7 +57,8 @@ public class ProdutoService {
 	}
 
 	public Produto pegarProdutoPorId(Long id) {
-		return produtoRepository.findById(id).orElseThrow(() -> new ValidacaoException("Não existe um produto com o id " + id));
+		return produtoRepository.findById(id)
+				.orElseThrow(() -> new ValidacaoException("Não existe um produto com o id " + id));
 	}
 
 	

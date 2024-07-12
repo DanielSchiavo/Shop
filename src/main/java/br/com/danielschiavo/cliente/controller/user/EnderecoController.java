@@ -63,8 +63,9 @@ public class EnderecoController {
 	@Operation(summary = "Cadastrar novo endereço para o cliente")
 	public ResponseEntity<?> cadastrarNovoEndereco(@RequestBody @Valid CadastrarEnderecoRequest request) {
 		Long clienteId = securityService.getClienteId();
-		Endereco endereco = enderecoService.cadastrarEndereco(request, clienteId);
-		
+		Endereco cadastrarEndereco = mapper.toEntity(request);
+
+		Endereco endereco = enderecoService.cadastrarEndereco(clienteId, cadastrarEndereco);
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Endereço cadastrado com sucesso!", null));
 	}
 	
@@ -72,8 +73,10 @@ public class EnderecoController {
 	@Operation(summary = "Alterar um endereço por id")
 	public ResponseEntity<?> alterarEnderecoPorIdToken(@PathVariable Long enderecoId, @RequestBody AlterarEnderecoRequest request) {
 		Long clienteId = securityService.getClienteId();
-		Endereco endereco = enderecoService.alterarEnderecoPorIdToken(request, clienteId, enderecoId);
-		return ResponseEntity.ok().body(Response.success("Endereço alterado com sucesso!", mapper.toDto(endereco)));
+		Endereco enderecoAtualizado = mapper.toEntity(request);
+
+		Endereco endereco = enderecoService.alterarEnderecoPorIdToken(clienteId, enderecoId, enderecoAtualizado);
+		return ResponseEntity.ok().body(Response.success("Endereço alterado com sucesso!", null));
 	}
 	
 }

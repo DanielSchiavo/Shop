@@ -19,6 +19,8 @@ import lombok.Setter;
 @Builder
 public class EnderecoPedido {
 
+	private Long enderecoId;
+
 	private String cep;
 	private String rua;
 	private String numero;

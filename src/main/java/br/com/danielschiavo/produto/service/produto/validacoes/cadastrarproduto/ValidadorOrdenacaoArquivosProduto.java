@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
+import br.com.danielschiavo.produto.model.entity.Produto;
+import br.com.danielschiavo.produto.model.valueobject.ArquivoProduto;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.stereotype.Service;
 import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
@@ -13,9 +15,9 @@ import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
 public class ValidadorOrdenacaoArquivosProduto implements ValidadorCadastrarNovoProduto {
 
 	@Override
-	public void validar(CadastrarProdutoRequest request) {
-        List<Byte> posicoesOrdenadas = request.arquivos().stream()
-									                .map(AdicionarArquivoProdutoRequest::posicao)
+	public void validar(Produto cadastrarProduto) {
+        List<Byte> posicoesOrdenadas = cadastrarProduto.getArquivosProduto().stream()
+									                .map(ArquivoProduto::getPosicao)
 									                .sorted()
 									                .toList();
 

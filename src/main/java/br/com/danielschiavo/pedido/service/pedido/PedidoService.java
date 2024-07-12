@@ -41,25 +41,23 @@ public class PedidoService {
 	private PedidoRepository pedidoRepository;
 
 	@Autowired
-	private FileStoragePedidoService fileStoragePedidoService;
-
-	@Autowired
-	private PedidoMapper pedidoMapper;
-
-	@Autowired
-	private ProdutoService produtoService;
-
-	@Autowired
 	private PagamentoService pagamentoService;
 
 	@Autowired
 	private EntregaService entregaService;
 
 	@Autowired
+	private FileStoragePedidoService fileStoragePedidoService;
+
+	@Autowired
+	private ProdutoService produtoService;
+
+	@Autowired
 	private List<ValidadorFazerPedido> validador;
 
 	@Autowired
 	private CarrinhoService carrinhoService;
+
     @Autowired
     private ClienteService clienteService;
 
@@ -68,33 +66,35 @@ public class PedidoService {
 	}
 	
 	@Transactional
-	public Pedido realizarPedido(FazerPedidoRequest request, Long clienteId) {
+	public Pedido realizarPedido(Long clienteId, Pedido pedido) {
 		Cliente cliente = clienteService.pegarClientePorId(clienteId);
-		validador.forEach(v -> v.validar(request, cliente));
+		validador.forEach(v -> v.validar(pedido, cliente));
 
-		List<ItemPedido> itemsPedido = pegarItemsPedido(request.items());
+		List<ItemPedido> itemsPedido = pegarItemsPedido(pedido.getItemsPedido());
 
 		BigDecimal valorTotal = itemsPedido.stream().map(ItemPedido::getSubTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		Pagamento pagamento = pagamentoService.executarPagamento(request.pagamento(), valorTotal, cliente);
-		Entrega entrega = entregaService.executarEntrega(request.entrega(), cliente);
+		Pagamento pagamento = pagamentoService.executarPagamento(pedido.getPagamento(), valorTotal, cliente);
+		Entrega entrega = entregaService.executarEntrega(pedido.getEntrega(), cliente);
 
-		Pedido pedido = Pedido.builder()
-				.nomeCliente(cliente.getNome() + " " + cliente.getSobrenome())
-				.cpf(cliente.getCpf())
-				.clienteId(cliente.getId())
-				.dataPedido(LocalDateTime.now())
-				.statusPedido(StatusPedido.A_PAGAR)
-				.itemsPedido(itemsPedido)
-				.pagamento(pagamento)
-				.entrega(entrega).build();
+		pedido.setNomeCliente(cliente.getNome() + " " + cliente.getSobrenome());
+		pedido.setCpf(cliente.getCpf());
+		pedido.setDataPedido(LocalDateTime.now());
+		pedido.setStatusPedido(StatusPedido.A_PAGAR);
+		pedido.adicionarItemPedido(itemsPedido);
+		pedido.setPagamento(pagamento);
+		pedido.setEntrega(entrega);
 
-		if (request.veioPeloCarrinho()) {
-			Long[] ids = request.items().stream().map(AdicionarItemPedidoRequest::produtoId).toArray(Long[]::new);
+		if (pedido.getComprouPeloCarrinho()) {
+			Long[] ids = pedido.getItemsPedido().stream().map(ItemPedido::getProdutoId).toArray(Long[]::new);
 			carrinhoService.removerProdutoDoCarrinho(clienteId, ids);
 		}
 
 		return pedidoRepository.save(pedido);
+	}
+
+	public Pedido pegarPedidoPorId(UUID pedidoId, Long clienteId) {
+		return pedidoRepository.findByIdAndClienteId(pedidoId, clienteId).orElseThrow(() -> new ValidacaoException("Usuário não possui um pedido com esse ID"));
 	}
 	
 	
@@ -104,11 +104,11 @@ public class PedidoService {
 //	------------------------------
 //	------------------------------
 
-	private List<ItemPedido> pegarItemsPedido(List<AdicionarItemPedidoRequest> items) {
+	private List<ItemPedido> pegarItemsPedido(List<ItemPedido> items) {
 	List<ItemPedido> itemsPedido = new ArrayList<>();
 		items.forEach(item -> {
-			var produto = produtoService.pegarProdutoPorId(item.produtoId());
-			BigDecimal subTotal = produto.getPreco().multiply(new BigDecimal(item.quantidade()));
+			var produto = produtoService.pegarProdutoPorId(item.getProdutoId());
+			BigDecimal subTotal = produto.getPreco().multiply(new BigDecimal(item.getQuantidade()));
 
 			File file = fileStoragePedidoService.handleImagemPedido(produto.pegarNomePrimeiraImagem(), produto.getId());
 
@@ -124,9 +124,5 @@ public class PedidoService {
 		});
 		
 		return itemsPedido;
-	}
-
-	public Pedido pegarPedidoPorId(UUID pedidoId, Long clienteId) {
-		return pedidoRepository.findByIdAndClienteId(pedidoId, clienteId).orElseThrow(() -> new ValidacaoException("Usuário não possui um pedido com esse ID"));
 	}
 }

@@ -62,7 +62,8 @@ public class PedidoUserController {
 	@PostMapping
 	@Operation(summary = "Cria um pedido em nome do cliente autenticado que está no token")
 	public ResponseEntity<?> realizarPedido(@RequestBody @Valid FazerPedidoRequest request, Long clienteId) {
-		Pedido pedido = pedidoService.realizarPedido(request, clienteId);
+		Pedido fazerPedido = mapper.toEntity(request);
+		Pedido pedido = pedidoService.realizarPedido(clienteId, fazerPedido);
 
 		return ResponseEntity.ok(Response.success("Pedido realizado com sucesso!", mapper.toDto(pedido)));
 	}

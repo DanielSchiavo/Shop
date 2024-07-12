@@ -30,8 +30,6 @@ public class ClienteService {
 	
 	@Autowired
 	private FileStoragePerfilService fileStorageService;
-    @Autowired
-    private ClienteRepository clienteRepository;
 
 
 	@Transactional
@@ -58,15 +56,14 @@ public class ClienteService {
 	}
 	
 	@Transactional
-	public Cliente cadastrarCliente(CadastrarClienteRequest request) {
-		Cliente cliente = mapper.toEntity(request);
+	public Cliente cadastrarCliente(Cliente cliente) {
 		return repository.save(cliente);
 	}
 	
 	@Transactional
-	public Cliente alterarClientePorId(AlterarClienteRequest request, Long clienteId) {
+	public Cliente alterarClientePorId(Long clienteId, Cliente clienteAtualizado) {
 		Cliente cliente = repository.getReferenceById(clienteId);
-		mapper.alterarCliente(request, cliente);
+		mapper.alterarCliente(clienteAtualizado, cliente);
 		
 		return repository.save(cliente);
 	}
@@ -82,17 +79,17 @@ public class ClienteService {
 	}
 
 	public void adicionarRole(Long clienteId, NomeRole nomeRole) {
-		Cliente cliente = clienteRepository.getReferenceById(clienteId);
+		Cliente cliente = repository.getReferenceById(clienteId);
 		cliente.adicionarRole(nomeRole);
 
-		clienteRepository.save(cliente);
+		repository.save(cliente);
 	}
 
 	public void removerRole(Long clienteId, NomeRole nomeRole) {
-		Cliente cliente = clienteRepository.getReferenceById(clienteId);
+		Cliente cliente = repository.getReferenceById(clienteId);
 		cliente.removerRole(nomeRole);
 
-		clienteRepository.save(cliente);
+		repository.save(cliente);
 	}
 
 

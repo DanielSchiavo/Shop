@@ -2,9 +2,10 @@ package br.com.danielschiavo.vendas.controller;
 
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
-import br.com.danielschiavo.vendas.dto.request.AdicionarItemCarrinhoRequest;
+import br.com.danielschiavo.vendas.dto.request.ItemCarrinhoRequest;
 import br.com.danielschiavo.vendas.mapper.CarrinhoMapper;
 import br.com.danielschiavo.vendas.model.entity.Carrinho;
+import br.com.danielschiavo.vendas.model.entity.ItemCarrinho;
 import br.com.danielschiavo.vendas.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,17 +57,19 @@ public class CarrinhoController {
 	
 	@PostMapping("/cliente/carrinho")
 	@Operation(summary = "Adiciona um produto no carrinho, se o cliente não tiver um carrinho, também cria automáticamente")
-	public ResponseEntity<?> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid AdicionarItemCarrinhoRequest request) {
+	public ResponseEntity<?> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoRequest request) {
 		Long clienteId = securityService.getClienteId();
-		Carrinho carrinho = carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(request, clienteId);
+		ItemCarrinho adicionarItem = mapper.toEntity(request);
+		Carrinho carrinho = carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(clienteId, adicionarItem);
 		return ResponseEntity.ok().body(Response.success("Produto adicionado ao carrinho!", null));
 	}
 	
 	@PutMapping("/cliente/carrinho")
 	@Operation(summary = "Seta a quantidade de determinado produto que está no carrinho")
-	public ResponseEntity<?> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid AdicionarItemCarrinhoRequest request) {
+	public ResponseEntity<?> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoRequest request) {
 		Long clienteId = securityService.getClienteId();
-		carrinhoService.setarQuantidadeProdutoNoCarrinho(request, clienteId);
+		ItemCarrinho setarItem = mapper.toEntity(request);
+		carrinhoService.setarQuantidadeProdutoNoCarrinho(clienteId, setarItem);
 		return ResponseEntity.ok(Response.success("Alterado com sucesso!", null));
 	}
 }

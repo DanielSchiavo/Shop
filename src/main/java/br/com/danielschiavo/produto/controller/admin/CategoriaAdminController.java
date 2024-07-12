@@ -41,8 +41,8 @@ public class CategoriaAdminController {
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cria uma categoria", 
 	   		   operationId = "03_criarCategoria")
-	public ResponseEntity<?> cadastrarCategoria(@RequestBody @Valid CriarCategoriaRequest reques) {
-		Categoria categoria = categoriaService.cadastrarCategoria(reques.nome());
+	public ResponseEntity<?> cadastrarCategoria(@RequestBody @Valid CriarCategoriaRequest request) {
+		Categoria categoria = categoriaService.cadastrarCategoria(request.nome());
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Categoria cadastrada com sucesso!", categoria));
 	}
 	
@@ -51,7 +51,7 @@ public class CategoriaAdminController {
 	@Operation(summary = "Altera o nome da categoria", 
 	   		   operationId = "02_alterarNomeCategoriaPorId")
 	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long categoriaId, @RequestBody @NotNull CriarCategoriaRequest request) {
-		Categoria categoria = categoriaService.alterarNomeCategoriaPorId(request, categoriaId);
+		Categoria categoria = categoriaService.alterarNomeCategoriaPorId(categoriaId, request.nome());
 
 		return ResponseEntity.status(HttpStatus.OK).body(Response.success("Categoria alterada com sucesso!", null));
 	}

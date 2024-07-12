@@ -18,8 +18,8 @@ public class ValidadorNomeProdutoIgual implements ValidadorCadastrarNovoProduto 
 	private ProdutoRepository produtoRepository;
 	
 	@Override
-	public void validar(CadastrarProdutoRequest request) {
-		Optional<Produto> optionalProduto = produtoRepository.findByNomeLowerCase(request.nome());
+	public void validar(Produto cadastrarProduto) {
+		Optional<Produto> optionalProduto = produtoRepository.findByNomeLowerCase(cadastrarProduto.getNome());
 		if (optionalProduto.isPresent()) {
 			throw new ValidacaoException("Já existe um produto com esse nome!");
 		}

@@ -2,6 +2,7 @@ package br.com.danielschiavo.produto.controller.admin;
 
 import br.com.danielschiavo.produto.dto.request.AlterarProdutoRequest;
 import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
+import br.com.danielschiavo.produto.mapper.ProdutoMapper;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.service.produto.ProdutoService;
 import br.com.danielschiavo.shared.Response;
@@ -31,6 +32,9 @@ public class ProdutoAdminController {
 	@Autowired
 	private ProdutoService produtoService;
 
+	@Autowired
+	private ProdutoMapper mapper;
+
 	@DeleteMapping("/{produtoId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Deleta um produto com o id fornecido no parametro da requisição")
@@ -45,7 +49,8 @@ public class ProdutoAdminController {
 	public ResponseEntity<?> cadastrarProduto(
 			@RequestBody @Valid CadastrarProdutoRequest request,
 			UriComponentsBuilder uriBuilder) {
-		Produto produto = produtoService.cadastrarProduto(request);
+		Produto cadastrarProduto = mapper.toEntity(request);
+		Produto produto = produtoService.cadastrarProduto(cadastrarProduto);
 		var uri = uriBuilder.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
 		return ResponseEntity.created(uri).body(Response.success("Produto cadastrado com sucesso!", null));
 	}
@@ -56,7 +61,8 @@ public class ProdutoAdminController {
 	public ResponseEntity<?> alterarProdutoPorId(
 			@PathVariable Long produtoId,
 			@RequestBody AlterarProdutoRequest request) {
-		Produto produto = produtoService.alterarProdutoPorId(produtoId, request);
+		Produto produtoAtualizado = mapper.toEntity(request);
+		Produto produto = produtoService.alterarProdutoPorId(produtoId, produtoAtualizado);
 			
 		return ResponseEntity.ok(Response.success("Produto alterado com sucesso!", null));
 	}

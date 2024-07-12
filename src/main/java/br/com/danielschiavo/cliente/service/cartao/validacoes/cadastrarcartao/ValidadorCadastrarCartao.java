@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ValidadorCadastrarCartao {
 	
-	void validar(CadastrarCartaoRequest request, List<Cartao> cartoes, Long clienteId);
+	void validar(Cartao cartao, List<Cartao> cartoes, Long clienteId);
 
 }

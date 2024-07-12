@@ -24,7 +24,7 @@ public interface ProdutoMapper extends ArquivoProdutoMapper, TipoEntregaProdutoM
 	@Mapping(target = "tiposEntrega", ignore = true)
 	@Mapping(target = "arquivosProduto", ignore = true)
 	@BeanMapping(builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	void alterarProdutoDtoParaProduto(AlterarProdutoRequest request, @MappingTarget Produto produto);
+	void alterarProdutoDtoParaProduto(Produto produtoAtualizado, @MappingTarget Produto produto);
 
 	@AfterMapping
 	default void toEntity(@MappingTarget Produto produto, AlterarProdutoRequest request) {
@@ -35,4 +35,7 @@ public interface ProdutoMapper extends ArquivoProdutoMapper, TipoEntregaProdutoM
 	MostrarProdutosResponse toMostrarProdutosDto(Produto produto);
 
 	DetalharProdutoResponse toDetalharProdutoDto(Produto produto);
+
+	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	Produto toEntity(AlterarProdutoRequest request);
 }

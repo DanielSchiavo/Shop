@@ -15,7 +15,7 @@ public record FazerPedidoRequest(
 			@NotNull
 			FormaEntregaRequest entrega,
 			@NotNull
-			Boolean veioPeloCarrinho,
+			Boolean comprouPeloCarrinho,
 			@NotNull
 			List<AdicionarItemPedidoRequest> items
 		) {

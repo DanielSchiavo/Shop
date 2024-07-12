@@ -48,37 +48,6 @@ public class GeneralExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> dataIntegrityViolation(DataIntegrityViolationException e) {
-        String message = e.getRootCause().getMessage();
-        String reason = null;
-        String mensagem = null;
-        if (e.getMessage().contains("clientes_cpf_key")) {
-            mensagem = "CPF já cadastrado";
-            reason = "clientes_cpf_key";
-        }
-        if (e.getMessage().contains("clientes_email_key")) {
-            mensagem = "E-Mail já cadastrado";
-            reason = "clientes_email_key";
-        }
-        if (e.getMessage().contains("clientes_celular_key")) {
-            mensagem = "Celular já cadastrado";
-            reason = "clientes_celular_key";
-        }
-
-        if (e.getCause() instanceof ConstraintViolationException) {
-            ConstraintViolationException constraintEx = (ConstraintViolationException) e.getCause();
-
-            SQLIntegrityConstraintViolationException  ex = (SQLIntegrityConstraintViolationException) e.getCause();
-
-            constraintEx.getConstraintName();
-            String sqlState = constraintEx.getSQLState();
-            int errorCode = constraintEx.getErrorCode();
-            String constraintName = constraintEx.getConstraintName();
-            System.out.println("SQL State: " + sqlState);
-            System.out.println("Código de Erro: " + errorCode);
-            System.out.println("Nome da Restrição: " + constraintName);
-        }
-
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(Response.failure("Falha ao persistir no banco de dados", List.of(reason)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.failure("Falha ao persistir no banco de dados", null));
     }
 }

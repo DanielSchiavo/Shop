@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 
 @Builder
-public record AdicionarItemCarrinhoRequest(
+public record ItemCarrinhoRequest(
 		@NotNull
 		@NumberFormat
 		@Positive

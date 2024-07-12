@@ -8,8 +8,6 @@ import lombok.Setter;
 @Setter
 public abstract class ProcessadorEntrega {
 	
-	private Cliente cliente;
-	
-	public abstract boolean executa();
+	public abstract boolean executa(Cliente cliente);
 
 }

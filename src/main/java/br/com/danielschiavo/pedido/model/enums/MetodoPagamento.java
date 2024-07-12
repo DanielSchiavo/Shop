@@ -84,9 +84,7 @@ public enum MetodoPagamento {
 		this.processadorPagamento = processadorPagamento;
 	}
 	
-	public ProcessadorPagamento getProcessador(BigDecimal valorTotal, Cliente cliente) {
-		this.processadorPagamento.setValorTotal(valorTotal);
-		this.processadorPagamento.setCliente(cliente);
+	public ProcessadorPagamento getProcessador() {
 		return this.processadorPagamento;
 	}
 	

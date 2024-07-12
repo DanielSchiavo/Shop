@@ -36,6 +36,8 @@ public class Pedido {
 
 	private LocalDateTime dataPedido;
 
+	private Boolean comprouPeloCarrinho;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status_pedido")
 	private StatusPedido statusPedido;
@@ -59,6 +61,10 @@ public class Pedido {
 
 	public void adicionarItemPedido(ItemPedido itemPedido) {
 		this.itemsPedido.add(itemPedido);
+	}
+
+	public void adicionarItemPedido(List<ItemPedido> itemsPedido) {
+		this.itemsPedido.addAll(itemsPedido);
 	}
 	
 }

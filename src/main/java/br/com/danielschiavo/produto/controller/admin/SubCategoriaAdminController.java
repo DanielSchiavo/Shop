@@ -41,8 +41,8 @@ public class SubCategoriaAdminController {
 	@PostMapping("/admin/sub-categoria")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Cria uma nova subcategoria, uma subcategoria tem que ter uma categoria a qual ela está relacionada")
-	public ResponseEntity<?> cadastrarSubCategoria(@RequestBody @Valid CadastrarSubCategoriaRequest dto, UriComponentsBuilder uriBuilder) {
-		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(dto);
+	public ResponseEntity<?> cadastrarSubCategoria(@RequestBody @Valid CadastrarSubCategoriaRequest request) {
+		SubCategoria subCategoria = subCategoriaService.cadastrarSubCategoria(request.nome(), request.categoriaId());
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Sub Categoria cadastrada com sucesso!", subCategoria));
 	}
@@ -51,7 +51,7 @@ public class SubCategoriaAdminController {
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Altera o nome de uma subcategoria com o id fornecido no parametro da requisição")
 	public ResponseEntity<?> alterarSubCategoriaPorId(@PathVariable Long subCategoriaId, @RequestBody AlterarSubCategoriaRequest request) {
-		SubCategoria subCategoria = subCategoriaService.alterarSubCategoriaPorId(request, subCategoriaId);
+		SubCategoria subCategoria = subCategoriaService.alterarSubCategoriaPorId(subCategoriaId, request.nome(), request.categoriaId());
 		
 		return ResponseEntity.ok(Response.success("Sub Categoria alterada com sucesso!", null));
 	}

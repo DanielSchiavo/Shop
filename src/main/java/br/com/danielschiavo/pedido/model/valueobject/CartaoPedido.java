@@ -20,6 +20,8 @@ import lombok.ToString;
 @ToString
 @Builder
 public class CartaoPedido {
+
+	private Long cartaoId;
 	
 	private String nomeBanco;
 	private String numeroCartao;

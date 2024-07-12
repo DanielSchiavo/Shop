@@ -18,13 +18,9 @@ public class PagamentoService {
     @Autowired
     private CartaoService cartaoService;
 
-    public Pagamento executarPagamento(FormaPagamentoRequest request, BigDecimal valorTotal, Cliente cliente) {
-        MetodoPagamento metodoPagamento = request.metodoPagamento();
-
-        Long cartaoId = request.cartaoId();
-
-        Pagamento.PagamentoBuilder pagamentoBuilder = Pagamento.builder().metodoPagamento(metodoPagamento).statusPagamento(StatusPagamento.PENDENTE);
-
+    public Pagamento executarPagamento(Pagamento pagamento, BigDecimal valorTotal, Cliente cliente) {
+        pagamento.setStatusPagamento(StatusPagamento.PENDENTE);
+        Long cartaoId = pagamento.getCartaoPedido().getCartaoId();
         if (cartaoId != null) {
             var cartao = cartaoService.pegarCartao(cartaoId, cliente.getId());
 
@@ -33,15 +29,13 @@ public class PagamentoService {
                     .numeroCartao(cartao.getNumeroCartao())
                     .nomeNoCartao(cartao.getNomeNoCartao())
                     .validadeCartao(cartao.getValidadeCartao())
-                    .numeroDeParcelas(request.numeroParcelas())
+                    .numeroDeParcelas(pagamento.getCartaoPedido().getNumeroDeParcelas())
                     .tipoCartao(cartao.getTipoCartao()).build();
 
-            pagamentoBuilder.cartaoPedido(cartaoPedido);
+            pagamento.setCartaoPedido(cartaoPedido);
         }
 
-        Pagamento pagamento = pagamentoBuilder.build();
-
-        pagamento.getMetodoPagamento().getProcessador(valorTotal, cliente).executa();
+        pagamento.getMetodoPagamento().getProcessador().executa(cliente, valorTotal);
 
         return pagamento;
     }

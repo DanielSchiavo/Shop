@@ -10,10 +10,6 @@ import java.math.BigDecimal;
 @Getter
 public abstract class ProcessadorPagamento {
 
-	private BigDecimal valorTotal;
-	
-	private Cliente cliente;
-	
-	public abstract boolean executa();
+	public abstract boolean executa(Cliente cliente, BigDecimal valorTotal);
 	
 }

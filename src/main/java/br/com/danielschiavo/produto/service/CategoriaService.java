@@ -36,10 +36,10 @@ public class CategoriaService {
 	}
 
 	@Transactional
-	public Categoria alterarNomeCategoriaPorId(CriarCategoriaRequest request, Long categoriaId) {
+	public Categoria alterarNomeCategoriaPorId(Long categoriaId, String nome) {
 		var categoria = pegarCategoriaPorId(categoriaId);
 
-		categoria.setNome(request.nome());
+		categoria.setNome(nome);
 		return categoriaRepository.save(categoria);
 	}
 

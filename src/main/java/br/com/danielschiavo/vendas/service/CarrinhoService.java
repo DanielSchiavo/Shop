@@ -9,7 +9,7 @@ import java.util.Optional;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.service.produto.ProdutoService;
 import br.com.danielschiavo.vendas.model.entity.Carrinho;
-import br.com.danielschiavo.vendas.dto.request.AdicionarItemCarrinhoRequest;
+import br.com.danielschiavo.vendas.dto.request.ItemCarrinhoRequest;
 import br.com.danielschiavo.vendas.model.entity.ItemCarrinho;
 import br.com.danielschiavo.vendas.repository.CarrinhoRepository;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
@@ -45,28 +45,28 @@ public class CarrinhoService {
 	}
 	
 	@Transactional
-	public Carrinho adicionarProdutosNoCarrinhoPorIdToken(AdicionarItemCarrinhoRequest request, Long clienteId) {
-		if (request.quantidade() <= 0) {
+	public Carrinho adicionarProdutosNoCarrinhoPorIdToken(Long clienteId, ItemCarrinho adicionarItem) {
+		if (adicionarItem.getQuantidade() <= 0) {
 			throw new ValidacaoException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
-					+ request.quantidade());
+					+ adicionarItem.getQuantidade());
 		}
 
 		Carrinho carrinho = pegarCarrinhoPorClienteId(clienteId);
 		carrinho.setDataEHoraAtualizacao(LocalDateTime.now());
 
 		List<ItemCarrinho> itemsCarrinho = carrinho.getItemsCarrinho();
-		Optional<ItemCarrinho> optionalItemCarrinho = itemsCarrinho.stream().filter(item -> item.getId().equals(request.produtoId())).findFirst();
+		Optional<ItemCarrinho> optionalItemCarrinho = itemsCarrinho.stream().filter(item -> item.getId().equals(adicionarItem.getProdutoId())).findFirst();
 
 		if (optionalItemCarrinho.isPresent()) {
 			var itemCarrinho = optionalItemCarrinho.get();
-			itemCarrinho.setQuantidade(itemCarrinho.getQuantidade() + request.quantidade());
+			itemCarrinho.setQuantidade(itemCarrinho.getQuantidade() + adicionarItem.getQuantidade());
 		} else {
-			Produto produto = produtoService.pegarProdutoPorId(request.produtoId());
-			BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(request.quantidade()));
+			Produto produto = produtoService.pegarProdutoPorId(adicionarItem.getProdutoId());
+			BigDecimal subTotal = produto.getPreco().multiply(BigDecimal.valueOf(adicionarItem.getQuantidade()));
 			ItemCarrinho itemCarrinho = ItemCarrinho.builder()
 					.id(null)
-					.quantidade(request.quantidade())
-					.produtoId(request.produtoId())
+					.quantidade(adicionarItem.getQuantidade())
+					.produtoId(adicionarItem.getProdutoId())
 					.subTotal(subTotal)
 					.dataEHoraInsercao(LocalDateTime.now())
 					.carrinho(carrinho).build();
@@ -79,16 +79,16 @@ public class CarrinhoService {
 	}
 
 	@Transactional
-	public void setarQuantidadeProdutoNoCarrinho(AdicionarItemCarrinhoRequest request, Long clienteId) {
+	public void setarQuantidadeProdutoNoCarrinho(Long clienteId, ItemCarrinho setarItem) {
 		Carrinho carrinho = pegarCarrinhoPorClienteId(clienteId);
 
-		ItemCarrinho itemCarrinho = carrinho.getItemsCarrinho().stream().filter(item -> item.getProdutoId().equals(request.produtoId()))
+		ItemCarrinho itemCarrinho = carrinho.getItemsCarrinho().stream().filter(item -> item.getProdutoId().equals(setarItem.getProdutoId()))
 				.findFirst().orElseThrow(() -> new ValidacaoException("Esse produto não foi adicionado ao carrinho ainda"));
 
-		if (request.quantidade() <= 0) {
+		if (setarItem.getQuantidade() <= 0) {
 			carrinho.removerItemCarrinho(itemCarrinho);
 		} else {
-			itemCarrinho.setQuantidade(request.quantidade());
+			itemCarrinho.setQuantidade(setarItem.getQuantidade());
 		}
 
 		carrinhoRepository.save(carrinho);

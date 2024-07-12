@@ -9,7 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ValidadorCelularJaExiste implements ValidadorCadastrarCliente {
+public class ValidarCelularJaExiste implements ValidadorCadastrarCliente {
 
     @Autowired
     private ClienteRepository repository;

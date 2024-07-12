@@ -41,16 +41,18 @@ public class Pagamento {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "metodo_pagamento")
 	private MetodoPagamento metodoPagamento;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "status_pagamento")
-	private StatusPagamento statusPagamento;
-	
-	private LocalDateTime dataPagamento;
+
+	private Byte numeroParcelas;
 
 	@Embedded
 	private CartaoPedido cartaoPedido;
-	
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status_pagamento")
+	private StatusPagamento statusPagamento;
+
+	private LocalDateTime dataPagamento;
+
 	@OneToOne(mappedBy = "pagamento")
 	private Pedido pedido;
 	

@@ -6,9 +6,17 @@ import br.com.danielschiavo.pedido.service.entrega.processador.ProcessarEntregaC
 import br.com.danielschiavo.pedido.service.entrega.processador.ProcessarEntregaDigital;
 import br.com.danielschiavo.pedido.service.entrega.processador.ProcessarEntregaExpressa;
 import br.com.danielschiavo.pedido.service.entrega.processador.ProcessarEntregaRetiradaNaLoja;
+import br.com.danielschiavo.pedido.service.entrega.processador.enums.ServicoCorreio;
 
 public enum TipoEntrega {
-	CORREIOS(new ProcessarEntregaCorreios())
+	CORREIOS_SEDEX(new ProcessarEntregaCorreios(ServicoCorreio.SEDEX))
+	{
+		@Override
+		public boolean precisaDeEndereco() {
+			return true;
+		}
+	},
+	CORREIOS_PAC(new ProcessarEntregaCorreios(ServicoCorreio.PAC))
 	{
 		@Override
 		public boolean precisaDeEndereco() {
@@ -43,8 +51,7 @@ public enum TipoEntrega {
 		this.processadorEntrega = processadorEntrega;
 	}
 	
-	public ProcessadorEntrega getProcessador(Cliente cliente) {
-		this.processadorEntrega.setCliente(cliente);
+	public ProcessadorEntrega getProcessador() {
 		return this.processadorEntrega;
 	}
 	

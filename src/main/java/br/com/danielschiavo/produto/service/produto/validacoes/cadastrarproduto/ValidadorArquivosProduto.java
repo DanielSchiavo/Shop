@@ -5,6 +5,8 @@ import java.util.List;
 import br.com.danielschiavo.filestorage.service.FileStorageProdutoService;
 import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
 import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
+import br.com.danielschiavo.produto.model.entity.Produto;
+import br.com.danielschiavo.produto.model.valueobject.ArquivoProduto;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,8 @@ public class ValidadorArquivosProduto implements ValidadorCadastrarNovoProduto {
 	private FileStorageProdutoService fileStorageProdutoService;
 	
 	@Override
-	public void validar(CadastrarProdutoRequest request) {
-		List<String> nomes = request.arquivos().stream().map(AdicionarArquivoProdutoRequest::nome).toList();
+	public void validar(Produto cadastrarProduto) {
+		List<String> nomes = cadastrarProduto.getArquivosProduto().stream().map(ArquivoProduto::getNome).toList();
 
 		nomes.forEach(nome -> {
 			boolean existe = fileStorageProdutoService.verificarSeImagemExiste(nome);

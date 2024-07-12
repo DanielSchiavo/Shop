@@ -33,29 +33,29 @@ public class SubCategoriaService {
 	}
 	
 	@Transactional
-	public SubCategoria cadastrarSubCategoria(@Valid CadastrarSubCategoriaRequest request) {
-		Categoria categoria = categoriaService.pegarCategoriaPorId(request.categoriaId());
+	public SubCategoria cadastrarSubCategoria(String nome, Long categoriaId) {
+		Categoria categoria = categoriaService.pegarCategoriaPorId(categoriaId);
 
-		boolean isPresent = subCategoriaRepository.findByNomeLowerCase(request.nome()).isPresent();
+		boolean isPresent = subCategoriaRepository.findByNomeLowerCase(nome).isPresent();
 		if (isPresent) {
-			throw new ValidacaoException("A Sub Categoria de nome " + request.nome() + " já existe");
+			throw new ValidacaoException("A Sub Categoria de nome " + nome + " já existe");
 		}
 
-		SubCategoria subCategoria = new SubCategoria(null, request.nome(), categoria.getId());
+		SubCategoria subCategoria = new SubCategoria(null, nome, categoria.getId());
 		return subCategoriaRepository.save(subCategoria);
 	}
 	
 	@Transactional
-	public SubCategoria alterarSubCategoriaPorId(AlterarSubCategoriaRequest request, Long subCategoriaId) {
+	public SubCategoria alterarSubCategoriaPorId(Long subCategoriaId, String nome, Long categoriaId) {
 		var subCategoria = pegarSubCategoriaPorId(subCategoriaId);
 
-		if (request.categoriaId() != null) {
-			Categoria categoria = categoriaService.pegarCategoriaPorId(request.categoriaId());
+		if (categoriaId != null) {
+			Categoria categoria = categoriaService.pegarCategoriaPorId(categoriaId);
 			subCategoria.setCategoriaId(categoria.getId());
 		}
 
-		if (request.nome() != null) {
-			subCategoria.setNome(request.nome());
+		if (nome != null) {
+			subCategoria.setNome(nome);
 		}
 
 		return subCategoriaRepository.save(subCategoria);

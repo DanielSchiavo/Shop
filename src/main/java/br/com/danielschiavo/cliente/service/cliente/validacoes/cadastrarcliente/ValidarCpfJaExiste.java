@@ -9,7 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ValidadorEmailJaExiste implements ValidadorCadastrarCliente {
+public class ValidarCpfJaExiste implements ValidadorCadastrarCliente {
 
     @Autowired
     private ClienteRepository repository;
@@ -17,13 +17,13 @@ public class ValidadorEmailJaExiste implements ValidadorCadastrarCliente {
     @Override
     public void validar(CadastrarClienteRequest request) {
         Cliente probe = new Cliente();
-        probe.setEmail(request.email());
+        probe.setCpf(request.cpf());
 
         Example<Cliente> example = Example.of(probe);
 
         boolean exists = repository.exists(example);
         if (exists) {
-            throw new ValidacaoException("Email já cadastrado");
+            throw new ValidacaoException("CPF já cadastrado");
         }
     }
 }

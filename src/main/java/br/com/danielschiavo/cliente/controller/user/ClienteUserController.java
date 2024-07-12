@@ -54,7 +54,9 @@ public class ClienteUserController {
 	@PostMapping("/register")
 	@Operation(summary = "Cadastro de cliente")
 	public ResponseEntity<?> cadastrarCliente(@RequestBody @Valid CadastrarClienteRequest request) {
-		Cliente cliente = clienteService.cadastrarCliente(request);
+		Cliente cadastrarCliente = mapper.toEntity(request);
+		Cliente cliente = clienteService.cadastrarCliente(cadastrarCliente);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Cadastrado com sucesso!", null));
 
 	}
@@ -63,8 +65,9 @@ public class ClienteUserController {
 	@Operation(summary = "Cliente altera seus próprios dados")
 	public ResponseEntity<?> alterarCliente(@RequestBody @Valid AlterarClienteRequest request) {
 		Long clienteId = securityService.getClienteId();
-		Cliente cliente = clienteService.alterarClientePorId(request, clienteId);
+		Cliente clienteAtualizado = mapper.toEntity(request);
 
+		Cliente cliente = clienteService.alterarClientePorId(clienteId, clienteAtualizado);
 		return ResponseEntity.ok(Response.success("Dados alterados com sucesso!", null));
 	}
 	

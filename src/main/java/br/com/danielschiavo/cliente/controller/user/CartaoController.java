@@ -69,8 +69,9 @@ public class CartaoController {
 	@Operation(summary = "Cadastra um novo cartão para o usuário")
 	public ResponseEntity<?> cadastrarNovoCartaoPorIdToken(@RequestBody @Valid CadastrarCartaoRequest request) {
 		Long clienteId = securityService.getClienteId();
-		Cartao cartao = cartaoService.cadastrarCartao(request, clienteId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Cartão cadastrado com sucesso!", mapper.toDto(cartao)));
+		Cartao cartao = mapper.toEntity(request, clienteId);
+		Cartao cartaoCadastrado = cartaoService.cadastrarCartao(clienteId, cartao);
+		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Cartão cadastrado com sucesso!", mapper.toDto(cartaoCadastrado)));
 	}
 	
 	@PutMapping("/{cartaoId}")

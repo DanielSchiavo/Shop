@@ -1,6 +1,5 @@
 package br.com.danielschiavo.cliente.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.danielschiavo.cliente.dto.request.endereco.AlterarEnderecoRequest;
@@ -24,5 +23,8 @@ public interface EnderecoMapper {
 	Endereco toEntity(CadastrarEnderecoRequest request);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	void alterarEnderecoDtoParaEndereco(AlterarEnderecoRequest request, @MappingTarget Endereco endereco);
+	Endereco toEntity(AlterarEnderecoRequest request);
+
+	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	void alterarEndereco(Endereco enderecoAtualizado, @MappingTarget Endereco endereco);
 }

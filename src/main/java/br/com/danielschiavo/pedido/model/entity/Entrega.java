@@ -38,10 +38,10 @@ public class Entrega {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipo_entrega")
 	private TipoEntrega tipoEntrega;
-	
+
 	@Embedded
 	private EnderecoPedido enderecoPedido;
-	
+
 	@OneToOne(mappedBy = "entrega")
 	private Pedido pedido;
 

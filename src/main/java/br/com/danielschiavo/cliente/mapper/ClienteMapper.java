@@ -27,8 +27,10 @@ public interface ClienteMapper {
     @Mapping(target = "dataCriacaoConta", expression = "java(LocalDate.now())")
     @Mapping(target = "fotoPerfil", source = "request.fotoPerfil", defaultValue = "Padrao.jpeg")
     Cliente toEntity(CadastrarClienteRequest request);
+
+    Cliente toEntity(AlterarClienteRequest request);
     
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    void alterarCliente(AlterarClienteRequest alterarClienteDTO, @MappingTarget Cliente cliente);
+    void alterarCliente(Cliente clienteAtualizado, @MappingTarget Cliente cliente);
     
 }
