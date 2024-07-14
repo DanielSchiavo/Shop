@@ -4,7 +4,7 @@ package br.com.danielschiavo.customer.service.endereco;
 import br.com.danielschiavo.customer.model.entity.Address;
 import br.com.danielschiavo.customer.repository.AddressRepository;
 import br.com.danielschiavo.customer.mapper.AddressMapper;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +30,12 @@ public class AddressService {
 	
 	public List<Address> getAllAddressesByCustomerId(Long customerId) {
 		return repository.findAllByCustomerId(customerId)
-				.orElseThrow(() -> new ValidacaoException("Customer doesn't have any registered Address"));
+				.orElseThrow(() -> new ValidationException("Customer doesn't have any registered Address"));
 	}
 	
 	public Address getAddressByIdAndCustomerId(Long addressId, Long customerId) {
 		return repository.findByIdAndCustomerId(addressId, customerId)
-				.orElseThrow(() -> new ValidacaoException("Customer doesn't have a Address with id: " + addressId));
+				.orElseThrow(() -> new ValidationException("Customer doesn't have a Address with id: " + addressId));
 	}
 	
 	@Transactional
@@ -58,7 +58,7 @@ public class AddressService {
 		List<Address> allAddresses = getAllAddressesByCustomerId(customerId);
 		
 		Address address = allAddresses.stream().filter(end -> end.getId().equals(addressId))
-				.findFirst().orElseThrow(() -> new ValidacaoException("Address can't be updated because Customer doesn't have any registered Address with id: " + addressId));
+				.findFirst().orElseThrow(() -> new ValidationException("Address can't be updated because Customer doesn't have any registered Address with id: " + addressId));
 
 		mapper.updateAddress(updatedAddress, address);
 

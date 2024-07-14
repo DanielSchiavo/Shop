@@ -5,7 +5,7 @@ import br.com.danielschiavo.produto.mapper.ProdutoMapper;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.repository.ProdutoRepository;
 import br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto.ValidadorCadastrarNovoProduto;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +58,7 @@ public class ProdutoService {
 
 	public Produto pegarProdutoPorId(Long id) {
 		return produtoRepository.findById(id)
-				.orElseThrow(() -> new ValidacaoException("Não existe um produto com o id " + id));
+				.orElseThrow(() -> new ValidationException("Não existe um produto com o id " + id));
 	}
 
 	

@@ -1,15 +1,15 @@
-package br.com.danielschiavo.customer.service.cartao;
+package br.com.danielschiavo.customer.service.card;
 
 import java.util.List;
 
 import br.com.danielschiavo.customer.model.entity.Card;
 import br.com.danielschiavo.customer.repository.CardRepository;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.danielschiavo.customer.service.cartao.validacoes.cadastrarcartao.ValidatorRegisterCard;
+import br.com.danielschiavo.customer.service.card.validators.registercard.ValidatorRegisterCard;
 import lombok.Setter;
 
 @Service
@@ -29,12 +29,12 @@ public class CardService {
 	
 	public List<Card> getAllCardsByCustomerId(Long customerId) {
 		return repository.findAllByClienteId(customerId)
-				.orElseThrow(() -> new ValidacaoException("Customer doesn't have any registered card"));
+				.orElseThrow(() -> new ValidationException("Customer doesn't have any registered card"));
 	}
 	
 	public Card getCardByIdAndCustomerId(Long cardId, Long customerId) {
 		return repository.findByIdAndClienteId(cardId, customerId)
-				.orElseThrow(() -> new ValidacaoException("Customer doesn't have a card with id: " + cardId));
+				.orElseThrow(() -> new ValidationException("Customer doesn't have a card with id: " + cardId));
 	}
 
 	@Transactional
@@ -58,7 +58,7 @@ public class CardService {
 
 		Card card = cards.stream()
 				.filter(c -> c.getId().equals(cardId))
-				.findFirst().orElseThrow(() -> new ValidacaoException("There's no card with provided id"));
+				.findFirst().orElseThrow(() -> new ValidationException("There's no card with provided id"));
 
 		boolean newDefaultCardState = !card.getIsDefault(); // Inverte o state do cartão
 

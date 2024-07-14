@@ -6,7 +6,7 @@ import java.util.List;
 import br.com.danielschiavo.customer.dto.request.card.RegisterCardRequest;
 import br.com.danielschiavo.customer.mapper.CardMapper;
 import br.com.danielschiavo.customer.model.entity.Card;
-import br.com.danielschiavo.customer.service.cartao.CardService;
+import br.com.danielschiavo.customer.service.card.CardService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class TokenJWTService {
 		        .withExpiresAt(expirationDate())
 		        .sign(algorithm);
 		} catch (JWTCreationException exception){
-			throw new ValidacaoException("Erro ao gerar token de autenticacao");
+			throw new ValidationException("Erro ao gerar token de autenticacao");
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class TokenJWTService {
 
 			return this;
 		} catch (JWTVerificationException exception){
-			throw new ValidacaoException("Token JWT inválido ou expirado!");
+			throw new ValidationException("Token JWT inválido ou expirado!");
 		}
 	}
 

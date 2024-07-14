@@ -24,8 +24,8 @@ public interface CustomerMapper {
     @Mapping(source = "customer.name", target = "name")
     ShowCustomerResponse toDto(Customer customer);
     
-    @Mapping(target = "dataCriacaoConta", expression = "java(LocalDate.now())")
-    @Mapping(target = "profilePicture", source = "request.profilePicture", defaultValue = "Padrao.jpeg")
+    @Mapping(target = "accountCreationDate", expression = "java(LocalDate.now())")
+    @Mapping(target = "profilePicture", source = "request.profilePicture", defaultValue = "Default.jpeg")
     Customer toEntity(RegisterCustomerRequest request);
 
     Customer toEntity(UpdateCustomerRequest request);

@@ -1,21 +1,14 @@
 package br.com.danielschiavo.produto.service;
 
-import java.util.Optional;
-
-import br.com.danielschiavo.produto.dto.request.AlterarSubCategoriaRequest;
-import br.com.danielschiavo.produto.dto.request.CadastrarSubCategoriaRequest;
-import br.com.danielschiavo.produto.dto.response.MostrarSubCategoriaResponse;
 import br.com.danielschiavo.produto.model.entity.Categoria;
 import br.com.danielschiavo.produto.model.entity.SubCategoria;
 import br.com.danielschiavo.produto.repository.SubCategoriaRepository;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.validation.Valid;
 
 @Service
 public class SubCategoriaService {
@@ -38,7 +31,7 @@ public class SubCategoriaService {
 
 		boolean isPresent = subCategoriaRepository.findByNomeLowerCase(nome).isPresent();
 		if (isPresent) {
-			throw new ValidacaoException("A Sub Categoria de name " + nome + " já existe");
+			throw new ValidationException("A Sub Categoria de name " + nome + " já existe");
 		}
 
 		SubCategoria subCategoria = new SubCategoria(null, nome, categoria.getId());
@@ -63,7 +56,7 @@ public class SubCategoriaService {
 
 	public SubCategoria pegarSubCategoriaPorId(Long subCategoriaId){
 		return subCategoriaRepository.findById(subCategoriaId)
-				.orElseThrow(() -> new ValidacaoException("Não existe sub categoria com o id " + subCategoriaId));
+				.orElseThrow(() -> new ValidationException("Não existe sub categoria com o id " + subCategoriaId));
 	}
 
 	public Page<SubCategoria> listarSubCategorias(Pageable pageable) {

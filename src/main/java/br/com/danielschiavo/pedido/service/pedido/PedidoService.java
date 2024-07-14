@@ -15,7 +15,7 @@ import br.com.danielschiavo.pedido.repository.PedidoRepository;
 import br.com.danielschiavo.pedido.service.entrega.EntregaService;
 import br.com.danielschiavo.pedido.service.pagamento.PagamentoService;
 import br.com.danielschiavo.produto.service.produto.ProdutoService;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import br.com.danielschiavo.vendas.service.CarrinhoService;
 import br.com.danielschiavo.filestorage.service.FileStoragePedidoService;
 import br.com.danielschiavo.pedido.model.entity.Entrega;
@@ -91,7 +91,7 @@ public class PedidoService {
 	}
 
 	public Pedido pegarPedidoPorId(UUID pedidoId, Long clienteId) {
-		return pedidoRepository.findByIdAndClienteId(pedidoId, clienteId).orElseThrow(() -> new ValidacaoException("Usuário não possui um pedido com esse ID"));
+		return pedidoRepository.findByIdAndClienteId(pedidoId, clienteId).orElseThrow(() -> new ValidationException("Usuário não possui um pedido com esse ID"));
 	}
 	
 	

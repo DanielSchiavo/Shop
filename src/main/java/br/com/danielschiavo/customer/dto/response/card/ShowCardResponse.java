@@ -4,7 +4,7 @@ import br.com.danielschiavo.customer.model.enums.CardType;
 import lombok.Builder;
 
 @Builder
-public record MostrarCartaoResponse(
+public record ShowCardResponse(
 			Long id,
 			String bankName,
 			String cardNumber,

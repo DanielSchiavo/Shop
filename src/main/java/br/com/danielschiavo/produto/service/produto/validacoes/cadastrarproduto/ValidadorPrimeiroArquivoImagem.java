@@ -2,11 +2,9 @@ package br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto
 
 import java.util.Optional;
 
-import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
-import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.model.valueobject.ArquivoProduto;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
 
@@ -19,7 +17,7 @@ public class ValidadorPrimeiroArquivoImagem implements ValidadorCadastrarNovoPro
 		if (first.isPresent()) {
 			String nomeArquivo = first.get().getNome();
 			if(!nomeArquivo.endsWith(".jpeg") && !nomeArquivo.endsWith(".png") && !nomeArquivo.endsWith(".jpg")) {
-				throw new ValidacaoException("O arquivo na posição 0 do produto sempre deve ser uma imagem");
+				throw new ValidationException("O arquivo na posição 0 do produto sempre deve ser uma imagem");
 			}
 		}
 	}

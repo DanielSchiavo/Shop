@@ -3,9 +3,10 @@ package br.com.danielschiavo.customer.service.cliente;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
+import br.com.danielschiavo.customer.service.cliente.validators.registercustomer.ValidatorRegisterCustomer;
 import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.service.FileStoragePerfilService;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @Setter
@@ -28,6 +31,9 @@ public class CustomerService {
 	
 	@Autowired
 	private FileStoragePerfilService fileStorageService;
+
+	@Autowired
+	private List<ValidatorRegisterCustomer> validators;
 
 
 	@Transactional
@@ -45,16 +51,17 @@ public class CustomerService {
 
 	public Customer getCustomerForHomePageById(Long customerId) {
 		return repository.findByIdHomePage(customerId)
-				.orElseThrow(() -> new ValidacaoException("There's no customer with id: " + customerId));
+				.orElseThrow(() -> new ValidationException("There's no customer with id: " + customerId));
 	}
 	
 	public Customer getCustomerById(Long customerId) {
 		return repository.findById(customerId)
-				.orElseThrow(() -> new ValidacaoException("There's no customer with id: " + customerId));
+				.orElseThrow(() -> new ValidationException("There's no customer with id: " + customerId));
 	}
 	
 	@Transactional
 	public Customer registerCustomer(Customer customer) {
+		validators.forEach(v -> v.validate(customer));
 		return repository.save(customer);
 	}
 	

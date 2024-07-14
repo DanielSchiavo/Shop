@@ -9,10 +9,9 @@ import java.util.Optional;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.service.produto.ProdutoService;
 import br.com.danielschiavo.vendas.model.entity.Carrinho;
-import br.com.danielschiavo.vendas.dto.request.ItemCarrinhoRequest;
 import br.com.danielschiavo.vendas.model.entity.ItemCarrinho;
 import br.com.danielschiavo.vendas.repository.CarrinhoRepository;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,13 +40,13 @@ public class CarrinhoService {
 	}
 	
 	public Carrinho pegarCarrinhoPorClienteId(Long clienteId) {
-		return carrinhoRepository.findByClienteId(clienteId).orElseThrow(() -> new ValidacaoException("Usuario não possui carrinho"));
+		return carrinhoRepository.findByClienteId(clienteId).orElseThrow(() -> new ValidationException("Usuario não possui carrinho"));
 	}
 	
 	@Transactional
 	public Carrinho adicionarProdutosNoCarrinhoPorIdToken(Long clienteId, ItemCarrinho adicionarItem) {
 		if (adicionarItem.getQuantidade() <= 0) {
-			throw new ValidacaoException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
+			throw new ValidationException("A quantidade do produto deve ser maior ou igual a 1, o valor fornecido foi: "
 					+ adicionarItem.getQuantidade());
 		}
 
@@ -83,7 +82,7 @@ public class CarrinhoService {
 		Carrinho carrinho = pegarCarrinhoPorClienteId(clienteId);
 
 		ItemCarrinho itemCarrinho = carrinho.getItemsCarrinho().stream().filter(item -> item.getProdutoId().equals(setarItem.getProdutoId()))
-				.findFirst().orElseThrow(() -> new ValidacaoException("Esse produto não foi adicionado ao carrinho ainda"));
+				.findFirst().orElseThrow(() -> new ValidationException("Esse produto não foi adicionado ao carrinho ainda"));
 
 		if (setarItem.getQuantidade() <= 0) {
 			carrinho.removerItemCarrinho(itemCarrinho);

@@ -3,12 +3,10 @@ package br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto
 import java.util.List;
 import java.util.stream.IntStream;
 
-import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.model.valueobject.ArquivoProduto;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.stereotype.Service;
-import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
 
 
 @Service
@@ -25,7 +23,7 @@ public class ValidadorOrdenacaoArquivosProduto implements ValidadorCadastrarNovo
 									.allMatch(i -> i == posicoesOrdenadas.get(i));
 		
 		if (!allMatch) {
-			throw new ValidacaoException("As posições dos arquivos do produto não estão seguindo uma ordenação correta");
+			throw new ValidationException("As posições dos arquivos do produto não estão seguindo uma ordenação correta");
 		}
 	}
 

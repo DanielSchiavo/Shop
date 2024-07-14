@@ -3,11 +3,9 @@ package br.com.danielschiavo.produto.service.produto.validacoes.cadastrarproduto
 import java.util.List;
 
 import br.com.danielschiavo.filestorage.service.FileStorageProdutoService;
-import br.com.danielschiavo.produto.dto.request.CadastrarProdutoRequest;
-import br.com.danielschiavo.produto.dto.AdicionarArquivoProdutoRequest;
 import br.com.danielschiavo.produto.model.entity.Produto;
 import br.com.danielschiavo.produto.model.valueobject.ArquivoProduto;
-import br.com.danielschiavo.shared.exception.ValidacaoException;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,7 @@ public class ValidadorArquivosProduto implements ValidadorCadastrarNovoProduto {
 		nomes.forEach(nome -> {
 			boolean existe = fileStorageProdutoService.verificarSeImagemExiste(nome);
 			if (!existe)
-				throw new ValidacaoException("Não foi possivel cadastrar o produto porque a imagem " + nome + " não existe");
+				throw new ValidationException("Não foi possivel cadastrar o produto porque a imagem " + nome + " não existe");
 		});
 	}
 

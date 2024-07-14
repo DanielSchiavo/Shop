@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Table(name = "clientes_roles")
+@Table(name = "customers_roles")
 @Entity(name = "Role")
 @Getter
 @Setter
@@ -38,8 +38,8 @@ public class Role {
 	@Id 
 	private Long id;
 	
-	@Column(name = "data_e_hora_atribuicao")
-	private LocalDateTime dataEHoraAtribuicao;
+	@Column
+	private LocalDateTime assignmentDateTime;
 	
 	@Enumerated(EnumType.STRING)
 	private RoleName role;

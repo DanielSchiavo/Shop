@@ -1,14 +1,14 @@
 package br.com.danielschiavo.shared.exception;
 
-public class ValidacaoException extends RuntimeException {
+public class ValidationException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public ValidacaoException(String message) {
+	public ValidationException(String message) {
         super(message);
     }
 
-    public ValidacaoException(String message, Throwable cause) {
+    public ValidationException(String message, Throwable cause) {
         super(message, cause);
     }
     

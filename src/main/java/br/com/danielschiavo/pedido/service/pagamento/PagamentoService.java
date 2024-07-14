@@ -1,7 +1,7 @@
 package br.com.danielschiavo.pedido.service.pagamento;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
-import br.com.danielschiavo.customer.service.cartao.CardService;
+import br.com.danielschiavo.customer.service.card.CardService;
 import br.com.danielschiavo.pedido.model.valueobject.CartaoPedido;
 import br.com.danielschiavo.pedido.model.entity.Pagamento;
 import br.com.danielschiavo.pedido.model.enums.StatusPagamento;
