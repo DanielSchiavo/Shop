@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.service.cliente.ClienteService;
+import br.com.danielschiavo.customer.model.entity.Customer;
+import br.com.danielschiavo.customer.service.cliente.CustomerService;
 import br.com.danielschiavo.filestorage.model.File;
-import br.com.danielschiavo.pedido.dto.request.pedido.FazerPedidoRequest;
-import br.com.danielschiavo.pedido.mapper.PedidoMapper;
 import br.com.danielschiavo.pedido.model.entity.Pedido;
 import br.com.danielschiavo.pedido.model.enums.StatusPedido;
 import br.com.danielschiavo.pedido.repository.PedidoRepository;
@@ -21,7 +19,6 @@ import br.com.danielschiavo.shared.exception.ValidacaoException;
 import br.com.danielschiavo.vendas.service.CarrinhoService;
 import br.com.danielschiavo.filestorage.service.FileStoragePedidoService;
 import br.com.danielschiavo.pedido.model.entity.Entrega;
-import br.com.danielschiavo.pedido.dto.request.itempedido.AdicionarItemPedidoRequest;
 import br.com.danielschiavo.pedido.model.entity.ItemPedido;
 import br.com.danielschiavo.pedido.model.entity.Pagamento;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +56,7 @@ public class PedidoService {
 	private CarrinhoService carrinhoService;
 
     @Autowired
-    private ClienteService clienteService;
+    private CustomerService clienteService;
 
 	public Page<Pedido> pegarTodosPedidosPorClienteId(Pageable pageable, Long clienteId) {
 		return pedidoRepository.findAllByClienteId(pageable, clienteId);
@@ -67,18 +64,18 @@ public class PedidoService {
 	
 	@Transactional
 	public Pedido realizarPedido(Long clienteId, Pedido pedido) {
-		Cliente cliente = clienteService.pegarClientePorId(clienteId);
-		validador.forEach(v -> v.validar(pedido, cliente));
+		Customer customer = clienteService.getCustomerById(clienteId);
+		validador.forEach(v -> v.validar(pedido, customer));
 
 		List<ItemPedido> itemsPedido = pegarItemsPedido(pedido.getItemsPedido());
 
 		BigDecimal valorTotal = itemsPedido.stream().map(ItemPedido::getSubTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		Pagamento pagamento = pagamentoService.executarPagamento(pedido.getPagamento(), valorTotal, cliente);
-		Entrega entrega = entregaService.executarEntrega(pedido.getEntrega(), cliente);
+		Pagamento pagamento = pagamentoService.executarPagamento(pedido.getPagamento(), valorTotal, customer);
+		Entrega entrega = entregaService.executarEntrega(pedido.getEntrega(), customer);
 
-		pedido.setNomeCliente(cliente.getNome() + " " + cliente.getSobrenome());
-		pedido.setCpf(cliente.getCpf());
+		pedido.setNomeCliente(customer.getName() + " " + customer.getSurname());
+		pedido.setCpf(customer.getCpf());
 		pedido.setDataPedido(LocalDateTime.now());
 		pedido.setStatusPedido(StatusPedido.A_PAGAR);
 		pedido.adicionarItemPedido(itemsPedido);

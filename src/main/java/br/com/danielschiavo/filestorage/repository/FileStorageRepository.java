@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Qualifier("fileStorageRepository")
 public class FileStorageRepository {
 
-	private static final String nomeImagemPadrao = "Padrao.jpeg";
+	private static final String nomeImagemPadrao = "Default.jpeg";
 	
 	protected void deletar(Path caminho, String nomeImagem) {
 		verificacaoDiretorioAtual();

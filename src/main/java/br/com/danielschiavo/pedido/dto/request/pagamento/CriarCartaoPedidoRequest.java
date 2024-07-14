@@ -1,9 +1,9 @@
 package br.com.danielschiavo.pedido.dto.request.pagamento;
 
-import br.com.danielschiavo.cliente.model.enums.TipoCartao;
+import br.com.danielschiavo.customer.model.enums.CardType;
 
 public record CriarCartaoPedidoRequest(
-			TipoCartao tipoCartao,
+			CardType cardType,
 			String numeroDeParcelas,
 			String numeroCartao
 		) {

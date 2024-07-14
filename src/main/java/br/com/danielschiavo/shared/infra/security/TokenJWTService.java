@@ -6,7 +6,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
+import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.shared.exception.ValidacaoException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,15 +36,15 @@ public class TokenJWTService {
 
 	private DecodedJWT decodedJWT;
 	
-	public String generateToken(Cliente cliente) {
+	public String generateToken(Customer customer) {
 		try {
-			List<String> roles = cliente.getRoles().stream().map(r -> r.getRole().toString()).collect(Collectors.toList());
+			List<String> roles = customer.getRoles().stream().map(r -> r.getRole().toString()).collect(Collectors.toList());
 
 		    return JWT.create()
 		        .withIssuer(issuer)
-		        .withSubject(cliente.getId().toString())
-		        .withClaim("email", cliente.getEmail())
-		        .withClaim("celular", cliente.getCelular())
+		        .withSubject(customer.getId().toString())
+		        .withClaim("email", customer.getEmail())
+		        .withClaim("cellphoneNumber", customer.getCellphoneNumber())
 				.withClaim("roles", roles)
 		        .withExpiresAt(expirationDate())
 		        .sign(algorithm);
@@ -71,7 +71,7 @@ public class TokenJWTService {
 	}
 
 	public String getCelular() {
-		return decodedJWT.getClaim("celular").toString();
+		return decodedJWT.getClaim("cellphoneNumber").toString();
 	}
 
 	public String getEmail() {

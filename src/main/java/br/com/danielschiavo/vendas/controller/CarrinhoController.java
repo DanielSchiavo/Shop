@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/user/carrinhos")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Cliente - Carrinho", description = "Todos endpoints relacionados com o carrinho do cliente, que o próprio poderá utilizar")
+@Tag(name = "Customer - Carrinho", description = "Todos endpoints relacionados com o carrinho do customer, que o próprio poderá utilizar")
 public class CarrinhoController {
 	
 	@Autowired
@@ -41,24 +41,24 @@ public class CarrinhoController {
 	@DeleteMapping("/produtos/{produtosId}")
 	@Operation(summary = "Deleta um ou vários produtos do carrinho")
 	public ResponseEntity<?> removerProdutoDoCarrinho(@PathVariable Long[] produtosId) {
-		Long clienteId = securityService.getClienteId();
+		Long clienteId = securityService.getCustomerId();
 		carrinhoService.removerProdutoDoCarrinho(clienteId, produtosId);
 		return ResponseEntity.ok().body(Response.success("Remoção realizada com sucesso!", null));
 	}
 	
 	@GetMapping("/cliente/carrinho")
-	@Operation(summary = "Pega todos os produtos que estão no carrinho do cliente")
+	@Operation(summary = "Pega todos os produtos que estão no carrinho do customer")
 	public ResponseEntity<?> pegarCarrinhoClientePorIdToken() {
-		Long clienteId = securityService.getClienteId();
+		Long clienteId = securityService.getCustomerId();
 		Carrinho carrinho = carrinhoService.pegarCarrinhoPorClienteId(clienteId);
 			
 		return ResponseEntity.ok(Response.success("Sucesso ao recuperar produtos do carrinho", mapper.toDto(carrinho)));
 	}
 	
 	@PostMapping("/cliente/carrinho")
-	@Operation(summary = "Adiciona um produto no carrinho, se o cliente não tiver um carrinho, também cria automáticamente")
+	@Operation(summary = "Adiciona um produto no carrinho, se o customer não tiver um carrinho, também cria automáticamente")
 	public ResponseEntity<?> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoRequest request) {
-		Long clienteId = securityService.getClienteId();
+		Long clienteId = securityService.getCustomerId();
 		ItemCarrinho adicionarItem = mapper.toEntity(request);
 		Carrinho carrinho = carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(clienteId, adicionarItem);
 		return ResponseEntity.ok().body(Response.success("Produto adicionado ao carrinho!", null));
@@ -67,7 +67,7 @@ public class CarrinhoController {
 	@PutMapping("/cliente/carrinho")
 	@Operation(summary = "Seta a quantidade de determinado produto que está no carrinho")
 	public ResponseEntity<?> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoRequest request) {
-		Long clienteId = securityService.getClienteId();
+		Long clienteId = securityService.getCustomerId();
 		ItemCarrinho setarItem = mapper.toEntity(request);
 		carrinhoService.setarQuantidadeProdutoNoCarrinho(clienteId, setarItem);
 		return ResponseEntity.ok(Response.success("Alterado com sucesso!", null));

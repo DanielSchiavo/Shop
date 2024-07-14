@@ -1,6 +1,6 @@
 package br.com.danielschiavo.pedido.dto.response.pagamento;
 
-import br.com.danielschiavo.cliente.model.enums.TipoCartao;
+import br.com.danielschiavo.customer.model.enums.CardType;
 import br.com.danielschiavo.pedido.model.valueobject.CartaoPedido;
 
 public record MostrarCartaoPedidoResponse(
@@ -8,7 +8,7 @@ public record MostrarCartaoPedidoResponse(
 		String numeroCartao,
 		String nomeNoCartao,
 		String numeroDeParcelas,
-		TipoCartao tipoCartao
+		CardType cardType
 		) {
 	
     public MostrarCartaoPedidoResponse(CartaoPedido dadosCartao) {
@@ -17,7 +17,7 @@ public record MostrarCartaoPedidoResponse(
         		dadosCartao.getNumeroCartao(),
         		dadosCartao.getNomeNoCartao(),
         		dadosCartao.getNumeroDeParcelas(),
-        		dadosCartao.getTipoCartao()
+        		dadosCartao.getCardType()
         );
     }
 }

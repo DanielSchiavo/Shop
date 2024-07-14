@@ -49,7 +49,7 @@ public class SubCategoriaAdminController {
 	
 	@PutMapping("/admin/sub-categoria/{subCategoriaId}")
 	@SecurityRequirement(name = "bearer-key")
-	@Operation(summary = "Altera o nome de uma subcategoria com o id fornecido no parametro da requisição")
+	@Operation(summary = "Altera o name de uma subcategoria com o id fornecido no parametro da requisição")
 	public ResponseEntity<?> alterarSubCategoriaPorId(@PathVariable Long subCategoriaId, @RequestBody AlterarSubCategoriaRequest request) {
 		SubCategoria subCategoria = subCategoriaService.alterarSubCategoriaPorId(subCategoriaId, request.nome(), request.categoriaId());
 		

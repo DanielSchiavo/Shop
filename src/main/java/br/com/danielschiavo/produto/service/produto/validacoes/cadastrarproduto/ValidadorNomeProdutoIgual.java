@@ -21,7 +21,7 @@ public class ValidadorNomeProdutoIgual implements ValidadorCadastrarNovoProduto 
 	public void validar(Produto cadastrarProduto) {
 		Optional<Produto> optionalProduto = produtoRepository.findByNomeLowerCase(cadastrarProduto.getNome());
 		if (optionalProduto.isPresent()) {
-			throw new ValidacaoException("Já existe um produto com esse nome!");
+			throw new ValidacaoException("Já existe um produto com esse name!");
 		}
 	}
 

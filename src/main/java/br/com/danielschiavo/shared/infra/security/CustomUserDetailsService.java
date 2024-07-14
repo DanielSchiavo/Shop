@@ -1,7 +1,6 @@
 package br.com.danielschiavo.shared.infra.security;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.repository.ClienteRepository;
+import br.com.danielschiavo.customer.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private CustomerRepository clienteRepository;
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {

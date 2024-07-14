@@ -1,6 +1,6 @@
 package br.com.danielschiavo.pedido.service.entrega.processador;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
+import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.pedido.service.entrega.processador.enums.ServicoCorreio;
 
 public class ProcessarEntregaCorreios extends ProcessadorEntrega {
@@ -12,8 +12,8 @@ public class ProcessarEntregaCorreios extends ProcessadorEntrega {
 	}
 
 	@Override
-	public boolean executa(Cliente cliente) {
-		System.out.println("Processando entrega via correios para o cliente " + cliente.getNome());
+	public boolean executa(Customer customer) {
+		System.out.println("Processando entrega via correios para o customer " + customer.getName());
 		return false;
 	}
 

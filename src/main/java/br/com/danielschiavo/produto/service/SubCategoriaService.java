@@ -38,7 +38,7 @@ public class SubCategoriaService {
 
 		boolean isPresent = subCategoriaRepository.findByNomeLowerCase(nome).isPresent();
 		if (isPresent) {
-			throw new ValidacaoException("A Sub Categoria de nome " + nome + " já existe");
+			throw new ValidacaoException("A Sub Categoria de name " + nome + " já existe");
 		}
 
 		SubCategoria subCategoria = new SubCategoria(null, nome, categoria.getId());

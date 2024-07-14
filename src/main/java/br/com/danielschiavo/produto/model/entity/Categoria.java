@@ -20,7 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "nome")
+@EqualsAndHashCode(of = "name")
 @Builder
 public class Categoria implements Serializable{
 

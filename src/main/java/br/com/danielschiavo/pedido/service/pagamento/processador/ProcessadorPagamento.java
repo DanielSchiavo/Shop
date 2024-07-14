@@ -1,6 +1,6 @@
 package br.com.danielschiavo.pedido.service.pagamento.processador;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
+import br.com.danielschiavo.customer.model.entity.Customer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +10,6 @@ import java.math.BigDecimal;
 @Getter
 public abstract class ProcessadorPagamento {
 
-	public abstract boolean executa(Cliente cliente, BigDecimal valorTotal);
+	public abstract boolean executa(Customer customer, BigDecimal valorTotal);
 	
 }

@@ -36,14 +36,14 @@ public class PedidoAdminController {
 	private PedidoMapper mapper;
 	
 	@GetMapping("/{clienteId}")
-	@Operation(summary = "Pega todos pedidos do cliente com id fornecido no parametro da requisição")
+	@Operation(summary = "Pega todos pedidos do customer com id fornecido no parametro da requisição")
 	public ResponseEntity<?> pegarTodosPedidosPorClienteId(@PathVariable Long clienteId, Pageable pageable) {
 		Page<Pedido> pagePedidos = pedidoService.pegarTodosPedidosPorClienteId(pageable, clienteId);
 
 		List<MostrarPedidoResponse> listaMostrarPedido = pagePedidos.getContent().stream().map(mapper::toDto).collect(Collectors.toList());
 		var resposta = new PageImpl<>(listaMostrarPedido, pagePedidos.getPageable(), pagePedidos.getTotalElements());
 
-		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do cliente", resposta));
+		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do customer", resposta));
 	}
 
 	@GetMapping("/{pedidoId}/clientes/{clienteId}")
@@ -51,6 +51,6 @@ public class PedidoAdminController {
 	public ResponseEntity<?> pegarPedidoPorId(@PathVariable UUID pedidoId, @PathVariable Long clienteId) {
 		Pedido pedido = pedidoService.pegarPedidoPorId(pedidoId, clienteId);
 
-		return ResponseEntity.ok(Response.success("Sucesso ao pegar pedido do cliente", mapper.toDto(pedido)));
+		return ResponseEntity.ok(Response.success("Sucesso ao pegar pedido do customer", mapper.toDto(pedido)));
 	}
 }

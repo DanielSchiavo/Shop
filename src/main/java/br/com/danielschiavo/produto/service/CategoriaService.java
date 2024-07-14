@@ -27,7 +27,7 @@ public class CategoriaService {
 	public Categoria cadastrarCategoria(String nomeCategoria) {
 		boolean isPresent = categoriaRepository.findByNomeLowerCase(nomeCategoria).isPresent();
 		if (isPresent)	{
-			throw new ValidacaoException("Já existe uma categoria com esse nome");
+			throw new ValidacaoException("Já existe uma categoria com esse name");
 		}
 
 		Categoria categoria = new Categoria(null, nomeCategoria);

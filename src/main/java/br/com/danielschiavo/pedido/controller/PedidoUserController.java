@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user/pedidos")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Pedido - User", description = "Todos endpoints relacionados com os pedidos do cliente, que o próprio poderá utilizar")
+@Tag(name = "Pedido - User", description = "Todos endpoints relacionados com os pedidos do customer, que o próprio poderá utilizar")
 public class PedidoUserController {
 
 	@Autowired
@@ -41,26 +41,26 @@ public class PedidoUserController {
 	@GetMapping("/{pedidoId}")
 	@Operation(summary = "Pega um pedido por id, para obter todos os detalhes sobre ele")
 	public ResponseEntity<?> pegarPedidoPorId(@PathVariable UUID pedidoId) {
-		Long clienteId = securityService.getClienteId();
+		Long clienteId = securityService.getCustomerId();
 		Pedido pedido = pedidoService.pegarPedidoPorId(pedidoId, clienteId);
 
-		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do cliente", mapper.toDto(pedido)));
+		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do customer", mapper.toDto(pedido)));
 	}
 	
 	@GetMapping
-	@Operation(summary = "Pega todos os pedidos do cliente")
+	@Operation(summary = "Pega todos os pedidos do customer")
 	public ResponseEntity<?> pegarTodosPedidos(Pageable pageable) {
-		Long clienteId = securityService.getClienteId();
+		Long clienteId = securityService.getCustomerId();
 		Page<Pedido> pagePedidos = pedidoService.pegarTodosPedidosPorClienteId(pageable, clienteId);
 
 		List<MostrarPedidoResponse> listaMostrarPedido = pagePedidos.getContent().stream().map(mapper::toDto).collect(Collectors.toList());
 		var resposta = new PageImpl<>(listaMostrarPedido, pagePedidos.getPageable(), pagePedidos.getTotalElements());
 
-		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do cliente", resposta));
+		return ResponseEntity.ok(Response.success("Sucesso ao pegar todos os pedidos do customer", resposta));
 	}
 	
 	@PostMapping
-	@Operation(summary = "Cria um pedido em nome do cliente autenticado que está no token")
+	@Operation(summary = "Cria um pedido em name do customer autenticado que está no token")
 	public ResponseEntity<?> realizarPedido(@RequestBody @Valid FazerPedidoRequest request, Long clienteId) {
 		Pedido fazerPedido = mapper.toEntity(request);
 		Pedido pedido = pedidoService.realizarPedido(clienteId, fazerPedido);

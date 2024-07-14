@@ -1,15 +1,15 @@
 package br.com.danielschiavo.shared.infra.inserirdados;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.model.entity.Cartao;
-import br.com.danielschiavo.cliente.model.enums.TipoCartao;
-import br.com.danielschiavo.cliente.model.entity.Endereco;
-import br.com.danielschiavo.cliente.model.enums.NomeRole;
-import br.com.danielschiavo.cliente.model.valueobject.Role;
-import br.com.danielschiavo.cliente.model.valueobject.Role.RoleBuilder;
-import br.com.danielschiavo.cliente.repository.CartaoRepository;
-import br.com.danielschiavo.cliente.repository.ClienteRepository;
-import br.com.danielschiavo.cliente.repository.EnderecoRepository;
+import br.com.danielschiavo.customer.model.entity.Card;
+import br.com.danielschiavo.customer.model.entity.Customer;
+import br.com.danielschiavo.customer.model.enums.CardType;
+import br.com.danielschiavo.customer.model.entity.Address;
+import br.com.danielschiavo.customer.model.enums.RoleName;
+import br.com.danielschiavo.customer.model.valueobject.Role;
+import br.com.danielschiavo.customer.model.valueobject.Role.RoleBuilder;
+import br.com.danielschiavo.customer.repository.CardRepository;
+import br.com.danielschiavo.customer.repository.CustomerRepository;
+import br.com.danielschiavo.customer.repository.AddressRepository;
 import br.com.danielschiavo.pedido.model.entity.Pedido;
 import br.com.danielschiavo.pedido.model.enums.TipoEntrega;
 import br.com.danielschiavo.pedido.repository.PedidoRepository;
@@ -37,7 +37,7 @@ import java.util.List;
 public class InicializacaoDevEnv implements CommandLineRunner {
 	
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private CustomerRepository clienteRepository;
 	
 	@Autowired
 	private CategoriaRepository categoriaRepository;
@@ -57,9 +57,9 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 	private final SubCategoria.SubCategoriaBuilder subCategoriaBuilder = SubCategoria.builder();
 
 	
-	private final Endereco.EnderecoBuilder enderecoBuilder = Endereco.builder();
-	private final Cartao.CartaoBuilder cartaoBuilder = Cartao.builder();
-	private final Cliente.ClienteBuilder clienteBuilder = Cliente.builder();
+	private final Address.AddressBuilder enderecoBuilder = Address.builder();
+	private final Card.CardBuilder cartaoBuilder = Card.builder();
+	private final Customer.CustomerBuilder clienteBuilder = Customer.builder();
 	private final RoleBuilder roleBuilder = Role.builder();
 	
 	private final Pedido.PedidoBuilder pedidoBuilder = Pedido.builder();
@@ -67,9 +67,9 @@ public class InicializacaoDevEnv implements CommandLineRunner {
     @Autowired
     private SubCategoriaRepository subCategoriaRepository;
     @Autowired
-    private CartaoRepository cartaoRepository;
+    private CardRepository cardRepository;
     @Autowired
-    private EnderecoRepository enderecoRepository;
+    private AddressRepository addressRepository;
 
 	@Override
 	@Transactional
@@ -149,88 +149,88 @@ public class InicializacaoDevEnv implements CommandLineRunner {
 		
 		produtoRepository.saveAll(List.of(produto, produto2));
 
-		Cliente cliente = clienteBuilder
+		Customer customer = clienteBuilder
 						.id(1L)
 						.cpf("12345678912")
-						.nome("Daniel")
-						.sobrenome("Schiavo Rosseto")
-						.dataNascimento(LocalDate.of(2000, 3, 3))
-						.dataCriacaoConta(LocalDate.now())
+						.name("Daniel")
+						.surname("Schiavo Rosseto")
+						.birthDate(LocalDate.of(2000, 3, 3))
+						.accountCreationDate(LocalDate.now())
 						.email("daniel.schiavo35@gmail.com")
-						.senha("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
-						.celular("27996121255")
-						.fotoPerfil("Padrao.jpeg")
+						.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
+						.cellphoneNumber("27996121255")
+						.profilePicture("Padrao.jpeg")
 						.build();
 		
 		Role role = roleBuilder.id(null)
-							   .role(NomeRole.ADMIN)
+							   .role(RoleName.ADMIN)
 							   .dataEHoraAtribuicao(LocalDateTime.now())
-							   .cliente(cliente).build();
+							   .customer(customer).build();
 		
-		Endereco endereco = enderecoBuilder.id(null)
-										  .cep("29142298")
-										  .rua("NaoSeiONome")
-										  .numero("15")
-										  .complemento(null)
-										  .bairro("Itapua")
-										  .cidade("Vila Velha")
-										  .estado("ES")
-										  .enderecoPadrao(true)
-										  .clienteId(cliente.getId()).build();
+		Address address = enderecoBuilder.id(null)
+										  .postalCode("29142298")
+										  .state("NaoSeiONome")
+										  .number("15")
+										  .complement(null)
+										  .neighborhood("Itapua")
+										  .city("Vila Velha")
+										  .state("ES")
+										  .isDefault(true)
+										  .customerId(customer.getId()).build();
 		
-		Cartao cartao = cartaoBuilder.id(null)
-									  .nomeBanco("Santander")
-									  .numeroCartao("1123444255591132")
-									  .nomeNoCartao("Daniel Schiavo Rosseto")
-									  .validadeCartao("03/25")
-									  .cartaoPadrao(true)
-									  .tipoCartao(TipoCartao.CREDITO)
-									  .clienteId(cliente.getId()).build();
+		Card card = cartaoBuilder.id(null)
+									  .bankName("Santander")
+									  .cardNumber("1123444255591132")
+									  .nameOnCard("Daniel Schiavo Rosseto")
+									  .expirationDate("03/25")
+									  .isDefault(true)
+									  .cardType(CardType.CREDIT)
+									  .customerId(customer.getId()).build();
 		
-		cliente.adicionarRole(role);
+		customer.adicionarRole(role);
 
-		Cliente cliente2 = clienteBuilder.id(null)
+		Customer customer2 = clienteBuilder.id(null)
 										.cpf("12345678994")
-										.nome("Silvana")
-										.sobrenome("Pereira da silva")
-										.dataNascimento(LocalDate.of(2000, 5, 3))
-										.dataCriacaoConta(LocalDate.now())
+										.name("Silvana")
+										.surname("Pereira da silva")
+										.birthDate(LocalDate.of(2000, 5, 3))
+										.accountCreationDate(LocalDate.now())
 										.email("silvana.dasilva@gmail.com")
-										.senha("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
-										.celular("27999833653")
-										.fotoPerfil("Padrao.jpeg").build();
+										.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
+										.cellphoneNumber("27999833653")
+										.profilePicture("Padrao.jpeg").build();
 		
-		Endereco endereco2 = enderecoBuilder.id(null)
-											  .cep("29142298")
-											  .rua("Avenida luciano das neves")
-											  .numero("3233")
-											  .complemento("Apartamento 302")
-											  .bairro("Praia de itaparica")
-											  .cidade("Vila Velha")
-											  .estado("ES")
-											  .enderecoPadrao(true)
-											  .clienteId(cliente2.getId()).build();
+		Address address2 = enderecoBuilder.id(null)
+											  .postalCode("29142298")
+											  .street("Avenida luciano das neves")
+											  .number("3233")
+											  .complement("Apartamento 302")
+											  .neighborhood("Praia de itaparica")
+											  .city("Vila Velha")
+											  .state("ES")
+											  .isDefault(true)
+											  .customerId(customer2.getId()).build();
 		
-		Cartao cartao2 = cartaoBuilder.id(null)
-									  .nomeBanco("Santander")
-									  .numeroCartao("1111222244445555")
-									  .nomeNoCartao("Silvana pereira da silva")
-									  .validadeCartao("03/28")
-									  .cartaoPadrao(true)
-									  .tipoCartao(TipoCartao.CREDITO)
-									  .clienteId(cliente2.getId()).build();
+		Card card2 = cartaoBuilder.id(null)
+									  .bankName("Santander")
+									  .cardNumber("1111222244445555")
+									  .nameOnCard("Silvana pereira da silva")
+									  .expirationDate("03/28")
+									  .isDefault(true)
+									  .cardType(CardType.CREDIT)
+									  .customerId(customer2.getId()).build();
 		
 
-		clienteRepository.saveAll(List.of(cliente, cliente2));
-		enderecoRepository.saveAll(List.of(endereco, endereco2));
-		cartaoRepository.saveAll(List.of(cartao, cartao2));
+		clienteRepository.saveAll(List.of(customer, customer2));
+		addressRepository.saveAll(List.of(address, address2));
+		cardRepository.saveAll(List.of(card, card2));
 //		
 //		List<Pedido> pedidos = pedidoBuilder
-//				.cliente(clientes.get(0))
+//				.customer(clientes.get(0))
 //					 .comItemPedidoIdQuantidadeProduto(null, 2, produtos.get(0))
 //					 .pagamentoIdMetodo(null, MetodoPagamento.PIX)
 //					 .entregaIdTipo(null, TipoEntrega.ENTREGA_DIGITAL)
-//				.cliente(clientes.get(1))
+//				.customer(clientes.get(1))
 //					 .comItemPedidoIdQuantidadeProduto(null, 2, produtos.get(1))
 //					 .pagamentoIdMetodo(null, MetodoPagamento.PIX)
 //					 .entregaIdTipo(null, TipoEntrega.ENTREGA_DIGITAL)

@@ -1,6 +1,5 @@
 package br.com.danielschiavo.pedido.model.enums;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.pedido.service.entrega.processador.ProcessadorEntrega;
 import br.com.danielschiavo.pedido.service.entrega.processador.ProcessarEntregaCorreios;
 import br.com.danielschiavo.pedido.service.entrega.processador.ProcessarEntregaDigital;

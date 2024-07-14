@@ -48,7 +48,7 @@ public class CategoriaAdminController {
 	
 	@PutMapping("/admin/categoria/{categoriaId}")
 	@SecurityRequirement(name = "bearer-key")
-	@Operation(summary = "Altera o nome da categoria", 
+	@Operation(summary = "Altera o name da categoria",
 	   		   operationId = "02_alterarNomeCategoriaPorId")
 	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long categoriaId, @RequestBody @NotNull CriarCategoriaRequest request) {
 		Categoria categoria = categoriaService.alterarNomeCategoriaPorId(categoriaId, request.nome());

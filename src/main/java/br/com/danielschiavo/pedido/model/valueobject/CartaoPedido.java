@@ -1,7 +1,7 @@
 package br.com.danielschiavo.pedido.model.valueobject;
 
-import br.com.danielschiavo.cliente.model.entity.Cartao;
-import br.com.danielschiavo.cliente.model.enums.TipoCartao;
+import br.com.danielschiavo.customer.model.entity.Card;
+import br.com.danielschiavo.customer.model.enums.CardType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,14 +30,14 @@ public class CartaoPedido {
 	private String numeroDeParcelas;
 	
 	@Enumerated(EnumType.STRING)
-	private TipoCartao tipoCartao;
+	private CardType cardType;
 	
-	public CartaoPedido(Cartao cartao, String numeroDeParcelas) {
-		this.nomeBanco = cartao.getNomeBanco();
-		this.numeroCartao = cartao.getNumeroCartao();
-		this.nomeNoCartao = cartao.getNomeNoCartao();
-		this.validadeCartao = cartao.getValidadeCartao();
+	public CartaoPedido(Card card, String numeroDeParcelas) {
+		this.nomeBanco = card.getBankName();
+		this.numeroCartao = card.getCardNumber();
+		this.nomeNoCartao = card.getNameOnCard();
+		this.validadeCartao = card.getExpirationDate();
 		this.numeroDeParcelas = numeroDeParcelas;
-		this.tipoCartao = cartao.getTipoCartao();
+		this.cardType = card.getCardType();
 	}
 }

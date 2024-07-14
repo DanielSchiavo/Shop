@@ -16,7 +16,7 @@ public class FileStoragePerfilService {
 	@Autowired
 	private FileStoragePerfilRepository repository;
 	
-	public void deletarFotoPerfilNoDisco(String nome) {
+	public void deleteProfilePictureInDisk(String nome) {
 		repository.deletarPorNome(nome);
 	}
 	
@@ -35,7 +35,7 @@ public class FileStoragePerfilService {
 	}
 
 
-	public File alterarFotoPerfil(MultipartFile novaFoto, String nomeFotoPerfilAntiga) {
+	public File updateProfilePicture(MultipartFile novaFoto, String nomeFotoPerfilAntiga) {
 		repository.deletarPorNome(nomeFotoPerfilAntiga);
 
 		return persistirFotoPerfil(novaFoto);

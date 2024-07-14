@@ -32,7 +32,7 @@ public class FileStorageProdutoController {
 	private FileStorageProdutoService fileStorageService;
 
 	@DeleteMapping("/admin/produtos/{nomesArquivos}")
-	@Operation(summary = "Deleta o arquivo com o nome enviado no parametro da requisição")
+	@Operation(summary = "Deleta o arquivo com o name enviado no parametro da requisição")
 	public ResponseEntity<?> deletarImagensProduto(@PathVariable(name = "nomesArquivos") String nomeArquivo) {
 		fileStorageService.deletarImagens(nomeArquivo);
 
@@ -41,7 +41,7 @@ public class FileStorageProdutoController {
 	}
 
 	@GetMapping("/publico/produto/{nomesArquivos}")
-	@Operation(summary = "Recupera os bytes do nome de todas imagens enviadas no parâmetro da requisição")
+	@Operation(summary = "Recupera os bytes do name de todas imagens enviadas no parâmetro da requisição")
 	public ResponseEntity<?> pegarImagemProduto(
 			@PathVariable(name = "nomesArquivos") String nomeImagem) {
 		File file = fileStorageService.pegarImagem(nomeImagem);
@@ -64,17 +64,17 @@ public class FileStorageProdutoController {
 	}
 
 //	@DeleteMapping("/admin/produto/{nomesArquivos}")
-//	@Operation(summary = "Deleta o arquivo com o nome enviado no parametro da requisição")
+//	@Operation(summary = "Deleta o arquivo com o name enviado no parametro da requisição")
 //	public ResponseEntity<?> deletarImagensProduto(@PathVariable(name = "nomesArquivos") List<String> nomesArquivos) {
 //		fileStorageService.deletarImagens(nomesArquivos);
 //
-//		List<FileInfoResponse> fileInfoResposeList = nomesArquivos.stream().map(nome -> FileInfoResponse.success(nome, "Imagem deletada com sucesso", null)).toList();
+//		List<FileInfoResponse> fileInfoResposeList = nomesArquivos.stream().map(name -> FileInfoResponse.success(name, "Imagem deletada com sucesso", null)).toList();
 
 //		return ResponseEntity.ok().body(Response.success("Requisição realizada com sucesso", fileInfoResposeList));
 
 //	}
 //	@GetMapping("/publico/produtos/{nomesArquivos}")
-//	@Operation(summary = "Recupera os bytes do nome de todas imagens enviadas no parâmetro da requisição")
+//	@Operation(summary = "Recupera os bytes do name de todas imagens enviadas no parâmetro da requisição")
 //	public ResponseEntity<?> pegarImagensProduto(
 //			@PathVariable(name = "nomesArquivos") String... nomesImagens) {
 //		List<File> files = fileStorageService.pegarImagens(List.of(nomesImagens));

@@ -1,9 +1,9 @@
 package br.com.danielschiavo.filestorage.service;
 
 import br.com.danielschiavo.filestorage.FileStorageUtil;
+import br.com.danielschiavo.filestorage.exception.FileStorageException;
 import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.repository.FileStorageProdutoRepository;
-import br.com.danielschiavo.filestorage.exception.FileStorageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

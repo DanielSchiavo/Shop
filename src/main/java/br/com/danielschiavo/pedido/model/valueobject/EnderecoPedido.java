@@ -1,6 +1,6 @@
 package br.com.danielschiavo.pedido.model.valueobject;
 
-import br.com.danielschiavo.cliente.model.entity.Endereco;
+import br.com.danielschiavo.customer.model.entity.Address;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +29,13 @@ public class EnderecoPedido {
 	private String cidade;
 	private String estado;
 
-	public EnderecoPedido(Endereco endereco) {
-		this.cep = endereco.getCep();
-		this.rua = endereco.getRua();
-		this.numero = endereco.getNumero();
-		this.complemento = endereco.getComplemento();
-		this.bairro = endereco.getBairro();
-		this.cidade = endereco.getCidade();
-		this.estado = endereco.getEstado();
+	public EnderecoPedido(Address address) {
+		this.cep = address.getPostalCode();
+		this.rua = address.getStreet();
+		this.numero = address.getNumber();
+		this.complemento = address.getComplement();
+		this.bairro = address.getNeighborhood();
+		this.cidade = address.getCity();
+		this.estado = address.getState();
 	}
 }

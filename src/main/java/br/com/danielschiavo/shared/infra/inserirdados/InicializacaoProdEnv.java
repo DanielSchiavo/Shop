@@ -2,26 +2,26 @@ package br.com.danielschiavo.shared.infra.inserirdados;
 
 import java.time.LocalDate;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
-import br.com.danielschiavo.cliente.repository.ClienteRepository;
+import br.com.danielschiavo.customer.model.entity.Customer;
+import br.com.danielschiavo.customer.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.danielschiavo.cliente.model.enums.NomeRole;
-import br.com.danielschiavo.cliente.model.valueobject.Role;
-import br.com.danielschiavo.cliente.model.valueobject.Role.RoleBuilder;
+import br.com.danielschiavo.customer.model.enums.RoleName;
+import br.com.danielschiavo.customer.model.valueobject.Role;
+import br.com.danielschiavo.customer.model.valueobject.Role.RoleBuilder;
 
 @Profile("prod")
 @Component
 public class InicializacaoProdEnv implements CommandLineRunner {
 	
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private CustomerRepository clienteRepository;
 	
-	private Cliente.ClienteBuilder clienteBuilder = Cliente.builder();
+	private Customer.ClienteBuilder clienteBuilder = Customer.builder();
 	private RoleBuilder roleBuilder = Role.builder();
 	
 	@Override
@@ -34,7 +34,7 @@ public class InicializacaoProdEnv implements CommandLineRunner {
 		boolean resultado = clienteRepository.findByCpf("12345678912").isEmpty();
 		
 		if (resultado) {
-			Cliente cliente = clienteBuilder
+			Customer customer = clienteBuilder
 					.id(null)
 					.cpf("12345678912")
 					.nome("Daniel")
@@ -47,11 +47,11 @@ public class InicializacaoProdEnv implements CommandLineRunner {
 					.fotoPerfil("Padrao.jpeg")
 					.build();
 			
-			cliente.adicionarRole(roleBuilder.id(null)
-					.role(NomeRole.ADMIN)
-					.cliente(cliente).build());
+			customer.adicionarRole(roleBuilder.id(null)
+					.role(RoleName.ADMIN)
+					.customer(customer).build());
 			
-			clienteRepository.save(cliente);
+			clienteRepository.save(customer);
 			
 			
 		}

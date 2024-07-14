@@ -1,13 +1,10 @@
 package br.com.danielschiavo.pedido.model.enums;
 
-import br.com.danielschiavo.cliente.model.entity.Cliente;
 import br.com.danielschiavo.pedido.service.pagamento.processador.ProcessadorPagamento;
 import br.com.danielschiavo.pedido.service.pagamento.processador.ProcessarPagamentoBoleto;
 import br.com.danielschiavo.pedido.service.pagamento.processador.ProcessarPagamentoCartaoCredito;
 import br.com.danielschiavo.pedido.service.pagamento.processador.ProcessarPagamentoCartaoDebito;
 import br.com.danielschiavo.pedido.service.pagamento.processador.ProcessarPagamentoPix;
-
-import java.math.BigDecimal;
 
 public enum MetodoPagamento {
 	CARTAO_CREDITO(new ProcessarPagamentoCartaoCredito())

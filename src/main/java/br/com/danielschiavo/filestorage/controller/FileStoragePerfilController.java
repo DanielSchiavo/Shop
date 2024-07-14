@@ -26,22 +26,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Cliente - Serviço de Armazenamento de Arquivos", description = "Para fazer upload da foto de perfil do cliente. Uso exclusivo do backend.")
+@Tag(name = "Customer - Serviço de Armazenamento de Arquivos", description = "Para fazer upload da foto de perfil do customer. Uso exclusivo do backend.")
 public class FileStoragePerfilController {
 
 	@Autowired
 	private FileStoragePerfilService fileStoragePerfilService;
 	
 	@DeleteMapping("/cliente/perfil/{nomeFotoPerfil}")
-	@Operation(summary = "Deleta a foto de perfil com o nome enviado no parametro da requisição")
+	@Operation(summary = "Deleta a foto de perfil com o name enviado no parametro da requisição")
 	public ResponseEntity<?> deletarFotoPerfil(@PathVariable String nomeFotoPerfil) {
-		fileStoragePerfilService.deletarFotoPerfilNoDisco(nomeFotoPerfil);
+		fileStoragePerfilService.deleteProfilePictureInDisk(nomeFotoPerfil);
 		FileInfoResponse fileInfoResponse = FileInfoResponse.success(nomeFotoPerfil, "Foto de perfil deletada com sucesso!", null);
 		return ResponseEntity.ok().body(Response.success("Requisição realizada com sucesso", fileInfoResponse));
 	}
 	
 	@GetMapping("/cliente/perfil/{nomeFotoPerfil}")
-	@Operation(summary = "Pega uma foto de perfil dado o nome da foto no parametro da requisição")
+	@Operation(summary = "Pega uma foto de perfil dado o name da foto no parametro da requisição")
 	public ResponseEntity<?> pegarFotoPerfilPorNome(@PathVariable String nomeFotoPerfil) {
 		File file = fileStoragePerfilService.pegarFotoPerfilPorNome(nomeFotoPerfil);
 
@@ -50,7 +50,7 @@ public class FileStoragePerfilController {
 	}
 	
 	@PostMapping("/cliente/perfil/")
-	@Operation(summary = "Cadastra uma foto de perfil enviada através de um formulario html e gera um nome")
+	@Operation(summary = "Cadastra uma foto de perfil enviada através de um formulario html e gera um name")
 	public ResponseEntity<?> cadastrarFotoPerfil(
 			@RequestPart(name = "foto", required = true) MultipartFile foto) {
 		File file = fileStoragePerfilService.persistirFotoPerfil(foto);
@@ -60,13 +60,13 @@ public class FileStoragePerfilController {
 	}
 	
 	@PutMapping("/cliente/{nomeFotoPerfilAntiga}")
-	@Operation(summary = "Deleta o nomeAntigoDoArquivo e salva o arquivo enviado e gera um novo nome")
+	@Operation(summary = "Deleta o nomeAntigoDoArquivo e salva o arquivo enviado e gera um novo name")
 	public ResponseEntity<?> alterarFotoPerfil(
 			@RequestPart(name = "foto", required = true) MultipartFile novaFoto,
 			@RequestParam String nomeFotoPerfilAntiga,
 			UriComponentsBuilder uriBuilder
 			) {
-		File file = fileStoragePerfilService.alterarFotoPerfil(novaFoto, nomeFotoPerfilAntiga);
+		File file = fileStoragePerfilService.updateProfilePicture(novaFoto, nomeFotoPerfilAntiga);
 
 		FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Sucesso ao alterar foto de perfil", null);
 

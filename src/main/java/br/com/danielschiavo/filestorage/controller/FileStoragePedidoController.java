@@ -31,7 +31,7 @@ public class FileStoragePedidoController {
 	private FileStoragePedidoService fileStoragePedidoService;
 	
 	@GetMapping("/cliente/pedido/{nomeImagemPedido}")
-	@Operation(summary = "Recupera os bytes da imagem do pedido dado o nome no parametro da requisição")
+	@Operation(summary = "Recupera os bytes da imagem do pedido dado o name no parametro da requisição")
 	public ResponseEntity<?> pegarImagemPedidoPorNome(@PathVariable String nomeImagemPedido) {
 		File file = fileStoragePedidoService.pegarImagemPedidoPorNome(nomeImagemPedido);
 
@@ -40,7 +40,7 @@ public class FileStoragePedidoController {
 	}
 	
 	@PostMapping("/cliente/pedido")
-	@Operation(summary = "Cadastra uma nova imagem do pedido e devolve o nome e os bytes da imagem, ou, se já tiver uma imagem cadastrada devolve o nome e os bytes da imagem já cadastrada")
+	@Operation(summary = "Cadastra uma nova imagem do pedido e devolve o name e os bytes da imagem, ou, se já tiver uma imagem cadastrada devolve o name e os bytes da imagem já cadastrada")
 	public ResponseEntity<?> handleImagemPedido(
 			@RequestBody HandleImagemPedidoRequest request,
 			UriComponentsBuilder uriBuilder
