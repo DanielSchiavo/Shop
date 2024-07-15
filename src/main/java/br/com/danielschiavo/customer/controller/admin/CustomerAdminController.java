@@ -4,7 +4,7 @@ package br.com.danielschiavo.customer.controller.admin;
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
-import br.com.danielschiavo.customer.service.cliente.CustomerService;
+import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;

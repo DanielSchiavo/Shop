@@ -16,7 +16,7 @@ public class FileStoragePedidoRepository extends FileStorageRepository {
     @Qualifier("fileStorageRepository")
     private FileStorageRepository repository;
 
-    private final Path raizPedido = Paths.get("imagens/pedido");
+    private final Path raizPedido = Paths.get("imagens/order");
 
     public File pegarImagemPorNome(String nomeArquivo) {
         byte[] content = repository.pegar(raizPedido, nomeArquivo);

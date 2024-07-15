@@ -5,7 +5,7 @@ import br.com.danielschiavo.customer.dto.request.customer.UpdateCustomerRequest;
 import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import br.com.danielschiavo.customer.model.entity.Customer;
-import br.com.danielschiavo.customer.service.cliente.CustomerService;
+import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

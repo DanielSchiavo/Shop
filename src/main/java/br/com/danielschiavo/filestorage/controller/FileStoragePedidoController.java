@@ -24,14 +24,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Pedido - Serviço de Armazenamento de Arquivos", description = "Para fazer upload da imagem do pedido. Uso exclusivo do backend.")
+@Tag(name = "Order - Serviço de Armazenamento de Arquivos", description = "Para fazer upload da imagem do order. Uso exclusivo do backend.")
 public class FileStoragePedidoController {
 
 	@Autowired
 	private FileStoragePedidoService fileStoragePedidoService;
 	
 	@GetMapping("/cliente/pedido/{nomeImagemPedido}")
-	@Operation(summary = "Recupera os bytes da imagem do pedido dado o name no parametro da requisição")
+	@Operation(summary = "Recupera os bytes da imagem do order dado o name no parametro da requisição")
 	public ResponseEntity<?> pegarImagemPedidoPorNome(@PathVariable String nomeImagemPedido) {
 		File file = fileStoragePedidoService.pegarImagemPedidoPorNome(nomeImagemPedido);
 
@@ -40,15 +40,15 @@ public class FileStoragePedidoController {
 	}
 	
 	@PostMapping("/cliente/pedido")
-	@Operation(summary = "Cadastra uma nova imagem do pedido e devolve o name e os bytes da imagem, ou, se já tiver uma imagem cadastrada devolve o name e os bytes da imagem já cadastrada")
+	@Operation(summary = "Cadastra uma nova imagem do order e devolve o name e os bytes da imagem, ou, se já tiver uma imagem cadastrada devolve o name e os bytes da imagem já cadastrada")
 	public ResponseEntity<?> handleImagemPedido(
 			@RequestBody HandleImagemPedidoRequest request,
 			UriComponentsBuilder uriBuilder
 			) {
 		File file = fileStoragePedidoService.handleImagemPedido(request.nomePrimeiraImagemProduto(), request.produtoId());
 
-		URI uri = uriBuilder.path("/filestorage/pedido/" + file).build().toUri();
-		FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Sucesso ao persistir imagem do pedido", file.getContent());
+		URI uri = uriBuilder.path("/filestorage/order/" + file).build().toUri();
+		FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Sucesso ao persistir imagem do order", file.getContent());
 		return ResponseEntity.created(uri).body(Response.success("Requisição realizada com sucesso", fileInfoResponse));
 	}
 	

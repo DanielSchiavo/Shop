@@ -6,7 +6,7 @@ import br.com.danielschiavo.vendas.dto.request.ItemCarrinhoRequest;
 import br.com.danielschiavo.vendas.mapper.CarrinhoMapper;
 import br.com.danielschiavo.vendas.model.entity.Carrinho;
 import br.com.danielschiavo.vendas.model.entity.ItemCarrinho;
-import br.com.danielschiavo.vendas.service.CarrinhoService;
+import br.com.danielschiavo.vendas.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 public class CarrinhoController {
 	
 	@Autowired
-	private CarrinhoService carrinhoService;
+	private CartService cartService;
 
 	@Autowired
 	private SecurityService securityService;
@@ -39,20 +39,20 @@ public class CarrinhoController {
 	private CarrinhoMapper mapper;
 	
 	@DeleteMapping("/produtos/{produtosId}")
-	@Operation(summary = "Deleta um ou vários produtos do carrinho")
+	@Operation(summary = "Deleta um ou vários products do carrinho")
 	public ResponseEntity<?> removerProdutoDoCarrinho(@PathVariable Long[] produtosId) {
 		Long clienteId = securityService.getCustomerId();
-		carrinhoService.removerProdutoDoCarrinho(clienteId, produtosId);
+		cartService.removerProdutoDoCarrinho(clienteId, produtosId);
 		return ResponseEntity.ok().body(Response.success("Remoção realizada com sucesso!", null));
 	}
 	
 	@GetMapping("/cliente/carrinho")
-	@Operation(summary = "Pega todos os produtos que estão no carrinho do customer")
+	@Operation(summary = "Pega todos os products que estão no carrinho do customer")
 	public ResponseEntity<?> pegarCarrinhoClientePorIdToken() {
 		Long clienteId = securityService.getCustomerId();
-		Carrinho carrinho = carrinhoService.pegarCarrinhoPorClienteId(clienteId);
+		Carrinho carrinho = cartService.pegarCarrinhoPorClienteId(clienteId);
 			
-		return ResponseEntity.ok(Response.success("Sucesso ao recuperar produtos do carrinho", mapper.toDto(carrinho)));
+		return ResponseEntity.ok(Response.success("Sucesso ao recuperar products do carrinho", mapper.toDto(carrinho)));
 	}
 	
 	@PostMapping("/cliente/carrinho")
@@ -60,16 +60,16 @@ public class CarrinhoController {
 	public ResponseEntity<?> adicionarProdutosNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoRequest request) {
 		Long clienteId = securityService.getCustomerId();
 		ItemCarrinho adicionarItem = mapper.toEntity(request);
-		Carrinho carrinho = carrinhoService.adicionarProdutosNoCarrinhoPorIdToken(clienteId, adicionarItem);
-		return ResponseEntity.ok().body(Response.success("Produto adicionado ao carrinho!", null));
+		Carrinho carrinho = cartService.adicionarProdutosNoCarrinhoPorIdToken(clienteId, adicionarItem);
+		return ResponseEntity.ok().body(Response.success("Product adicionado ao carrinho!", null));
 	}
 	
 	@PutMapping("/cliente/carrinho")
-	@Operation(summary = "Seta a quantidade de determinado produto que está no carrinho")
+	@Operation(summary = "Seta a quantity de determinado produto que está no carrinho")
 	public ResponseEntity<?> setarQuantidadeProdutoNoCarrinhoPorIdToken(@RequestBody @Valid ItemCarrinhoRequest request) {
 		Long clienteId = securityService.getCustomerId();
 		ItemCarrinho setarItem = mapper.toEntity(request);
-		carrinhoService.setarQuantidadeProdutoNoCarrinho(clienteId, setarItem);
+		cartService.setarQuantidadeProdutoNoCarrinho(clienteId, setarItem);
 		return ResponseEntity.ok(Response.success("Alterado com sucesso!", null));
 	}
 }

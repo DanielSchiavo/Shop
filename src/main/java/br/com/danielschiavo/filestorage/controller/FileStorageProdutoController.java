@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Produto - Serviço de Armazenamento de Arquivos", description = "Para fazer upload de imagens e videos do produto. Uso exclusivo do backend.")
+@Tag(name = "Product - Serviço de Armazenamento de Arquivos", description = "Para fazer upload de imagens e videos do produto. Uso exclusivo do backend.")
 public class FileStorageProdutoController {
 
 	@Autowired
@@ -52,9 +52,9 @@ public class FileStorageProdutoController {
 
 	@PostMapping(path = "/admin/produto", consumes = "multipart/form-data")
 	@ResponseBody
-	@Operation(summary = "Salva um array de arquivos enviados através de um formulário html e gera os seus respectivos nomes")
+	@Operation(summary = "Salva um array de files enviados através de um formulário html e gera os seus respectivos nomes")
 	public ResponseEntity<?> persistirImagensProduto(
-			@RequestPart(name = "arquivos", required = true) MultipartFile[] arquivos,
+			@RequestPart(name = "files", required = true) MultipartFile[] arquivos,
 			UriComponentsBuilder uriBuilder) {
 		List<File> files = fileStorageService.persistirImagens(arquivos);
 
@@ -73,7 +73,7 @@ public class FileStorageProdutoController {
 //		return ResponseEntity.ok().body(Response.success("Requisição realizada com sucesso", fileInfoResposeList));
 
 //	}
-//	@GetMapping("/publico/produtos/{nomesArquivos}")
+//	@GetMapping("/publico/products/{nomesArquivos}")
 //	@Operation(summary = "Recupera os bytes do name de todas imagens enviadas no parâmetro da requisição")
 //	public ResponseEntity<?> pegarImagensProduto(
 //			@PathVariable(name = "nomesArquivos") String... nomesImagens) {

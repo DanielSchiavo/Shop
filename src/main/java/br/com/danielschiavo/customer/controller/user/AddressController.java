@@ -7,7 +7,7 @@ import br.com.danielschiavo.customer.dto.request.address.UpdateAddressRequest;
 import br.com.danielschiavo.customer.dto.request.address.RegisterAddressRequest;
 import br.com.danielschiavo.customer.mapper.AddressMapper;
 import br.com.danielschiavo.customer.model.entity.Address;
-import br.com.danielschiavo.customer.service.endereco.AddressService;
+import br.com.danielschiavo.customer.service.address.AddressService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
