@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.model.valueobject;
+package br.com.danielschiavo.order.model.valueobject;
 
 import br.com.danielschiavo.customer.model.entity.Address;
 import jakarta.persistence.Embeddable;

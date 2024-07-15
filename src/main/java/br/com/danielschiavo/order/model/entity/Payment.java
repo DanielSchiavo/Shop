@@ -1,10 +1,10 @@
-package br.com.danielschiavo.pedido.model.entity;
+package br.com.danielschiavo.order.model.entity;
 
 import java.time.LocalDateTime;
 
-import br.com.danielschiavo.pedido.model.enums.PaymentStatus;
-import br.com.danielschiavo.pedido.model.valueobject.OrderCard;
-import br.com.danielschiavo.pedido.model.enums.PaymentMethod;
+import br.com.danielschiavo.order.model.enums.PaymentStatus;
+import br.com.danielschiavo.order.model.valueobject.OrderCard;
+import br.com.danielschiavo.order.model.enums.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

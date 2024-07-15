@@ -1,6 +1,6 @@
-package br.com.danielschiavo.pedido.dto.request.delivery;
+package br.com.danielschiavo.order.dto.request.delivery;
 
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 

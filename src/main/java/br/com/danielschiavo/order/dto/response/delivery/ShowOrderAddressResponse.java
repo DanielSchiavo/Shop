@@ -1,6 +1,6 @@
-package br.com.danielschiavo.pedido.dto.response.delivery;
+package br.com.danielschiavo.order.dto.response.delivery;
 
-import br.com.danielschiavo.pedido.model.valueobject.OrderAddress;
+import br.com.danielschiavo.order.model.valueobject.OrderAddress;
 
 public record ShowOrderAddressResponse(
         String postalCode,

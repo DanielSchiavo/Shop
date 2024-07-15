@@ -1,4 +1,4 @@
-package br.com.danielschiavo.produto.model.entity;
+package br.com.danielschiavo.catalog.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

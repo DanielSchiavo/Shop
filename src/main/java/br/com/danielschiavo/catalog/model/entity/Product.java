@@ -1,4 +1,4 @@
-package br.com.danielschiavo.produto.model.entity;
+package br.com.danielschiavo.catalog.model.entity;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import br.com.danielschiavo.produto.model.enums.ProductDeliveryType;
-import br.com.danielschiavo.produto.model.valueobject.ProductFile;
+import br.com.danielschiavo.catalog.model.enums.ProductDeliveryType;
+import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -56,7 +56,7 @@ public class Product {
     @Setter(value = AccessLevel.NONE)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
-    private Set<ProductDeliveryType> productDeliveryType = new HashSet<>();
+    private Set<ProductDeliveryType> deliveryTypes = new HashSet<>();
 
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)
@@ -68,16 +68,16 @@ public class Product {
 
 	
 	
-	public Set<ProductDeliveryType> getProductDeliveryType() {
-		return Collections.unmodifiableSet(this.productDeliveryType);
+	public Set<ProductDeliveryType> getDeliveryTypes() {
+		return Collections.unmodifiableSet(this.deliveryTypes);
 	}
 
 	public void addDeliveryType(ProductDeliveryType tipoEntrega) {
-		this.productDeliveryType.add(tipoEntrega);
+		this.deliveryTypes.add(tipoEntrega);
 	}
 	
     public void addDeliveryType(Set<ProductDeliveryType> tiposEntrega) {
-        this.productDeliveryType.addAll(tiposEntrega);
+        this.deliveryTypes.addAll(tiposEntrega);
     }
 
 

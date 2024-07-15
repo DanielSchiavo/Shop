@@ -1,7 +1,7 @@
-package br.com.danielschiavo.produto.model.enums;
+package br.com.danielschiavo.catalog.model.enums;
 
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
-import br.com.danielschiavo.produto.model.entity.Product;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.catalog.model.entity.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

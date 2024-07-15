@@ -1,4 +1,4 @@
-package br.com.danielschiavo.produto.dto;
+package br.com.danielschiavo.catalog.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

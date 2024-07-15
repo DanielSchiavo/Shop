@@ -1,8 +1,8 @@
-package br.com.danielschiavo.produto.controller.admin;
+package br.com.danielschiavo.catalog.controller.admin;
 
-import br.com.danielschiavo.produto.model.entity.Category;
-import br.com.danielschiavo.produto.dto.request.CreateCategoryRequest;
-import br.com.danielschiavo.produto.service.CategoryService;
+import br.com.danielschiavo.catalog.model.entity.Category;
+import br.com.danielschiavo.catalog.dto.request.CreateCategoryRequest;
+import br.com.danielschiavo.catalog.service.CategoryService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

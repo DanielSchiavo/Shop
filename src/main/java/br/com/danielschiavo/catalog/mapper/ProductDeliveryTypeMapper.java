@@ -1,8 +1,8 @@
-package br.com.danielschiavo.produto.mapper;
+package br.com.danielschiavo.catalog.mapper;
 
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
-import br.com.danielschiavo.produto.model.entity.Product;
-import br.com.danielschiavo.produto.model.enums.ProductDeliveryType;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.model.enums.ProductDeliveryType;
 import org.mapstruct.Mapper;
 
 import java.util.Set;

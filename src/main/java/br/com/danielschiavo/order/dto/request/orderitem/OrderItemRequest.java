@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.dto.request.orderitem;
+package br.com.danielschiavo.order.dto.request.orderitem;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

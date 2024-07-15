@@ -1,0 +1,75 @@
+package br.com.danielschiavo.sales.controller;
+
+import br.com.danielschiavo.shared.Response;
+import br.com.danielschiavo.shared.infra.security.SecurityService;
+import br.com.danielschiavo.sales.dto.request.CartItemRequest;
+import br.com.danielschiavo.sales.mapper.CartMapper;
+import br.com.danielschiavo.sales.model.entity.Cart;
+import br.com.danielschiavo.sales.model.entity.CartItem;
+import br.com.danielschiavo.sales.service.CartService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/user/carts")
+@SecurityRequirement(name = "bearer-key")
+@Tag(name = "Customer - Cart", description = "All endpoints related to the customer's cart, which they can use")
+public class CartController {
+
+	@Autowired
+	private CartService service;
+
+	@Autowired
+	private SecurityService securityService;
+
+	@Autowired
+	private CartMapper mapper;
+
+	@DeleteMapping("/products/{productsId}")
+	@Operation(summary = "Deletes one or more products from the cart")
+	public ResponseEntity<?> removeProductFromCart(@PathVariable Long[] productsId) {
+		Long customerId = securityService.getCustomerId();
+		service.removeProductFromCart(customerId, productsId);
+		return ResponseEntity.ok().body(Response.success("Removal successfully completed!", null));
+	}
+
+	@GetMapping
+	@Operation(summary = "Gets all products that are in the customer's cart")
+	public ResponseEntity<?> getCustomerCartByIdToken() {
+		Long customerId = securityService.getCustomerId();
+		Cart cart = service.getCartByCustomerId(customerId);
+
+		return ResponseEntity.ok(Response.success("Successfully retrieved cart products", mapper.toDto(cart)));
+	}
+
+	@PostMapping
+	@Operation(summary = "Adds a product to the cart, if the customer does not have a cart, it also creates one automatically")
+	public ResponseEntity<?> addProductToCart(@RequestBody @Valid CartItemRequest request) {
+		Long customerId = securityService.getCustomerId();
+		CartItem cartItem = mapper.toEntity(request);
+		Cart cart = service.addProductToCart(customerId, cartItem);
+		return ResponseEntity.ok().body(Response.success("Product added to cart!", null));
+	}
+
+	@PutMapping
+	@Operation(summary = "Sets the quantity of a specific product that is in the cart")
+	public ResponseEntity<?> setProductQuantityInCart(@RequestBody @Valid CartItemRequest request) {
+		Long customerId = securityService.getCustomerId();
+		CartItem setItem = mapper.toEntity(request);
+		service.setProductQuantityInCart(customerId, setItem);
+		return ResponseEntity.ok(Response.success("Successfully changed!", null));
+	}
+}

@@ -1,4 +1,4 @@
-package br.com.danielschiavo.vendas.dto.request;
+package br.com.danielschiavo.sales.dto.request;
 
 import org.springframework.format.annotation.NumberFormat;
 
@@ -7,14 +7,14 @@ import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 
 @Builder
-public record ItemCarrinhoRequest(
+public record CartItemRequest(
 		@NotNull
 		@NumberFormat
 		@Positive
-		Long produtoId,
+		Long productId,
 		@NotNull
 		@NumberFormat
-		Integer quantidade
+		Integer quantity
 		) {
 
 }

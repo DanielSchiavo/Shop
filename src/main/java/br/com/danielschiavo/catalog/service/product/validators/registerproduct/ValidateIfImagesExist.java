@@ -1,10 +1,10 @@
-package br.com.danielschiavo.produto.service.product.validators.registerproduct;
+package br.com.danielschiavo.catalog.service.product.validators.registerproduct;
 
 import java.util.List;
 
 import br.com.danielschiavo.filestorage.service.FileStorageProdutoService;
-import br.com.danielschiavo.produto.model.entity.Product;
-import br.com.danielschiavo.produto.model.valueobject.ProductFile;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

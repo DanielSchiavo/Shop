@@ -1,10 +1,10 @@
-package br.com.danielschiavo.produto.controller.admin;
+package br.com.danielschiavo.catalog.controller.admin;
 
-import br.com.danielschiavo.produto.dto.request.UpdateProductRequest;
-import br.com.danielschiavo.produto.dto.request.RegisterProductRequest;
-import br.com.danielschiavo.produto.mapper.ProductMapper;
-import br.com.danielschiavo.produto.model.entity.Product;
-import br.com.danielschiavo.produto.service.product.ProductService;
+import br.com.danielschiavo.catalog.dto.request.UpdateProductRequest;
+import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
+import br.com.danielschiavo.catalog.mapper.ProductMapper;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.shared.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

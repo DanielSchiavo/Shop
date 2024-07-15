@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.model.enums;
+package br.com.danielschiavo.order.model.enums;
 
 public enum PaymentStatus {
 	PENDING,

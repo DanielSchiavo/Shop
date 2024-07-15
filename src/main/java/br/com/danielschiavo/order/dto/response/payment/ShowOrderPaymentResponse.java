@@ -1,7 +1,7 @@
-package br.com.danielschiavo.pedido.dto.response.payment;
+package br.com.danielschiavo.order.dto.response.payment;
 
-import br.com.danielschiavo.pedido.model.enums.PaymentMethod;
-import br.com.danielschiavo.pedido.model.enums.PaymentStatus;
+import br.com.danielschiavo.order.model.enums.PaymentMethod;
+import br.com.danielschiavo.order.model.enums.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

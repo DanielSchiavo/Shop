@@ -1,6 +1,6 @@
-package br.com.danielschiavo.produto.service.product.validators.registerproduct;
+package br.com.danielschiavo.catalog.service.product.validators.registerproduct;
 
-import br.com.danielschiavo.produto.model.entity.Product;
+import br.com.danielschiavo.catalog.model.entity.Product;
 
 public interface ValidatorRegisterProduct {
 	

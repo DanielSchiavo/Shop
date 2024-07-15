@@ -1,9 +1,9 @@
-package br.com.danielschiavo.pedido.controller;
+package br.com.danielschiavo.order.controller;
 
-import br.com.danielschiavo.pedido.dto.response.order.ShowOrderResponse;
-import br.com.danielschiavo.pedido.mapper.OrderMapper;
-import br.com.danielschiavo.pedido.model.entity.Order;
-import br.com.danielschiavo.pedido.service.order.OrderService;
+import br.com.danielschiavo.order.dto.response.order.ShowOrderResponse;
+import br.com.danielschiavo.order.mapper.OrderMapper;
+import br.com.danielschiavo.order.model.entity.Order;
+import br.com.danielschiavo.order.service.order.OrderService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

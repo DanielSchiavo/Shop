@@ -1,8 +1,8 @@
-package br.com.danielschiavo.produto.service;
+package br.com.danielschiavo.catalog.service;
 
-import br.com.danielschiavo.produto.model.entity.Category;
-import br.com.danielschiavo.produto.model.entity.SubCategory;
-import br.com.danielschiavo.produto.repository.SubCategoryRepository;
+import br.com.danielschiavo.catalog.model.entity.Category;
+import br.com.danielschiavo.catalog.model.entity.SubCategory;
+import br.com.danielschiavo.catalog.repository.SubCategoryRepository;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

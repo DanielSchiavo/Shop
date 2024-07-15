@@ -1,10 +1,10 @@
-package br.com.danielschiavo.produto.mapper;
+package br.com.danielschiavo.catalog.mapper;
 
-import br.com.danielschiavo.produto.dto.request.UpdateProductRequest;
-import br.com.danielschiavo.produto.dto.request.RegisterProductRequest;
-import br.com.danielschiavo.produto.dto.response.DetailProductResponse;
-import br.com.danielschiavo.produto.dto.response.ShowProductsResponse;
-import br.com.danielschiavo.produto.model.entity.Product;
+import br.com.danielschiavo.catalog.dto.request.UpdateProductRequest;
+import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
+import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
+import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.model.entity.Product;
 import org.mapstruct.*;
 
 

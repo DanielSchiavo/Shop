@@ -1,4 +1,4 @@
-package br.com.danielschiavo.produto.dto.response;
+package br.com.danielschiavo.catalog.dto.response;
 
 import java.math.BigDecimal;
 import java.util.List;

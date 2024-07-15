@@ -1,9 +1,9 @@
-package br.com.danielschiavo.pedido.repository;
+package br.com.danielschiavo.order.repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import br.com.danielschiavo.pedido.model.entity.Order;
+import br.com.danielschiavo.order.model.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

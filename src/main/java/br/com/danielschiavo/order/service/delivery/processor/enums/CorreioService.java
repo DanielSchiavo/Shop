@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.service.delivery.processor.enums;
+package br.com.danielschiavo.order.service.delivery.processor.enums;
 
 public enum CorreioService {
     PAC,

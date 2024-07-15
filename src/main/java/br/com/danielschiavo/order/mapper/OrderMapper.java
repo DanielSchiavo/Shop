@@ -1,8 +1,8 @@
-package br.com.danielschiavo.pedido.mapper;
+package br.com.danielschiavo.order.mapper;
 
-import br.com.danielschiavo.pedido.dto.request.order.PlaceOrderRequest;
-import br.com.danielschiavo.pedido.dto.response.order.ShowOrderResponse;
-import br.com.danielschiavo.pedido.model.entity.Order;
+import br.com.danielschiavo.order.dto.request.order.PlaceOrderRequest;
+import br.com.danielschiavo.order.dto.response.order.ShowOrderResponse;
+import br.com.danielschiavo.order.model.entity.Order;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

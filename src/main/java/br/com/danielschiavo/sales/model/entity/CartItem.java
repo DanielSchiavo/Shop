@@ -1,4 +1,4 @@
-package br.com.danielschiavo.vendas.model.entity;
+package br.com.danielschiavo.sales.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Table(name = "clientes_carrinhos_items")
+@Table(name = "customers_carts_items")
 @Entity
 @Getter
 @Setter
@@ -25,24 +25,24 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Builder
-public class ItemCarrinho {
+public class CartItem {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-    private Integer quantidade;
+    private Integer quantity;
     
-    private Long produtoId;
+    private Long productId;
     
     private BigDecimal subTotal;
     
-    @Column(name = "data_e_hora_insercao")
-    private LocalDateTime dataEHoraInsercao;
+    @Column(name = "insertion_date_time")
+    private LocalDateTime insertionDateTime;
     
-    @Column(name = "data_e_hora_atualizacao")
-    private LocalDateTime dataEHoraAtualizacao;
+    @Column(name = "update_date_time")
+    private LocalDateTime updateDateTime;
 	
 	@ManyToOne
-	private Carrinho carrinho;
+	private Cart cart;
 }

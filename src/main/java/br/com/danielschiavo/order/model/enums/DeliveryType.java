@@ -1,11 +1,11 @@
-package br.com.danielschiavo.pedido.model.enums;
+package br.com.danielschiavo.order.model.enums;
 
-import br.com.danielschiavo.pedido.service.delivery.processor.DeliveryProcessor;
-import br.com.danielschiavo.pedido.service.delivery.processor.ProcessCorreiosDelivery;
-import br.com.danielschiavo.pedido.service.delivery.processor.ProcessDigitalDelivery;
-import br.com.danielschiavo.pedido.service.delivery.processor.ProcessExpressDelivery;
-import br.com.danielschiavo.pedido.service.delivery.processor.ProcessPickUpInStoreDelivery;
-import br.com.danielschiavo.pedido.service.delivery.processor.enums.CorreioService;
+import br.com.danielschiavo.order.service.delivery.processor.DeliveryProcessor;
+import br.com.danielschiavo.order.service.delivery.processor.ProcessCorreiosDelivery;
+import br.com.danielschiavo.order.service.delivery.processor.ProcessDigitalDelivery;
+import br.com.danielschiavo.order.service.delivery.processor.ProcessExpressDelivery;
+import br.com.danielschiavo.order.service.delivery.processor.ProcessPickUpInStoreDelivery;
+import br.com.danielschiavo.order.service.delivery.processor.enums.CorreioService;
 
 public enum DeliveryType {
 	CORREIOS_SEDEX(new ProcessCorreiosDelivery(CorreioService.SEDEX))

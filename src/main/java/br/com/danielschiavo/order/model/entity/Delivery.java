@@ -1,7 +1,7 @@
-package br.com.danielschiavo.pedido.model.entity;
+package br.com.danielschiavo.order.model.entity;
 
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
-import br.com.danielschiavo.pedido.model.valueobject.OrderAddress;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.order.model.valueobject.OrderAddress;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

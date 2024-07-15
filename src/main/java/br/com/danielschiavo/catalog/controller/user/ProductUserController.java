@@ -1,12 +1,12 @@
-package br.com.danielschiavo.produto.controller.user;
+package br.com.danielschiavo.catalog.controller.user;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.danielschiavo.produto.dto.response.ShowProductsResponse;
-import br.com.danielschiavo.produto.mapper.ProductMapper;
-import br.com.danielschiavo.produto.model.entity.Product;
-import br.com.danielschiavo.produto.service.product.ProductService;
+import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.mapper.ProductMapper;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

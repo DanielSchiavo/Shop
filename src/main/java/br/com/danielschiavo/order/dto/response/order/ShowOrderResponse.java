@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.dto.response.order;
+package br.com.danielschiavo.order.dto.response.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import br.com.danielschiavo.pedido.dto.response.delivery.ShowOrderDeliveryResponse;
-import br.com.danielschiavo.pedido.dto.response.orderitem.ShowOrderItemResponse;
-import br.com.danielschiavo.pedido.dto.response.payment.ShowOrderPaymentResponse;
-import br.com.danielschiavo.pedido.model.entity.Order;
-import br.com.danielschiavo.pedido.model.enums.OrderStatus;
-import br.com.danielschiavo.pedido.dto.response.payment.ShowOrderCardResponse;
+import br.com.danielschiavo.order.dto.response.delivery.ShowOrderDeliveryResponse;
+import br.com.danielschiavo.order.dto.response.orderitem.ShowOrderItemResponse;
+import br.com.danielschiavo.order.dto.response.payment.ShowOrderPaymentResponse;
+import br.com.danielschiavo.order.model.entity.Order;
+import br.com.danielschiavo.order.model.enums.OrderStatus;
+import br.com.danielschiavo.order.dto.response.payment.ShowOrderCardResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import br.com.danielschiavo.pedido.dto.response.delivery.ShowOrderAddressResponse;
+import br.com.danielschiavo.order.dto.response.delivery.ShowOrderAddressResponse;
 import lombok.Builder;
 
 @Builder

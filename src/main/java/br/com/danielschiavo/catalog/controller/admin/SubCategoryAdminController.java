@@ -1,9 +1,9 @@
-package br.com.danielschiavo.produto.controller.admin;
+package br.com.danielschiavo.catalog.controller.admin;
 
-import br.com.danielschiavo.produto.dto.request.UpdateSubCategoryRequest;
-import br.com.danielschiavo.produto.dto.request.CreateSubCategoryRequest;
-import br.com.danielschiavo.produto.model.entity.SubCategory;
-import br.com.danielschiavo.produto.service.SubCategoryService;
+import br.com.danielschiavo.catalog.dto.request.UpdateSubCategoryRequest;
+import br.com.danielschiavo.catalog.dto.request.CreateSubCategoryRequest;
+import br.com.danielschiavo.catalog.model.entity.SubCategory;
+import br.com.danielschiavo.catalog.service.SubCategoryService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

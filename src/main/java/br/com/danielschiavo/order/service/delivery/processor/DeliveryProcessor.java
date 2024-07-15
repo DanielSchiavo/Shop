@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.service.delivery.processor;
+package br.com.danielschiavo.order.service.delivery.processor;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package br.com.danielschiavo.produto.repository;
+package br.com.danielschiavo.catalog.repository;
 
 import java.util.Optional;
 
-import br.com.danielschiavo.produto.model.entity.SubCategory;
+import br.com.danielschiavo.catalog.model.entity.SubCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

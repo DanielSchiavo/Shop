@@ -1,7 +1,7 @@
-package br.com.danielschiavo.produto.model.valueobject;
+package br.com.danielschiavo.catalog.model.valueobject;
 
 
-import br.com.danielschiavo.produto.model.entity.Product;
+import br.com.danielschiavo.catalog.model.entity.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

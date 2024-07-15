@@ -1,10 +1,10 @@
-package br.com.danielschiavo.pedido.model.enums;
+package br.com.danielschiavo.order.model.enums;
 
-import br.com.danielschiavo.pedido.service.payment.processor.PaymentProcessor;
-import br.com.danielschiavo.pedido.service.payment.processor.ProcessBoletoPayment;
-import br.com.danielschiavo.pedido.service.payment.processor.ProcessCreditCardPayment;
-import br.com.danielschiavo.pedido.service.payment.processor.ProcessDebitCardPayment;
-import br.com.danielschiavo.pedido.service.payment.processor.ProcessPixPayment;
+import br.com.danielschiavo.order.service.payment.processor.PaymentProcessor;
+import br.com.danielschiavo.order.service.payment.processor.ProcessBoletoPayment;
+import br.com.danielschiavo.order.service.payment.processor.ProcessCreditCardPayment;
+import br.com.danielschiavo.order.service.payment.processor.ProcessDebitCardPayment;
+import br.com.danielschiavo.order.service.payment.processor.ProcessPixPayment;
 
 public enum PaymentMethod {
 	CREDIT_CARD(new ProcessCreditCardPayment())

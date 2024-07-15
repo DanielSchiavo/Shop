@@ -21,7 +21,7 @@ public class InitializationProdEnv implements CommandLineRunner {
 	@Autowired
 	private CustomerRepository clienteRepository;
 	
-	private Customer.ClienteBuilder clienteBuilder = Customer.builder();
+	private Customer.CustomerBuilder clienteBuilder = Customer.builder();
 	private RoleBuilder roleBuilder = Role.builder();
 	
 	@Override
@@ -37,14 +37,14 @@ public class InitializationProdEnv implements CommandLineRunner {
 			Customer customer = clienteBuilder
 					.id(null)
 					.cpf("12345678912")
-					.nome("Daniel")
-					.sobrenome("Schiavo Rosseto")
-					.dataNascimento(LocalDate.of(2000, 3, 3))
-					.dataCriacaoConta(LocalDate.now())
+					.name("Daniel")
+					.surname("Schiavo Rosseto")
+					.birthDate(LocalDate.of(2000, 3, 3))
+					.accountCreationDate(LocalDate.now())
 					.email("daniel.schiavo35@gmail.com")
-					.senha("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
-					.celular("27996121255")
-					.fotoPerfil("Padrao.jpeg")
+					.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
+					.cellphoneNumber("27996121255")
+					.profilePicture("Default.jpeg")
 					.build();
 			
 			customer.adicionarRole(roleBuilder.id(null)

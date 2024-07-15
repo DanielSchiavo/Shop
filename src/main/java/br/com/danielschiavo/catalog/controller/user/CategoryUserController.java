@@ -1,7 +1,7 @@
-package br.com.danielschiavo.produto.controller.user;
+package br.com.danielschiavo.catalog.controller.user;
 
-import br.com.danielschiavo.produto.model.entity.Category;
-import br.com.danielschiavo.produto.service.CategoryService;
+import br.com.danielschiavo.catalog.model.entity.Category;
+import br.com.danielschiavo.catalog.service.CategoryService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

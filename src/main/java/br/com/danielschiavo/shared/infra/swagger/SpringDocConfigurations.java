@@ -25,7 +25,7 @@ public class SpringDocConfigurations implements OpenApiCustomizer {
 	        		  			new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
               .info(new Info()
                       .title("Loja API")
-                      .description("API Rest de uma aplicação de loja online, contendo basicamente todas as funcionalidades que uma loja precisa, que é um CRUD de Product, Category, SubCategory, Carrinho, Order, Usuario, Enderecos do usuario, Cartoes do usuario"));
+                      .description("API Rest de uma aplicação de loja online, contendo basicamente todas as funcionalidades que uma loja precisa, que é um CRUD de Product, Category, SubCategory, Cart, Order, Usuario, Enderecos do usuario, Cartoes do usuario"));
 	}
     
     @Override

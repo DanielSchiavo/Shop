@@ -1,6 +1,6 @@
-package br.com.danielschiavo.pedido.dto.response.delivery;
+package br.com.danielschiavo.order.dto.response.delivery;
 
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

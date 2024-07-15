@@ -1,8 +1,8 @@
-package br.com.danielschiavo.pedido.dto.response.orderitem;
+package br.com.danielschiavo.order.dto.response.orderitem;
 
 import java.math.BigDecimal;
 
-import br.com.danielschiavo.pedido.model.entity.OrderItem;
+import br.com.danielschiavo.order.model.entity.OrderItem;
 import lombok.Builder;
 
 @Builder

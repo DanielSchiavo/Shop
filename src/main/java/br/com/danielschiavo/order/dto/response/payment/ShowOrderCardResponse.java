@@ -1,7 +1,7 @@
-package br.com.danielschiavo.pedido.dto.response.payment;
+package br.com.danielschiavo.order.dto.response.payment;
 
 import br.com.danielschiavo.customer.model.enums.CardType;
-import br.com.danielschiavo.pedido.model.valueobject.OrderCard;
+import br.com.danielschiavo.order.model.valueobject.OrderCard;
 
 public record ShowOrderCardResponse(
 		String bankName,

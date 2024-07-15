@@ -1,4 +1,4 @@
-package br.com.danielschiavo.produto.dto.request;
+package br.com.danielschiavo.catalog.dto.request;
 
 import org.springframework.format.annotation.NumberFormat;
 

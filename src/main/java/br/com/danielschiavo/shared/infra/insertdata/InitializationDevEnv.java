@@ -10,17 +10,17 @@ import br.com.danielschiavo.customer.model.valueobject.Role.RoleBuilder;
 import br.com.danielschiavo.customer.repository.CardRepository;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.customer.repository.AddressRepository;
-import br.com.danielschiavo.pedido.model.entity.Order;
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
-import br.com.danielschiavo.pedido.repository.OrderRepository;
-import br.com.danielschiavo.produto.model.entity.Category;
-import br.com.danielschiavo.produto.model.entity.Product;
-import br.com.danielschiavo.produto.model.entity.SubCategory;
-import br.com.danielschiavo.produto.model.valueobject.ProductFile;
-import br.com.danielschiavo.produto.model.enums.ProductDeliveryType;
-import br.com.danielschiavo.produto.repository.CategoryRepository;
-import br.com.danielschiavo.produto.repository.ProductRepository;
-import br.com.danielschiavo.produto.repository.SubCategoryRepository;
+import br.com.danielschiavo.order.model.entity.Order;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.order.repository.OrderRepository;
+import br.com.danielschiavo.catalog.model.entity.Category;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.model.entity.SubCategory;
+import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
+import br.com.danielschiavo.catalog.model.enums.ProductDeliveryType;
+import br.com.danielschiavo.catalog.repository.CategoryRepository;
+import br.com.danielschiavo.catalog.repository.ProductRepository;
+import br.com.danielschiavo.catalog.repository.SubCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -137,7 +137,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 		produto2.addDeliveryType(productDeliveryType2);
 		
 		ProductFile productFile2 = ProductFile.builder()
-													   .name("Padrao.jpeg")
+													   .name("Default.jpeg")
 													   .position((byte) 0)
 													   .product(produto2).build();
 												
@@ -157,7 +157,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 						.email("daniel.schiavo35@gmail.com")
 						.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
 						.cellphoneNumber("27996121255")
-						.profilePicture("Padrao.jpeg")
+						.profilePicture("Default.jpeg")
 						.build();
 		
 		Role role = roleBuilder.id(null)
@@ -196,7 +196,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 										.email("silvana.dasilva@gmail.com")
 										.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
 										.cellphoneNumber("27999833653")
-										.profilePicture("Padrao.jpeg").build();
+										.profilePicture("Default.jpeg").build();
 		
 		Address address2 = addressBuilder.id(null)
 											  .postalCode("29142298")

@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.model.entity;
+package br.com.danielschiavo.order.model.entity;
 
 import java.math.BigDecimal;
 

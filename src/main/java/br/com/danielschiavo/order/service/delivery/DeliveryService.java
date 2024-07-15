@@ -1,10 +1,10 @@
-package br.com.danielschiavo.pedido.service.delivery;
+package br.com.danielschiavo.order.service.delivery;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.service.address.AddressService;
-import br.com.danielschiavo.pedido.model.enums.DeliveryType;
-import br.com.danielschiavo.pedido.model.valueobject.OrderAddress;
-import br.com.danielschiavo.pedido.model.entity.Delivery;
+import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.order.model.valueobject.OrderAddress;
+import br.com.danielschiavo.order.model.entity.Delivery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

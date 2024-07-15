@@ -1,4 +1,4 @@
-package br.com.danielschiavo.pedido.service.order;
+package br.com.danielschiavo.order.service.order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,24 +8,24 @@ import java.util.UUID;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.filestorage.model.File;
-import br.com.danielschiavo.pedido.model.entity.Delivery;
-import br.com.danielschiavo.pedido.model.entity.Order;
-import br.com.danielschiavo.pedido.model.entity.Payment;
-import br.com.danielschiavo.pedido.model.enums.OrderStatus;
-import br.com.danielschiavo.pedido.repository.OrderRepository;
-import br.com.danielschiavo.pedido.service.delivery.DeliveryService;
-import br.com.danielschiavo.pedido.service.payment.PaymentService;
-import br.com.danielschiavo.produto.service.product.ProductService;
+import br.com.danielschiavo.order.model.entity.Delivery;
+import br.com.danielschiavo.order.model.entity.Order;
+import br.com.danielschiavo.order.model.entity.Payment;
+import br.com.danielschiavo.order.model.enums.OrderStatus;
+import br.com.danielschiavo.order.repository.OrderRepository;
+import br.com.danielschiavo.order.service.delivery.DeliveryService;
+import br.com.danielschiavo.order.service.payment.PaymentService;
+import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.shared.exception.ValidationException;
-import br.com.danielschiavo.vendas.service.CartService;
+import br.com.danielschiavo.sales.service.CartService;
 import br.com.danielschiavo.filestorage.service.FileStoragePedidoService;
-import br.com.danielschiavo.pedido.model.entity.OrderItem;
+import br.com.danielschiavo.order.model.entity.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.danielschiavo.pedido.service.order.validators.placeorder.ValidatorPlaceOrder;
+import br.com.danielschiavo.order.service.order.validators.placeorder.ValidatorPlaceOrder;
 import jakarta.transaction.Transactional;
 import lombok.Setter;
 
@@ -84,7 +84,7 @@ public class OrderService {
 
 		if (order.getPurchasedViaCart()) {
 			Long[] ids = order.getOrderItems().stream().map(OrderItem::getProductId).toArray(Long[]::new);
-			cartService.removerProdutoDoCarrinho(customerId, ids);
+			cartService.removeProductFromCart(customerId, ids);
 		}
 
 		return repository.save(order);

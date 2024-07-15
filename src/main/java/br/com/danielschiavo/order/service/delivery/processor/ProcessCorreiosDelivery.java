@@ -1,7 +1,7 @@
-package br.com.danielschiavo.pedido.service.delivery.processor;
+package br.com.danielschiavo.order.service.delivery.processor;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
-import br.com.danielschiavo.pedido.service.delivery.processor.enums.CorreioService;
+import br.com.danielschiavo.order.service.delivery.processor.enums.CorreioService;
 
 public class ProcessCorreiosDelivery extends DeliveryProcessor {
 

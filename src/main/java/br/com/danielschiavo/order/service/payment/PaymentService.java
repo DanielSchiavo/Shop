@@ -1,10 +1,10 @@
-package br.com.danielschiavo.pedido.service.payment;
+package br.com.danielschiavo.order.service.payment;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.service.card.CardService;
-import br.com.danielschiavo.pedido.model.enums.PaymentStatus;
-import br.com.danielschiavo.pedido.model.valueobject.OrderCard;
-import br.com.danielschiavo.pedido.model.entity.Payment;
+import br.com.danielschiavo.order.model.enums.PaymentStatus;
+import br.com.danielschiavo.order.model.valueobject.OrderCard;
+import br.com.danielschiavo.order.model.entity.Payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

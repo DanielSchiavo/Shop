@@ -1,6 +1,6 @@
-package br.com.danielschiavo.pedido.dto.request.payment;
+package br.com.danielschiavo.order.dto.request.payment;
 
-import br.com.danielschiavo.pedido.model.enums.PaymentMethod;
+import br.com.danielschiavo.order.model.enums.PaymentMethod;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 

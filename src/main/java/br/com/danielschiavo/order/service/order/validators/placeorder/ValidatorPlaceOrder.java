@@ -1,7 +1,7 @@
-package br.com.danielschiavo.pedido.service.order.validators.placeorder;
+package br.com.danielschiavo.order.service.order.validators.placeorder;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
-import br.com.danielschiavo.pedido.model.entity.Order;
+import br.com.danielschiavo.order.model.entity.Order;
 
 public interface ValidatorPlaceOrder {
 	

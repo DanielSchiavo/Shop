@@ -1,8 +1,8 @@
-package br.com.danielschiavo.produto.service.product.validators.registerproduct;
+package br.com.danielschiavo.catalog.service.product.validators.registerproduct;
 
 
-import br.com.danielschiavo.produto.model.entity.Product;
-import br.com.danielschiavo.produto.repository.ProductRepository;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.repository.ProductRepository;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

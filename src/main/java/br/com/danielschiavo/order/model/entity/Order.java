@@ -1,6 +1,6 @@
-package br.com.danielschiavo.pedido.model.entity;
+package br.com.danielschiavo.order.model.entity;
 
-import br.com.danielschiavo.pedido.model.enums.OrderStatus;
+import br.com.danielschiavo.order.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
