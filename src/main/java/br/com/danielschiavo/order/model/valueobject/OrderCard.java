@@ -39,5 +39,6 @@ public class OrderCard {
 		this.expirationDate = card.getExpirationDate();
 		this.numberOfInstallments = numberOfInstallments;
 		this.cardType = card.getCardType();
+
 	}
 }

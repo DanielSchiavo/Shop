@@ -1,10 +1,10 @@
 package br.com.danielschiavo.catalog.service.product;
 
-import br.com.danielschiavo.filestorage.service.FileStorageProdutoService;
 import br.com.danielschiavo.catalog.mapper.ProductMapper;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import br.com.danielschiavo.catalog.repository.ProductRepository;
 import br.com.danielschiavo.catalog.service.product.validators.registerproduct.ValidatorRegisterProduct;
+import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,20 +21,21 @@ public class ProductService {
 	private ProductRepository repository;
 
 	@Autowired
-	private FileStorageProdutoService fileStorageProdutoService;
+	private FileService fileService;
 
 	@Autowired
 	private ProductMapper mapper;
 
 	@Autowired
 	private List<ValidatorRegisterProduct> validators;
+
+	public static final String bucketName = "product";
 	
 	@Transactional
 	public void deleteProduct(Long productId) {
 		Product product = getProductById(productId);
-		List<String> imageNames = product.getAllImageNames();
-		
-		fileStorageProdutoService.deletarImagens(imageNames);
+		product.getAllImageNames().forEach(image -> fileService.deleteFile(bucketName, image));
+
 		repository.delete(product);
 	}
 	

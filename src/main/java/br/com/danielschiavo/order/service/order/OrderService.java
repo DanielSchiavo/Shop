@@ -8,6 +8,7 @@ import java.util.UUID;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.filestorage.model.File;
+import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.order.model.entity.Delivery;
 import br.com.danielschiavo.order.model.entity.Order;
 import br.com.danielschiavo.order.model.entity.Payment;
@@ -18,7 +19,6 @@ import br.com.danielschiavo.order.service.payment.PaymentService;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import br.com.danielschiavo.sales.service.CartService;
-import br.com.danielschiavo.filestorage.service.FileStoragePedidoService;
 import br.com.danielschiavo.order.model.entity.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,13 +49,15 @@ public class OrderService {
     private CustomerService customerService;
 
 	@Autowired
-	private FileStoragePedidoService fileStoragePedidoService;
+	private FileService fileService;
 
 	@Autowired
 	private List<ValidatorPlaceOrder> validators;
 
 	@Autowired
 	private OrderRepository repository;
+
+	private static final String bucketName = "orders";
 
 	public Page<Order> getAllOrdersByCustomerId(Pageable pageable, Long customerId) {
 		return repository.findAllByCustomerId(pageable, customerId);
@@ -114,7 +116,7 @@ public class OrderService {
 			var produto = productService.getProductById(item.getProductId());
 			BigDecimal subTotal = produto.getPrice().multiply(new BigDecimal(item.getQuantity()));
 
-			File file = fileStoragePedidoService.handleImagemPedido(produto.getNameFirstImage(), produto.getId());
+			File file = fileService.copyFile(bucketName, null, ProductService.bucketName, produto.getNameFirstImage());
 
 			item.setPrice(produto.getPrice());
 			item.setProductName(produto.getName());

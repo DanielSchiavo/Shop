@@ -19,8 +19,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
-@RequestMapping("/user/clientes")
+@RequestMapping("/user/customers")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Customer - User", description = "All endpoints related to a Customer, in which only him can use")
 public class CustomerUserController {
@@ -72,11 +74,11 @@ public class CustomerUserController {
 		return ResponseEntity.ok(Response.success("Customer updated successfully!", null));
 	}
 	
-	@PutMapping("/profile-picture")
+	@PutMapping("/profile-picture/{profilePictureName}")
 	@Operation(summary = "Customer update your profile picture")
-	public ResponseEntity<?> updateProfilePicture(@RequestPart(name = "picture", required = true) MultipartFile newPicture) {
+	public ResponseEntity<?> updateProfilePicture(@PathVariable String profilePictureName) {
 		Long customerId = securityService.getCustomerId();
-		Customer customer = customerService.updateProfilePictureById(newPicture, customerId);
+		Customer customer = customerService.updateProfilePictureById(profilePictureName, customerId);
 		return ResponseEntity.ok(Response.success("Profile picture updated successfully!", null));
 	}
 

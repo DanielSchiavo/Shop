@@ -5,7 +5,7 @@ import br.com.danielschiavo.customer.model.enums.RoleName;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.customer.service.customer.validators.registercustomer.ValidatorRegisterCustomer;
 import br.com.danielschiavo.filestorage.model.File;
-import br.com.danielschiavo.filestorage.service.FileStoragePerfilService;
+import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +17,7 @@ import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -30,16 +31,18 @@ public class CustomerService {
 	private CustomerMapper mapper;
 	
 	@Autowired
-	private FileStoragePerfilService fileStorageService;
+	private FileService fileService;
 
 	@Autowired
 	private List<ValidatorRegisterCustomer> validators;
+
+	private static final String bucketName = "profile-picture";
 
 
 	@Transactional
 	public void deleteProfilePictureById(Long clienteId) {
 		Customer customer = repository.getReferenceById(clienteId);
-		fileStorageService.deleteProfilePictureInDisk(customer.getProfilePicture());
+		fileService.deleteFile(bucketName, customer.getProfilePicture());
 
 		customer.setProfilePicture("Default.jpeg");
 		repository.save(customer);
@@ -74,12 +77,12 @@ public class CustomerService {
 	}
 	
 	@Transactional
-	public Customer updateProfilePictureById(MultipartFile newPicture, Long customerId) {
-		Customer customer = repository.getReferenceById(customerId);
+	public Customer updateProfilePictureById(String nameNewPicture, Long customerId) {
+		Customer customer = getCustomerById(customerId);
 
-		File file = fileStorageService.updateProfilePicture(newPicture, customer.getProfilePicture());
+		fileService.deleteFile(bucketName, customer.getProfilePicture());
 
-		customer.setProfilePicture(file.getFileName());
+		customer.setProfilePicture(nameNewPicture);
 		return repository.save(customer);
 	}
 

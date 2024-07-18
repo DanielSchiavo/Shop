@@ -31,6 +31,7 @@ public interface CustomerMapper {
     Customer toEntity(UpdateCustomerRequest request);
     
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @Mapping(target = "authorities", ignore = true)
     void updateCustomer(Customer updatedCustomer, @MappingTarget Customer customer);
     
 }

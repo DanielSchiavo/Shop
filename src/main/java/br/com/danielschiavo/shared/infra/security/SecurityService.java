@@ -1,5 +1,7 @@
 package br.com.danielschiavo.shared.infra.security;
 
+import br.com.danielschiavo.shared.exception.ValidationException;
+import jakarta.validation.Validation;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -26,5 +28,12 @@ public class SecurityService {
     public boolean hasSameId(Long customerId) {
         Long verdadeiroClienteId = (Long) authentication.getPrincipal();
         return verdadeiroClienteId.equals(customerId);
+    }
+
+    public void verifyNeededPermission(String permission) {
+        boolean match = authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_" + permission));
+        if (!match) {
+            throw new ValidationException("User doesn't have the needed permission to access it");
+        }
     }
 }
