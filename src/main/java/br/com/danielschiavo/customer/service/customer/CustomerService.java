@@ -1,5 +1,6 @@
 package br.com.danielschiavo.customer.service.customer;
 
+import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
@@ -63,8 +64,10 @@ public class CustomerService {
 	}
 	
 	@Transactional
-	public Customer registerCustomer(Customer customer) {
-		validators.forEach(v -> v.validate(customer));
+	public Customer registerCustomer(RegisterCustomerRequest request) {
+		validators.forEach(v -> v.validate(request));
+		Customer customer = mapper.toEntity(request);
+		System.out.println(customer);
 		return repository.save(customer);
 	}
 	

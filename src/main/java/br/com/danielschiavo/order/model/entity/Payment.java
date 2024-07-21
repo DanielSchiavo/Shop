@@ -42,8 +42,6 @@ public class Payment {
 	@Column(name = "payment_method")
 	private PaymentMethod paymentMethod;
 
-	private Byte numberOfInstallments;
-
 	@Embedded
 	private OrderCard orderCard;
 

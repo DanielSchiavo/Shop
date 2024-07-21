@@ -39,12 +39,12 @@ public class Order {
 	private Boolean purchasedViaCart;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status_pedido")
+	@Column(name = "order_status")
 	private OrderStatus orderStatus;
 
 	@Getter(value = AccessLevel.NONE)
 	@Setter(value = AccessLevel.NONE)
-	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

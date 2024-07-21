@@ -12,18 +12,10 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AddressRepository extends JpaRepository<Address, Long>{
 	
-	@Query("SELECT e FROM Address e WHERE e.id = :enderecoId AND e.cliente = :clienteId")
-	Optional<Address> findByClienteIdAndEnderecoId(Long clienteId, Long enderecoId);
+	Optional<List<Address>> findAllByCustomerId(Long customerId);
 
-	@Query("SELECT e FROM Address e WHERE e.isDefault = true AND e.cliente = :cliente")
-	Optional<Address> findByClienteAndEnderecoPadraoTrue(Customer customer);
-
-	Optional<Address> findByIdAndCliente(Long idEndereco, Customer customer);
-
-	Optional<List<Address>> findAllByCustomerId(Long clienteId);
-
-	Optional<Address> findByIdAndCustomerId(Long enderecoId, Long clienteId);
+	Optional<Address> findByIdAndCustomerId(Long addressId, Long customerId);
 
 	@Modifying
-	void deleteByIdAndCustomerId(Long enderecoId, Long clienteId);
+	void deleteByIdAndCustomerId(Long addressId, Long customerId);
 }

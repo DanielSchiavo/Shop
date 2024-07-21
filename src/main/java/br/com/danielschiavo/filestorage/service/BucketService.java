@@ -98,6 +98,6 @@ public class BucketService {
     }
 
     public Bucket getBucketByName(String bucketName) {
-        return repository.findByBucketName(bucketName).orElseThrow(() -> new ValidationException("There's no bucket with name: " + bucketName));
+        return repository.findByName(bucketName).orElseThrow(() -> new ValidationException("There's no bucket with name: " + bucketName));
     }
 }

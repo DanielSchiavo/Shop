@@ -15,12 +15,10 @@ import br.com.danielschiavo.order.model.enums.DeliveryType;
 import br.com.danielschiavo.order.repository.OrderRepository;
 import br.com.danielschiavo.catalog.model.entity.Category;
 import br.com.danielschiavo.catalog.model.entity.Product;
-import br.com.danielschiavo.catalog.model.entity.SubCategory;
 import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import br.com.danielschiavo.catalog.model.enums.ProductDeliveryType;
 import br.com.danielschiavo.catalog.repository.CategoryRepository;
 import br.com.danielschiavo.catalog.repository.ProductRepository;
-import br.com.danielschiavo.catalog.repository.SubCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -54,7 +52,6 @@ public class InitializationDevEnv implements CommandLineRunner {
 	private final Product.ProductBuilder productBuilder = Product.builder();
 
 	private final Category.CategoryBuilder categoryBuilder = Category.builder();
-	private final SubCategory.SubCategoryBuilder subCategoryBuilder = SubCategory.builder();
 
 	
 	private final Address.AddressBuilder addressBuilder = Address.builder();
@@ -65,8 +62,6 @@ public class InitializationDevEnv implements CommandLineRunner {
 	private final Order.OrderBuilder orderBuilder = Order.builder();
 
     @Autowired
-    private SubCategoryRepository subCategoriaRepository;
-    @Autowired
     private CardRepository cardRepository;
     @Autowired
     private AddressRepository addressRepository;
@@ -74,23 +69,17 @@ public class InitializationDevEnv implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-		databaseCleaner.clean();
-		
-		insertData();
+//		databaseCleaner.clean();
+//
+//		insertData();
 	}
 
 	public void insertData() {
 		Category software = categoryBuilder.name("Software").build();
 		Category category = categoriaRepository.save(software);
-		SubCategory subCategoryTeclado = subCategoriaRepository.save(subCategoryBuilder.categoryId(category.getId()).name("Teclado").build());
-		SubCategory subCategoryMouse = subCategoriaRepository.save(subCategoryBuilder.categoryId(category.getId()).name("Mouse").build());
-		subCategoriaRepository.save(subCategoryBuilder.categoryId(category.getId()).name("SSD").build());
-		subCategoriaRepository.save(subCategoryBuilder.categoryId(category.getId()).name("Placa de Video").build());
 
 		Category computadores = categoryBuilder.name("Computadores").build();
 		Category category1 = categoriaRepository.save(computadores);
-		subCategoriaRepository.save(subCategoryBuilder.categoryId(category1.getId()).name("Sistema Administrativo").build());
-		subCategoriaRepository.save(subCategoryBuilder.categoryId(category1.getId()).name("Automacao").build());
 
 		 Product produto = productBuilder.id(null)
 									 	  .name("Teclado RedDragon switch vermelho")
@@ -98,7 +87,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 										  .price(BigDecimal.valueOf(200.00))
 										  .quantity(999)
 										  .active(true)
-										  .subCategoryId(subCategoryTeclado.getId()).build();
+										  .categoryId(category1.getId()).build();
 		
 		 ProductDeliveryType productDeliveryType = ProductDeliveryType.builder()
 																   .deliveryType(DeliveryType.PICK_UP_IN_STORE)
@@ -127,7 +116,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 										  .price(BigDecimal.valueOf(200.00))
 										  .quantity(999)
 										  .active(true)
-										  .subCategoryId(subCategoryMouse.getId())
+										  .categoryId(category.getId())
 										  .build();
 		 
 		 ProductDeliveryType productDeliveryType2 = ProductDeliveryType.builder()

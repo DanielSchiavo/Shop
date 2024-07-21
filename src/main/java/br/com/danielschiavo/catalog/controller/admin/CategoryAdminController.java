@@ -1,5 +1,6 @@
 package br.com.danielschiavo.catalog.controller.admin;
 
+import br.com.danielschiavo.catalog.dto.request.UpdateCategoryRequest;
 import br.com.danielschiavo.catalog.model.entity.Category;
 import br.com.danielschiavo.catalog.dto.request.CreateCategoryRequest;
 import br.com.danielschiavo.catalog.service.CategoryService;
@@ -41,15 +42,15 @@ public class CategoryAdminController {
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Create a Category")
 	public ResponseEntity<?> createCategory(@RequestBody @Valid CreateCategoryRequest request) {
-		Category category = service.createCategory(request.name());
-		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Category created successfully!", category));
+		Category category = service.createCategory(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Category created successfully!", null));
 	}
 	
 	@PutMapping("/{categoryId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Update a Category")
-	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long categoryId, @RequestBody @NotNull CreateCategoryRequest request) {
-		Category category = service.updateCategory(categoryId, request.name());
+	public ResponseEntity<?> alterarNomeCategoriaPorId(@PathVariable Long categoryId, @RequestBody @NotNull UpdateCategoryRequest request) {
+		Category category = service.updateCategory(categoryId, request);
 
 		return ResponseEntity.status(HttpStatus.OK).body(Response.success("Category updated successfully", null));
 	}

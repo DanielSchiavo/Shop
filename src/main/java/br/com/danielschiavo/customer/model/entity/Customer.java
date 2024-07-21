@@ -74,7 +74,7 @@ public class Customer implements UserDetails {
 	
     @Getter(value = AccessLevel.NONE)
     @Setter(value = AccessLevel.NONE)
-	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Singular
 	private final Set<Role> roles = new HashSet<>();
 

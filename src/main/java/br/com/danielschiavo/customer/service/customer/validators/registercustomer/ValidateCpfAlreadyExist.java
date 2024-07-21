@@ -1,5 +1,6 @@
 package br.com.danielschiavo.customer.service.customer.validators.registercustomer;
 
+import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.shared.exception.ValidationException;
@@ -14,9 +15,9 @@ public class ValidateCpfAlreadyExist implements ValidatorRegisterCustomer {
     private CustomerRepository repository;
 
     @Override
-    public void validate(Customer customer) {
+    public void validate(RegisterCustomerRequest request) {
         Customer probe = new Customer();
-        probe.setCpf(customer.getCpf());
+        probe.setCpf(request.cpf());
 
         Example<Customer> example = Example.of(probe);
 

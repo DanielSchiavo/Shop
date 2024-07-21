@@ -24,16 +24,16 @@ public class CardService {
 	
 	@Transactional
 	public void deleteCardById(Long cardId, Long customerId) {
-		repository.deleteByIdAndClienteId(cardId, customerId);
+		repository.deleteByIdAndCustomerId(cardId, customerId);
 	}
 	
 	public List<Card> getAllCardsByCustomerId(Long customerId) {
-		return repository.findAllByClienteId(customerId)
+		return repository.findAllByCustomerId(customerId)
 				.orElseThrow(() -> new ValidationException("Customer doesn't have any registered card"));
 	}
 	
 	public Card getCardByIdAndCustomerId(Long cardId, Long customerId) {
-		return repository.findByIdAndClienteId(cardId, customerId)
+		return repository.findByIdAndCustomerId(cardId, customerId)
 				.orElseThrow(() -> new ValidationException("Customer doesn't have a card with id: " + cardId));
 	}
 

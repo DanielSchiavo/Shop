@@ -64,7 +64,7 @@ public class Product {
     @Builder.Default
 	private Set<ProductFile> productFiles = new HashSet<>();
     
-	private Long subCategoryId;
+	private Long categoryId;
 
 	
 	

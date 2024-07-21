@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	Page<Product> findAll(Pageable pageable);
 
-	Page<Product> findAllByAtivoTrue(Pageable pageable);
+	Page<Product> findAllByActiveTrue(Pageable pageable);
 
 	@Query("SELECT f FROM Product p JOIN p.productFiles f WHERE p.id = :productId AND f.position = :position")
 	Optional<ProductFile> findArquivosProdutoByProdutoIdAndPosicao(@Param("position") Integer position,
@@ -30,7 +30,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	@Query("SELECT p FROM Product p WHERE p.id IN :ids AND p.active = true")
 	List<Product> findAllByIdAndAtivoTrue(@Param("ids") List<Long> ids);
 	
-	Optional<Product> findByIdAndAtivoTrue(Long id);
+	Optional<Product> findByIdAndActiveTrue(Long id);
 
 	@Query("SELECT p FROM Product p WHERE LOWER(p.name) = LOWER(:name)")
 	Optional<Product> findByNomeLowerCase(String name);

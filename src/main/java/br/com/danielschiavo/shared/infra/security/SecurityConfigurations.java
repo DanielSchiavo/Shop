@@ -26,10 +26,10 @@ public class SecurityConfigurations {
 	            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	            .authorizeHttpRequests(req -> {
         			req.requestMatchers("/admin/**").hasRole("ADMIN");
-        			req.requestMatchers("/cliente/**").hasRole("USER");
-        			req.requestMatchers("/publico/**").permitAll();
+					req.requestMatchers("/user/customers/register").anonymous();
+					req.requestMatchers("/user/**").hasRole("USER");
+					req.requestMatchers("/public/**").permitAll();
         			req.requestMatchers("/auth/login").anonymous();
-        			req.requestMatchers("/publico/cadastrar/cliente").anonymous();
         			req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
 	                req.anyRequest().authenticated();
 	            })
@@ -42,9 +42,9 @@ public class SecurityConfigurations {
 		return configuration.getAuthenticationManager();
 	}
 	
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+//	@Bean
+//	PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
 	
 }

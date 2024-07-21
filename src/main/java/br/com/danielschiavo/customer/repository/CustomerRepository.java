@@ -14,15 +14,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>{
 	
 	Page<Customer> findAll(Pageable pageable);
 	
-	@Query("SELECT c FROM Cliente c WHERE c.id = :id")
-	UserDetails buscarPorId(Long id);
-
-	@Query("SELECT c FROM Cliente c WHERE c.email = :login OR c.cellphoneNumber = :login OR c.cpf = :login")
-	Optional<UserDetails> findByEmailOrCelularOrCpf(String login);
+	@Query("SELECT c FROM Customer c WHERE c.email = :login OR c.cellphoneNumber = :login OR c.cpf = :login")
+	Optional<UserDetails> findByEmailOrCellphoneNumberOrCpf(String login);
 
 	Optional<Customer> findByCpf(String number);
 
-	@Query("SELECT c.name, c.surname, c.profilePicture FROM Cliente c WHERE c.id = :id")
+	@Query("SELECT c.name, c.surname, c.profilePicture FROM Customer c WHERE c.id = :id")
 	Optional<Customer> findByIdHomePage(Long id);
 
 }

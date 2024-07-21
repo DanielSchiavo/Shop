@@ -57,8 +57,7 @@ public class CustomerUserController {
 	@PostMapping("/register")
 	@Operation(summary = "Register customer")
 	public ResponseEntity<?> registerCustomer(@RequestBody @Valid RegisterCustomerRequest request) {
-		Customer registerCustomer = mapper.toEntity(request);
-		Customer customer = customerService.registerCustomer(registerCustomer);
+		Customer customer = customerService.registerCustomer(request);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Customer registred successfully!", null));
 

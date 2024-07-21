@@ -37,6 +37,7 @@ public class SecurityFilter extends OncePerRequestFilter{
 			Long clienteId = tokenService.getClienteId();
 			String email = tokenService.getEmail();
 			List<SimpleGrantedAuthority> roles = tokenService.getRoles();
+			System.out.println("TESTEr" + roles);
 
 			var authentication = new JwtAuthenticationToken(clienteId, null, tokenComBearer, roles);
 			SecurityContextHolder.getContext().setAuthentication(authentication);

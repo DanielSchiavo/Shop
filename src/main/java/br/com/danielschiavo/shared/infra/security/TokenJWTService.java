@@ -3,6 +3,7 @@ package br.com.danielschiavo.shared.infra.security;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,6 @@ public class TokenJWTService {
 	@Value("${api.security.token.issuer}")
 	private String issuer;
 
-	private Algorithm algorithm = Algorithm.HMAC256(secret);
-
 	private DecodedJWT decodedJWT;
 	
 	public String generateToken(Customer customer) {
@@ -47,7 +46,7 @@ public class TokenJWTService {
 		        .withClaim("cellphoneNumber", customer.getCellphoneNumber())
 				.withClaim("roles", roles)
 		        .withExpiresAt(expirationDate())
-		        .sign(algorithm);
+		        .sign(Algorithm.HMAC256(secret));
 		} catch (JWTCreationException exception){
 			throw new ValidationException("Erro ao gerar token de autenticacao");
 		}
@@ -55,7 +54,7 @@ public class TokenJWTService {
 	
 	public TokenJWTService decodeJWT(String tokenJWT) {
 		try {
-		    decodedJWT = JWT.require(algorithm)
+		    decodedJWT = JWT.require(Algorithm.HMAC256(secret))
 		        .withIssuer(issuer)
 		        .build()
 		        .verify(tokenJWT);
@@ -79,7 +78,7 @@ public class TokenJWTService {
 	}
 
 	public List<SimpleGrantedAuthority> getRoles() {
-		List<SimpleGrantedAuthority> roles = decodedJWT.getClaim("roles").asList(String.class).stream().map(SimpleGrantedAuthority::new).toList();
+		List<SimpleGrantedAuthority> roles = new ArrayList<>(decodedJWT.getClaim("roles").asList(String.class).stream().map(r -> new SimpleGrantedAuthority("ROLE_" + r)).toList());
 		roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 		return roles;
 	}
