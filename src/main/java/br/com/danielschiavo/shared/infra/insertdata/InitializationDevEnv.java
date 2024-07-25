@@ -11,7 +11,7 @@ import br.com.danielschiavo.customer.repository.CardRepository;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.customer.repository.AddressRepository;
 import br.com.danielschiavo.order.model.entity.Order;
-import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.delivery.model.enums.DeliveryType;
 import br.com.danielschiavo.order.repository.OrderRepository;
 import br.com.danielschiavo.catalog.model.entity.Category;
 import br.com.danielschiavo.catalog.model.entity.Product;

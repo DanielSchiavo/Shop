@@ -18,4 +18,6 @@ public interface AddressRepository extends JpaRepository<Address, Long>{
 
 	@Modifying
 	void deleteByIdAndCustomerId(Long addressId, Long customerId);
+
+    Optional<Address> findByCustomerIdAndIsDefault(Long customerId, boolean isDefault);
 }

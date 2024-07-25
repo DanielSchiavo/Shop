@@ -1,11 +1,11 @@
 package br.com.danielschiavo.sales.controller;
 
+import br.com.danielschiavo.sales.dto.response.ShowCartResponse;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
-import br.com.danielschiavo.sales.dto.request.CartItemRequest;
+import br.com.danielschiavo.sales.dto.request.AddCartItemRequest;
 import br.com.danielschiavo.sales.mapper.CartMapper;
 import br.com.danielschiavo.sales.model.entity.Cart;
-import br.com.danielschiavo.sales.model.entity.CartItem;
 import br.com.danielschiavo.sales.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +35,10 @@ public class CartController {
 	@Autowired
 	private SecurityService securityService;
 
-	@Autowired
-	private CartMapper mapper;
 
 	@DeleteMapping("/products/{productsId}")
 	@Operation(summary = "Deletes one or more products from the cart")
-	public ResponseEntity<?> removeProductFromCart(@PathVariable Long[] productsId) {
+	public ResponseEntity<?> removeProductFromCart(@PathVariable Long productsId) {
 		Long customerId = securityService.getCustomerId();
 		service.removeProductFromCart(customerId, productsId);
 		return ResponseEntity.ok().body(Response.success("Removal successfully completed!", null));
@@ -50,26 +48,16 @@ public class CartController {
 	@Operation(summary = "Gets all products that are in the customer's cart")
 	public ResponseEntity<?> getCustomerCartByIdToken() {
 		Long customerId = securityService.getCustomerId();
-		Cart cart = service.getCartByCustomerId(customerId);
+		ShowCartResponse response = service.getCartByCustomerId(customerId);
 
-		return ResponseEntity.ok(Response.success("Successfully retrieved cart products", mapper.toDto(cart)));
+		return ResponseEntity.ok(Response.success("Successfully retrieved cart products", response));
 	}
 
 	@PostMapping
 	@Operation(summary = "Adds a product to the cart, if the customer does not have a cart, it also creates one automatically")
-	public ResponseEntity<?> addProductToCart(@RequestBody @Valid CartItemRequest request) {
+	public ResponseEntity<?> addProductToCart(@RequestBody @Valid AddCartItemRequest request) {
 		Long customerId = securityService.getCustomerId();
-		CartItem cartItem = mapper.toEntity(request);
-		Cart cart = service.addProductToCart(customerId, cartItem);
+		service.addProductToCart(customerId, request);
 		return ResponseEntity.ok().body(Response.success("Product added to cart!", null));
-	}
-
-	@PutMapping
-	@Operation(summary = "Sets the quantity of a specific product that is in the cart")
-	public ResponseEntity<?> setProductQuantityInCart(@RequestBody @Valid CartItemRequest request) {
-		Long customerId = securityService.getCustomerId();
-		CartItem setItem = mapper.toEntity(request);
-		service.setProductQuantityInCart(customerId, setItem);
-		return ResponseEntity.ok(Response.success("Successfully changed!", null));
 	}
 }

@@ -7,9 +7,13 @@ import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import org.mapstruct.*;
 
+import java.util.List;
+
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper extends ProductFileMapper, ProductDeliveryTypeMapper {
+
+	Product toEntity(DetailProductResponse response);
 
 	@BeanMapping(builder = @Builder(disableBuilder = true))
 	@Mapping(target = "deliveryTypes", ignore = true)
@@ -24,7 +28,7 @@ public interface ProductMapper extends ProductFileMapper, ProductDeliveryTypeMap
 	@Mapping(target = "deliveryTypes", ignore = true)
 	@Mapping(target = "productFiles", ignore = true)
 	@BeanMapping(builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	void updateProduct(Product updatedProduct, @MappingTarget Product product);
+	void updateProduct(UpdateProductRequest request, @MappingTarget Product product);
 
 	@AfterMapping
 	default void toEntity(@MappingTarget Product product, UpdateProductRequest request) {
@@ -32,9 +36,11 @@ public interface ProductMapper extends ProductFileMapper, ProductDeliveryTypeMap
 		mapDeliveryTypesToEntity(product, request.deliveryTypes());
 	}
 
-	ShowProductsResponse toShowProducts(Product produto);
+	ShowProductsResponse toShowProducts(Product product);
 
-	DetailProductResponse toDetailProduct(Product produto);
+	List<ShowProductsResponse> toShowProducts(List<Product> products);
+
+	DetailProductResponse toDetailProduct(Product product);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 	Product toEntity(UpdateProductRequest request);

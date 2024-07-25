@@ -2,9 +2,13 @@ package br.com.danielschiavo.catalog.controller.admin;
 
 import br.com.danielschiavo.catalog.dto.request.UpdateProductRequest;
 import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
+import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
 import br.com.danielschiavo.catalog.mapper.ProductMapper;
 import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
+import br.com.danielschiavo.catalog.service.CategoryService;
 import br.com.danielschiavo.catalog.service.product.ProductService;
+import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.shared.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -16,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("/admin/products")
 @Tag(name = "Product - Admin", description = "All endpoints related with Products, for use by administrators")
@@ -25,13 +31,17 @@ public class ProductAdminController {
 	private ProductService service;
 
 	@Autowired
-	private ProductMapper mapper;
+	private FileService fileService;
+
+	@Autowired
+	private CategoryService categoryService;
 
 	@DeleteMapping("/{productId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Delete a Product with the provided id")
 	public ResponseEntity<?> deleteProduct(@PathVariable @NotNull Long productId) {
-		service.deleteProduct(productId);
+		Set<ProductFile> productFiles = service.deleteProduct(productId);
+		productFiles.forEach(image -> fileService.deleteFile(ProductService.bucketName, image.getName()));
 		return ResponseEntity.ok(Response.success("Product deleted successfully!", null));
 	}
 
@@ -41,20 +51,20 @@ public class ProductAdminController {
 	public ResponseEntity<?> registerProduct(
 			@RequestBody @Valid RegisterProductRequest request,
 			UriComponentsBuilder uriBuilder) {
-		Product registerProduct = mapper.toEntity(request);
-		Product product = service.registerProduct(registerProduct);
-		var uri = uriBuilder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
+		categoryService.validateCategoryExists(request.categoryId());
+		DetailProductResponse response = service.registerProduct(request);
+		var uri = uriBuilder.path("/products/{id}").buildAndExpand(response.id()).toUri();
 		return ResponseEntity.created(uri).body(Response.success("Product registered successfully!", null));
 	}
 
 	@PutMapping("/{productId}")
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Update a Product")
-	public ResponseEntity<?> alterarProdutoPorId(
+	public ResponseEntity<?> updateProductById(
 			@PathVariable Long productId,
 			@RequestBody UpdateProductRequest request) {
-		Product updateProduct = mapper.toEntity(request);
-		Product product = service.updateProduct(productId, updateProduct);
+		categoryService.validateCategoryExists(request.categoryId());
+		DetailProductResponse response = service.updateProduct(productId, request);
 			
 		return ResponseEntity.ok(Response.success("Product updated successfully!", null));
 	}

@@ -3,9 +3,11 @@ package br.com.danielschiavo.customer.controller.user;
 
 import br.com.danielschiavo.customer.dto.request.customer.UpdateCustomerRequest;
 import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
+import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
+import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,32 +34,31 @@ public class CustomerUserController {
 
 	@Autowired
 	private SecurityService securityService;
+    @Autowired
+    private FileService fileService;
 
-	@Autowired
-	private CustomerMapper mapper;
-	
 	@GetMapping("/home-page")
 	@Operation(summary = "Show Customer data for home page")
 	public ResponseEntity<?> getCustomerHomePage() {
 		Long customerId = securityService.getCustomerId();
-		Customer customer = customerService.getCustomerForHomePageById(customerId);
+		DetailCustomerResponse response = customerService.getCustomerForHomePageById(customerId);
 		
-		return ResponseEntity.ok(Response.success("Success in recovering customer data for home page", mapper.toHomePage(customer)));
+		return ResponseEntity.ok(Response.success("Success in recovering customer data for home page", response));
 	}
 
 	@GetMapping
 	@Operation(summary = "Show all Customer data")
 	public ResponseEntity<?> getCustomer() {
 		Long customerId = securityService.getCustomerId();
-		Customer customer = customerService.getCustomerById(customerId);
+		DetailCustomerResponse response = customerService.getCustomerById(customerId);
 
-		return ResponseEntity.ok(Response.success("Success in recovering customer data", mapper.toDto(customer)));
+		return ResponseEntity.ok(Response.success("Success in recovering customer data", response));
 	}
 	
 	@PostMapping("/register")
 	@Operation(summary = "Register customer")
 	public ResponseEntity<?> registerCustomer(@RequestBody @Valid RegisterCustomerRequest request) {
-		Customer customer = customerService.registerCustomer(request);
+		DetailCustomerResponse response = customerService.registerCustomer(request);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Customer registred successfully!", null));
 
@@ -67,9 +68,8 @@ public class CustomerUserController {
 	@Operation(summary = "Customer update your own data")
 	public ResponseEntity<?> updateCustomer(@RequestBody @Valid UpdateCustomerRequest request) {
 		Long customerId = securityService.getCustomerId();
-		Customer updatedCustomer = mapper.toEntity(request);
 
-		Customer customer = customerService.updateCustomerById(customerId, updatedCustomer);
+		DetailCustomerResponse response = customerService.updateCustomerById(customerId, request);
 		return ResponseEntity.ok(Response.success("Customer updated successfully!", null));
 	}
 	
@@ -77,7 +77,8 @@ public class CustomerUserController {
 	@Operation(summary = "Customer update your profile picture")
 	public ResponseEntity<?> updateProfilePicture(@PathVariable String profilePictureName) {
 		Long customerId = securityService.getCustomerId();
-		Customer customer = customerService.updateProfilePictureById(profilePictureName, customerId);
+		String oldProfilePicture = customerService.updateProfilePictureById(profilePictureName, customerId);
+		fileService.deleteFile(CustomerService.bucketName, oldProfilePicture);
 		return ResponseEntity.ok(Response.success("Profile picture updated successfully!", null));
 	}
 
@@ -85,7 +86,8 @@ public class CustomerUserController {
 	@Operation(summary = "Customer delete your profile picture")
 	public ResponseEntity<?> deleteProfilePicture() {
 		Long customerId = securityService.getCustomerId();
-		customerService.deleteProfilePictureById(customerId);
+		String oldProfilePicture = customerService.deleteProfilePictureById(customerId);
+		fileService.deleteFile(CustomerService.bucketName, oldProfilePicture);
 		return ResponseEntity.ok().body(Response.success("Profile picture deleted successfully", null));
 	}
 }

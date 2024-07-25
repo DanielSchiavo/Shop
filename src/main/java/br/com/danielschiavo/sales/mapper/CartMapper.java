@@ -1,6 +1,6 @@
 package br.com.danielschiavo.sales.mapper;
 
-import br.com.danielschiavo.sales.dto.request.CartItemRequest;
+import br.com.danielschiavo.sales.dto.request.AddCartItemRequest;
 import br.com.danielschiavo.sales.model.entity.Cart;
 import br.com.danielschiavo.sales.dto.response.ShowCartResponse;
 import br.com.danielschiavo.sales.model.entity.CartItem;
@@ -12,8 +12,8 @@ import org.mapstruct.Mapping;
 public interface CartMapper {
 
 	@Mapping(target = "cartItems", source = "cartItems")
-	ShowCartResponse toDto(Cart cart);
+	ShowCartResponse toDtoShowCart(Cart cart);
 
-	CartItem toEntity(CartItemRequest request);
+	CartItem toEntity(AddCartItemRequest request);
 	
 }

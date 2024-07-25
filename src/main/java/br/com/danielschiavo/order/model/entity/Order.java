@@ -34,12 +34,13 @@ public class Order {
 
 	private Long customerId;
 
-	private LocalDateTime orderDate;
+	private LocalDateTime orderTime;
+
+	private LocalDateTime expiryTime;
 
 	private Boolean purchasedViaCart;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "order_status")
 	private OrderStatus orderStatus;
 
 	@Getter(value = AccessLevel.NONE)
@@ -47,13 +48,7 @@ public class Order {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	private Payment payment;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	private Delivery delivery;
-
-	
 	
 	public List<OrderItem> getOrderItems() {
 		return Collections.unmodifiableList(this.orderItems);

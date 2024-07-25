@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -37,8 +36,7 @@ public class Cart {
 	
 	private BigDecimal totalValue;
 	
-	@Column(name = "update_date_time")
-	private LocalDateTime updateDateTime;
+	private LocalDateTime lastUpdate;
 	
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@Builder.Default

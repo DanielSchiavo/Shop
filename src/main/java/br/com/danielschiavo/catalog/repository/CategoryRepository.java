@@ -33,4 +33,6 @@ public interface CategoryRepository extends JpaRepository <Category, Long> {
         SELECT * FROM CategoryHierarchy;""",
             nativeQuery = true)
     List<Category> getCategoryByIdAndAllSubCategories(Long id);
+
+    Optional<List<Category>> findByNameStartingWith(String categoryName);
 }

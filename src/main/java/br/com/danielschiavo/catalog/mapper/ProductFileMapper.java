@@ -1,6 +1,6 @@
 package br.com.danielschiavo.catalog.mapper;
 
-import br.com.danielschiavo.catalog.dto.AddProductFileRequest;
+import br.com.danielschiavo.catalog.dto.request.AddProductFileRequest;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import org.mapstruct.Mapper;

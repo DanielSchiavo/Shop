@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.sales.model.entity.Cart;
+import br.com.danielschiavo.sales.model.entity.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,9 @@ public interface CartRepository extends JpaRepository <Cart, Long>{
 	Optional<List<Cart>> findAllCartsByProductId(@Param("productId") Long productId);
 
 	Optional<Cart> findByCustomerId(Long customerId);
+
+	Optional<List<CartItem>> findByCustomerIdAndCartItemsProductId(Long customerId, Long productId);
+
+	@Query("DELETE FROM CartItem ci WHERE ci.cart.customerId = :customerId AND ci.productId IN :productId")
+	void deleteCartItemByCustomerIdAndProductId(Long customerId, List<Long> productId);
 }

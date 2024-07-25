@@ -1,5 +1,6 @@
 package br.com.danielschiavo.customer.dto.request.address;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,6 +10,7 @@ import lombok.Builder;
 public record RegisterAddressRequest(
 		@NotBlank
 		@Size(min=8, max=8)
+		@JsonProperty("postal_code")
 		String postalCode,
 		@NotBlank
 		String street,
@@ -23,6 +25,7 @@ public record RegisterAddressRequest(
 		@Size(min=2, max=2)
 		String state,
 		@NotNull
+		@JsonProperty("is_default")
 		Boolean isDefault
 		) {
 

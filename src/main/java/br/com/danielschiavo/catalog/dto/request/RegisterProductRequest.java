@@ -3,8 +3,8 @@ package br.com.danielschiavo.catalog.dto.request;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import br.com.danielschiavo.order.model.enums.DeliveryType;
-import br.com.danielschiavo.catalog.dto.AddProductFileRequest;
+import br.com.danielschiavo.delivery.model.enums.DeliveryType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -24,8 +24,9 @@ public record RegisterProductRequest(
 		@NotNull
 		Boolean active,
 		@NotNull
-		Long subCategoryId,
+		Long categoryId,
 		@NotNull
+		@JsonProperty("delivery_types")
 		Set<DeliveryType> deliveryTypes,
 		@NotNull
 		Set<AddProductFileRequest> files

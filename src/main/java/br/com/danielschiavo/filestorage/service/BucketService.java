@@ -30,17 +30,8 @@ public class BucketService {
 
     public Bucket createBucket(Long customerId, CreateBucketRequest request) {
         Bucket createBucket = mapper.toEntity(request, customerId);
-        Path bucketDirectory = root.resolve(createBucket.getName());
 
         createBucket.setCreatedByAdminId(customerId);
-        createBucket.setPath(bucketDirectory.toString());
-        try {
-            if (!Files.exists(bucketDirectory)) {
-                Files.createDirectories(bucketDirectory);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         return repository.save(createBucket);
     }
@@ -62,9 +53,9 @@ public class BucketService {
         Bucket bucket = getBucketById(bucketId);
 
         Path oldBucketDirectory = root.resolve(bucket.getName());
-        Path newBucketDirectory = root.resolve(request.bucketName());
+        Path newBucketDirectory = root.resolve(request.name());
 
-        bucket.setName(request.bucketName());
+        bucket.setName(request.name());
         try {
             Files.move(oldBucketDirectory, newBucketDirectory);
         } catch (IOException e) {

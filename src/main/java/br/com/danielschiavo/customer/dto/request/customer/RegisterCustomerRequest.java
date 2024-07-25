@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import br.com.danielschiavo.customer.dto.request.address.RegisterAddressRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ public record RegisterCustomerRequest(
 		@NotNull
 		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 		@Past
+		@JsonProperty("birth_date")
 		LocalDate birthDate,
 		@NotBlank
 		@Email
@@ -31,7 +33,9 @@ public record RegisterCustomerRequest(
 		String password,
 		@NotBlank
 		@Size(min=11, max=11)
+		@JsonProperty("cellphone_number")
 		String cellphoneNumber,
+		@JsonProperty("profile_picture")
 		String profilePicture,
 		RegisterAddressRequest address
 		) {

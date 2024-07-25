@@ -1,4 +1,6 @@
 package br.com.danielschiavo.filestorage.dto.request;
 
-public class CreateBucketRequest {
+public record CreateBucketRequest(
+
+) {
 }

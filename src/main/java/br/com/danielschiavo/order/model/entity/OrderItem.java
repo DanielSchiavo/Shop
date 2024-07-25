@@ -36,7 +36,7 @@ public class OrderItem {
 	
 	private Integer quantity;
 	
-	private String productName;
+	private String name;
 	
 	private String firstImage;
 	

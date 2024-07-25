@@ -1,9 +1,9 @@
 package br.com.danielschiavo.order.controller;
 
-import br.com.danielschiavo.order.dto.response.order.ShowOrderResponse;
+import br.com.danielschiavo.order.dto.response.DetailOrderResponse;
 import br.com.danielschiavo.order.mapper.OrderMapper;
 import br.com.danielschiavo.order.model.entity.Order;
-import br.com.danielschiavo.order.service.order.OrderService;
+import br.com.danielschiavo.order.service.OrderService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,32 +32,26 @@ public class OrderAdminController {
 	@Autowired
 	private OrderService service;
 
-	@Autowired
-	private OrderMapper mapper;
-	
 	@GetMapping("/{customerId}")
 	@Operation(summary = "Get all orders by customer id")
 	public ResponseEntity<?> getAllOrdersByCustomerId(@PathVariable Long customerId, Pageable pageable) {
-		Page<Order> pageOrders = service.getAllOrdersByCustomerId(pageable, customerId);
+		Page<DetailOrderResponse> pageOrders = service.getAllOrdersByCustomerId(pageable, customerId);
 
-		List<ShowOrderResponse> showOrderList = pageOrders.getContent().stream().map(mapper::toDto).collect(Collectors.toList());
-		var resposta = new PageImpl<>(showOrderList, pageOrders.getPageable(), pageOrders.getTotalElements());
-
-		return ResponseEntity.ok(Response.success("Success recovering all orders of the costumer", resposta));
+		return ResponseEntity.ok(Response.success("Success recovering all orders of the costumer", pageOrders));
 	}
 
 	@GetMapping("/{orderId}")
 	@Operation(summary = "Get all data from a specific order by id")
 	public ResponseEntity<?> getOrderById(@PathVariable UUID orderId) {
-		Order order = service.getOrderById(orderId);
+		DetailOrderResponse order = service.getOrderById(orderId);
 
-		return ResponseEntity.ok(Response.success("Success recovering order", mapper.toDto(order)));
+		return ResponseEntity.ok(Response.success("Success recovering order", order));
 	}
 
 	@GetMapping
 	@Operation(summary = "Get all orders realized on store")
 	public ResponseEntity<?> getAllOrders(Pageable pageable) {
-		Page<Order> pageOrders = service.getAllOrders(pageable);
+		Page<DetailOrderResponse> pageOrders = service.getAllOrders(pageable);
 
 		return ResponseEntity.ok(Response.success("Success recovering all orders", pageOrders));
 	}

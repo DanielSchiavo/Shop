@@ -2,6 +2,7 @@ package br.com.danielschiavo.catalog.mapper;
 
 import br.com.danielschiavo.catalog.dto.request.CreateCategoryRequest;
 import br.com.danielschiavo.catalog.dto.request.UpdateCategoryRequest;
+import br.com.danielschiavo.catalog.dto.response.DetailCategoryResponse;
 import br.com.danielschiavo.catalog.model.entity.Category;
 import org.mapstruct.*;
 
@@ -11,6 +12,10 @@ public interface CategoryMapper {
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     Category toEntity(CreateCategoryRequest request);
 
+    Category toEntity(DetailCategoryResponse response);
+
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     void update(@MappingTarget Category category, UpdateCategoryRequest request);
+
+    DetailCategoryResponse toDetailCategory(Category category);
 }

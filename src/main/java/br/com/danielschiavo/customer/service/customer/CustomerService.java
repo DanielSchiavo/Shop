@@ -1,25 +1,26 @@
 package br.com.danielschiavo.customer.service.customer;
 
 import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
+import br.com.danielschiavo.customer.dto.request.customer.UpdateCustomerRequest;
+import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
+import br.com.danielschiavo.customer.dto.response.customer.ShowCustomersResponse;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.customer.service.customer.validators.registercustomer.ValidatorRegisterCustomer;
-import br.com.danielschiavo.filestorage.model.File;
-import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Setter
@@ -30,63 +31,70 @@ public class CustomerService {
 	
 	@Autowired
 	private CustomerMapper mapper;
-	
-	@Autowired
-	private FileService fileService;
 
 	@Autowired
 	private List<ValidatorRegisterCustomer> validators;
 
-	private static final String bucketName = "profile-picture";
+	public static final String bucketName = "profile-picture", directory = "directory";
 
 
 	@Transactional
-	public void deleteProfilePictureById(Long clienteId) {
-		Customer customer = repository.getReferenceById(clienteId);
-		fileService.deleteFile(bucketName, customer.getProfilePicture());
+	public String deleteProfilePictureById(Long customerId) {
+		Customer customer = repository.findById(customerId)
+				.orElseThrow(() -> new ValidationException("Could not delete profile picture, contact an administrator"));
 
+		String oldProfilePicture = customer.getProfilePicture();
 		customer.setProfilePicture("Default.jpeg");
 		repository.save(customer);
+		return oldProfilePicture;
 	}
 
-	public Page<Customer> getAllCustomers(Pageable pageable) {
-		return repository.findAll(pageable);
+	public Page<ShowCustomersResponse> getAllCustomers(Pageable pageable) {
+		Page<Customer> all = repository.findAll(pageable);
+
+		List<ShowCustomersResponse> list = all.getContent().stream()
+				.map(mapper::toShowCustomers).collect(Collectors.toList());
+
+		return new PageImpl<>(list, pageable, all.getTotalElements());
 	}
 
-	public Customer getCustomerForHomePageById(Long customerId) {
-		return repository.findByIdHomePage(customerId)
+	public DetailCustomerResponse getCustomerForHomePageById(Long customerId) {
+		Customer customer = repository.findByIdHomePage(customerId)
 				.orElseThrow(() -> new ValidationException("There's no customer with id: " + customerId));
+		return mapper.toDetailCustomer(customer);
 	}
 	
-	public Customer getCustomerById(Long customerId) {
-		return repository.findById(customerId)
+	public DetailCustomerResponse getCustomerById(Long customerId) {
+		Customer customer = repository.findById(customerId)
 				.orElseThrow(() -> new ValidationException("There's no customer with id: " + customerId));
+		return mapper.toDetailCustomer(customer);
 	}
 	
 	@Transactional
-	public Customer registerCustomer(RegisterCustomerRequest request) {
+	public DetailCustomerResponse registerCustomer(RegisterCustomerRequest request) {
 		validators.forEach(v -> v.validate(request));
 		Customer customer = mapper.toEntity(request);
-		System.out.println(customer);
-		return repository.save(customer);
+		return mapper.toDetailCustomer(repository.save(customer));
 	}
 	
 	@Transactional
-	public Customer updateCustomerById(Long customerId, Customer updatedCustomer) {
-		Customer customer = repository.getReferenceById(customerId);
-		mapper.updateCustomer(updatedCustomer, customer);
+	public DetailCustomerResponse updateCustomerById(Long customerId, UpdateCustomerRequest request) {
+		Customer customer = repository.findById(customerId)
+				.orElseThrow(() -> new ValidationException("Could not update, contact an administrator"));
+		mapper.updateCustomer(request, customer);
 		
-		return repository.save(customer);
+		return mapper.toDetailCustomer(repository.save(customer));
 	}
 	
 	@Transactional
-	public Customer updateProfilePictureById(String nameNewPicture, Long customerId) {
-		Customer customer = getCustomerById(customerId);
+	public String updateProfilePictureById(String nameNewPicture, Long customerId) {
+		Customer customer = repository.findById(customerId)
+				.orElseThrow(() -> new ValidationException("Could not update profile picture, contact an administrator"));
 
-		fileService.deleteFile(bucketName, customer.getProfilePicture());
-
+		String oldProfilePicture = customer.getProfilePicture();
 		customer.setProfilePicture(nameNewPicture);
-		return repository.save(customer);
+
+		return oldProfilePicture;
 	}
 
 	public void addRole(Long custumerId, RoleName roleName) {

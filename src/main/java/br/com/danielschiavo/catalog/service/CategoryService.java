@@ -3,6 +3,8 @@ package br.com.danielschiavo.catalog.service;
 import br.com.danielschiavo.catalog.dto.request.CreateCategoryRequest;
 import br.com.danielschiavo.catalog.dto.request.UpdateCategoryRequest;
 import br.com.danielschiavo.catalog.dto.response.CategoryDto;
+import br.com.danielschiavo.catalog.dto.response.DetailCategoryResponse;
+import br.com.danielschiavo.catalog.exception.CategoryNotFoundException;
 import br.com.danielschiavo.catalog.mapper.CategoryMapper;
 import br.com.danielschiavo.catalog.model.entity.Category;
 import br.com.danielschiavo.catalog.repository.CategoryRepository;
@@ -13,10 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -27,65 +26,62 @@ public class CategoryService {
 
 	@Autowired
 	private CategoryMapper mapper;
-	
+
 	@Transactional
 	public void deleteCategoryById(Long categoryId) {
+		if (!repository.existsById(categoryId)) {
+			throw new ValidationException("Unable to delete category with id " + categoryId + " because it does not exist");
+		}
 		Category category = repository.getReferenceById(categoryId);
 		repository.delete(category);
 	}
 
 	@Transactional
-	public Category createCategory(CreateCategoryRequest request) {
+	public DetailCategoryResponse createCategory(CreateCategoryRequest request) {
 		repository.findByNomeLowerCase(request.name())
-				.ifPresent(c -> {throw new ValidationException("A category with name: " + request.name() + " already exist");});
+				.ifPresent(c -> {throw new ValidationException("A category with name " + c.getName() + " already exists");});
 
-		Category category = mapper.toEntity(request);
+		Category createCategory = mapper.toEntity(request);
 
-		if (request.parentCategoryId() != null) {
-			Category parentCategory = getCategoryById(request.parentCategoryId());
-			category.setParentCategoryId(parentCategory.getId());
-		}
-
-		repository.save(category);
-		return category;
+		return mapper.toDetailCategory(repository.save(createCategory));
 	}
 
 	@Transactional
-	public Category updateCategory(Long categoryId, UpdateCategoryRequest request) {
-		var category = getCategoryById(categoryId);
-
+	public DetailCategoryResponse updateCategory(Long categoryId, UpdateCategoryRequest request) {
+		Category category = repository.findById(categoryId)
+				.orElseThrow(() -> new ValidationException("Cannot update because there is no category with given id: " + categoryId));
 		mapper.update(category, request);
 
-		if (request.parentCategoryId() != null) {
-			Category parentCategory = getCategoryById(request.parentCategoryId());
-			category.setParentCategoryId(parentCategory.getId());
-		}
-
-		return repository.save(category);
+		return mapper.toDetailCategory(repository.save(category));
 	}
 
-	public Category getCategoryById(Long id){
-		return repository.findById(id)
-				.orElseThrow(() -> new ValidationException("There are no Category with id: " + id));
+	public DetailCategoryResponse getCategoryById(Long id){
+		Category category = repository.findById(id)
+				.orElseThrow(() -> new ValidationException("There is no Category with id: " + id));
+		return mapper.toDetailCategory(category);
 	}
 
-	public Page<Category> getAllCategories(Pageable pageable) {
-		return repository.findAll(pageable);
-	}
-
-	public List<Category> findAllParentCategories() {
-		return repository.findAllParentCategories();
-	}
-
-	public List<CategoryDto> getASpecificId(Long categoryId) {
+	public List<CategoryDto> getRootCategoryByIdAndItsChildren(Long categoryId) {
 		List<Category> all = repository.getCategoryByIdAndAllSubCategories(categoryId);
 		return mapToDto(all);
 	}
 
-	public List<CategoryDto> findAll() {
+	public List<CategoryDto> getAllRootCategoriesAndItsChildren() {
 		List<Category> all = repository.findAll();
-
 		return mapToDto(all);
+	}
+
+	public List<DetailCategoryResponse> getAllCategoriesByName(String categoryName) {
+		List<Category> all = repository.findByNameStartingWith(categoryName)
+				.orElseThrow(() -> new ValidationException("There's no category starting with " + categoryName));
+
+		return all.stream().map(mapper::toDetailCategory).toList();
+	}
+
+	public void validateCategoryExists(Long categoryId) {
+		if (categoryId != null && !repository.existsById(categoryId)) {
+			throw new CategoryNotFoundException("Category with ID " + categoryId + " does not exist.");
+		}
 	}
 
 	public List<CategoryDto> mapToDto(List<Category> all) {
@@ -113,5 +109,4 @@ public class CategoryService {
 
 		return rootDtos;
 	}
-
 }

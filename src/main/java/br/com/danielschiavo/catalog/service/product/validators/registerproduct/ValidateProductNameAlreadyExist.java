@@ -1,6 +1,7 @@
 package br.com.danielschiavo.catalog.service.product.validators.registerproduct;
 
 
+import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import br.com.danielschiavo.catalog.repository.ProductRepository;
 import br.com.danielschiavo.shared.exception.ValidationException;
@@ -17,8 +18,8 @@ public class ValidateProductNameAlreadyExist implements ValidatorRegisterProduct
 	private ProductRepository productRepository;
 	
 	@Override
-	public void validate(Product cadastrarProduto) {
-		Optional<Product> optionalProduct = productRepository.findByNomeLowerCase(cadastrarProduto.getName());
+	public void validate(RegisterProductRequest request) {
+		Optional<Product> optionalProduct = productRepository.findByNomeLowerCase(request.name());
 		if (optionalProduct.isPresent()) {
 			throw new ValidationException("There is already a product with that name");
 		}

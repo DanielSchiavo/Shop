@@ -1,12 +1,13 @@
 package br.com.danielschiavo.filestorage.service;
 
+import br.com.danielschiavo.filestorage.dto.response.FileResponse;
+import br.com.danielschiavo.filestorage.mapper.FileMapper;
 import br.com.danielschiavo.filestorage.model.Bucket;
 import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.repository.FileRepository;
 import br.com.danielschiavo.filestorage.repository.LocalStorageRepository;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -20,23 +21,26 @@ public class FileService {
     private LocalStorageRepository localStorage;
 
     @Autowired
-    private FileRepository repository;
+    private FileRepository dbRepository;
 
     @Autowired
     private BucketService bucketService;
 
-    public File getFile(String fileName, String bucketName) {
+    @Autowired
+    private FileMapper mapper;
+
+    public FileResponse getFile(String fileName, String bucketName) {
         Bucket bucket = bucketService.getBucketByName(bucketName);
 
-        File file = repository.findByFileNameAndBucket(fileName, bucket).orElseThrow(() -> new ValidationException("There's no file with given name in bucket " + bucketName));
+        File file = dbRepository.findByFileNameAndBucket(fileName, bucket).orElseThrow(() -> new ValidationException("There's no file with given name in bucket " + bucketName));
 
-        byte[] content = localStorage.get(Path.of(bucket.getPath()), file.getFileName());
+        byte[] content = localStorage.get(Path.of(bucketName), file.getFileName());
         file.setContent(content);
 
-        return file;
+        return mapper.toDto(file);
     }
 
-    public File registerFile(String bucketName, String fileName, byte[] content, String contentType) {
+    public FileResponse registerFile(String bucketName, String fileName, byte[] content, String contentType) {
         if (fileName == null) {
             String extensao = contentType.split("/")[1];
             fileName = UUID.randomUUID() + "." + extensao;
@@ -44,37 +48,37 @@ public class FileService {
 
         Bucket bucket = bucketService.getBucketByName(bucketName);
 
-        File file = new File(fileName, content, contentType, LocalDateTime.now(), null, bucket);
-        repository.save(file);
+        File file = new File(fileName, null, content, contentType, LocalDateTime.now(), null, bucket);
+        dbRepository.save(file);
 
-        localStorage.save(Path.of(bucket.getPath()), file.getFileName(), content);
+        localStorage.save(Path.of(bucketName), file.getFileName(), content);
 
-        return file;
+        return mapper.toDto(file);
     }
 
     public void deleteFile(String bucketName, String fileName) {
-        Bucket bucket = bucketService.getBucketByName(bucketName);
+        if (!dbRepository.existsByIdAndBucket_name(fileName, bucketName)) {
+            throw new ValidationException("Cannot delete because a file with name " + fileName + " does not exist");
+        }
+        dbRepository.deleteById(fileName);
 
-        File file = getFile(fileName, bucketName);
-        repository.delete(file);
-
-        localStorage.delete(Path.of(bucket.getPath()), file.getFileName());
+        localStorage.delete(Path.of(bucketName), fileName);
     }
 
-    public File copyFile(String destBucketName, String destFileName, String sourceBucketName, String sourceFileName) {
+    public FileResponse copyFile(String destBucketName, String destFileName, String sourceBucketName, String sourceFileName) {
         Bucket destBucket = bucketService.getBucketByName(destBucketName);
         Bucket sourceBucket = bucketService.getBucketByName(sourceBucketName);
-        File sourceFile = getFile(sourceFileName, sourceBucket.getName());
+        FileResponse sourceFile = getFile(sourceFileName, sourceBucket.getName());
 
         return registerFile(destBucket.getName(),
-                            destFileName == null ? sourceFile.getFileName() : destFileName,
-                            sourceFile.getContent(),
-                            sourceFile.getContentType());
+                            destFileName == null ? sourceFile.fileName() : destFileName,
+                            sourceFile.content(),
+                            sourceFile.contentType());
     }
 
     public boolean checkIfFileExists(String bucketName, String fileName) {
         Bucket bucket = bucketService.getBucketByName(bucketName);
 
-        return repository.findByFileNameAndBucket(fileName, bucket).isPresent();
+        return dbRepository.findByFileNameAndBucket(fileName, bucket).isPresent();
     }
 }

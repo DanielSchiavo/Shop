@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface FileRepository extends JpaRepository<File, Long> {
+public interface FileRepository extends JpaRepository<File, String> {
 
     Optional<File> findByFileNameAndBucket(String fileName, Bucket bucket);
+
+    boolean existsByIdAndBucket_name(String fileName, String bucketName);
 }

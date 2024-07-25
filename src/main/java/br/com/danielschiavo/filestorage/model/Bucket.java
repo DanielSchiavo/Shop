@@ -18,12 +18,7 @@ import java.util.List;
 public class Bucket {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String name;
-
-    private String path;
 
     private LocalDateTime creationDateTime;
 

@@ -1,6 +1,6 @@
 package br.com.danielschiavo.catalog.model.enums;
 
-import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.delivery.model.enums.DeliveryType;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

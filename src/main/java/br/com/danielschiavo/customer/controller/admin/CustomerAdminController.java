@@ -1,6 +1,7 @@
 package br.com.danielschiavo.customer.controller.admin;
 
 
+import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
@@ -33,16 +34,16 @@ public class CustomerAdminController {
     @GetMapping("/{id}")
     @Operation(summary = "Show all the Customer's data")
     public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
-        Customer customer = service.getCustomerById(id);
+        DetailCustomerResponse response = service.getCustomerById(id);
 
-        return ResponseEntity.ok(Response.success("Success in recovering customer's data", mapper.toDto(customer)));
+        return ResponseEntity.ok(Response.success("Success in recovering customer's data", response));
     }
 
 	@GetMapping
 	@Operation(summary = "Show all registred customers")
 	public ResponseEntity<?> getAllCustomers(Pageable pageable) {
-		var clientes = service.getAllCustomers(pageable);
-		return ResponseEntity.ok(Response.success("Success in recovering all registred customers", clientes));
+		var customers = service.getAllCustomers(pageable);
+		return ResponseEntity.ok(Response.success("Success in recovering all registred customers", customers));
 	}
 
     @PostMapping("/{customerId}/roles/{roleName}")

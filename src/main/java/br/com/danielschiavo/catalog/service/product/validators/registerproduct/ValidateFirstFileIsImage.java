@@ -2,8 +2,8 @@ package br.com.danielschiavo.catalog.service.product.validators.registerproduct;
 
 import java.util.Optional;
 
-import br.com.danielschiavo.catalog.model.entity.Product;
-import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
+import br.com.danielschiavo.catalog.dto.request.AddProductFileRequest;
+import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 public class ValidateFirstFileIsImage implements ValidatorRegisterProduct {
 
 	@Override
-	public void validate(Product cadastrarProduto) {
-		Optional<ProductFile> first = cadastrarProduto.getProductFiles().stream().filter(arq -> arq.getPosition() == 0).findFirst();
+	public void validate(RegisterProductRequest request) {
+		Optional<AddProductFileRequest> first = request.files().stream().filter(arq -> arq.position() == 0).findFirst();
 		if (first.isPresent()) {
-			String nomeArquivo = first.get().getName();
+			String nomeArquivo = first.get().name();
 			if(!nomeArquivo.endsWith(".jpeg") && !nomeArquivo.endsWith(".png") && !nomeArquivo.endsWith(".jpg")) {
 				throw new ValidationException("The file at position 0 of the product must always be an image");
 			}

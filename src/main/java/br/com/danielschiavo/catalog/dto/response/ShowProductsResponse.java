@@ -2,24 +2,22 @@ package br.com.danielschiavo.catalog.dto.response;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class ShowProductsResponse {
-
-	private Long id;
-	private String nome;
-	private BigDecimal preco;
-	private Integer quantidade;
-	private Boolean ativo;
-	private String primeiraImagem;
+public record ShowProductsResponse (
+		Long id,
+		String name,
+		BigDecimal price,
+		Integer quantity,
+		Boolean active,
+		@JsonProperty("first_image")
+		String firstImage
+) {
 
 }

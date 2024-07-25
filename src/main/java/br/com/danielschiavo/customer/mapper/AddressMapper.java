@@ -4,7 +4,8 @@ import java.util.List;
 
 import br.com.danielschiavo.customer.dto.request.address.UpdateAddressRequest;
 import br.com.danielschiavo.customer.dto.request.address.RegisterAddressRequest;
-import br.com.danielschiavo.customer.dto.response.address.ShowAddressResponse;
+import br.com.danielschiavo.customer.dto.response.address.DetailAddressResponse;
+import br.com.danielschiavo.customer.dto.response.address.ShowAddressesResponse;
 import br.com.danielschiavo.customer.model.entity.Address;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -15,16 +16,16 @@ import org.mapstruct.NullValueCheckStrategy;
 @Mapper(componentModel = "spring")
 public interface AddressMapper {
 
-	ShowAddressResponse toDto(Address address);
+	DetailAddressResponse toDetailAddress(Address address);
 	
-	List<ShowAddressResponse> toDto(List<Address> addresses);
+	List<ShowAddressesResponse> toListShowAddresses(List<Address> addresses);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 	Address toEntity(RegisterAddressRequest request);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	Address toEntity(UpdateAddressRequest request);
+	Address toEntity(DetailAddressResponse response);
 
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	void updateAddress(Address addressAtualizado, @MappingTarget Address address);
+	void updateAddress(UpdateAddressRequest request, @MappingTarget Address address);
 }

@@ -1,6 +1,6 @@
 package br.com.danielschiavo.filestorage.controller;
 
-import br.com.danielschiavo.filestorage.dto.response.FileInfoResponse;
+import br.com.danielschiavo.filestorage.dto.response.FileResponse;
 import br.com.danielschiavo.filestorage.model.File;
 import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.shared.Response;
@@ -31,19 +31,17 @@ public class FileController {
     @GetMapping("/{bucketName}/files/{fileName}")
     @Operation(summary = "Get a file from a bucket")
     public ResponseEntity<?> getFile(@PathVariable String bucketName, @PathVariable String fileName) {
-        File file = service.getFile(bucketName, fileName);
+        FileResponse file = service.getFile(bucketName, fileName);
 
-        FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Success recovering file", file.getContent());
-        return ResponseEntity.ok(Response.success(respMessage, fileInfoResponse));
+        return ResponseEntity.ok(Response.success("Success recovering file", file));
     }
 
     @PostMapping("/{bucketName}/files/{fileName}")
     @Operation(summary = "Register a file into a bucket")
     public ResponseEntity<?> registerFile(@PathVariable String bucketName, @PathVariable String fileName, @RequestPart MultipartFile multipartFile) throws IOException {
-        File file = service.registerFile(bucketName, fileName, multipartFile.getBytes(), multipartFile.getContentType());
+        FileResponse file = service.registerFile(bucketName, fileName, multipartFile.getBytes(), multipartFile.getContentType());
 
-        FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "Success registering file", null);
-        return ResponseEntity.ok(Response.success(respMessage, fileInfoResponse));
+        return ResponseEntity.ok(Response.success("Success registering file", file));
     }
 
     @DeleteMapping("/{bucketId}/files/{fileName}")
@@ -51,8 +49,7 @@ public class FileController {
     public ResponseEntity<?> deleteFile(@PathVariable String bucketId, @PathVariable String fileName) {
         service.deleteFile(bucketId, fileName);
 
-        FileInfoResponse fileInfoResponse = FileInfoResponse.success(fileName, "File deleted successfully!", null);
-        return ResponseEntity.ok(Response.success(respMessage, fileInfoResponse));
+        return ResponseEntity.ok(Response.success("File deleted successfully!", null));
     }
 
     @PutMapping("/{destBucketName}/files/{destFileName}")
@@ -65,10 +62,9 @@ public class FileController {
         String sourceBucketName = split[0];
         String sourceFileName = split[1];
 
-        File file = service.copyFile(destBucketName, destFileName, sourceBucketName, sourceFileName);
+        FileResponse file = service.copyFile(destBucketName, destFileName, sourceBucketName, sourceFileName);
 
-        FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "File copied successfully!", null);
-        return ResponseEntity.ok(Response.success(respMessage, fileInfoResponse));
+        return ResponseEntity.ok(Response.success("File copied successfully!", file));
     }
 
     @PutMapping("/{destBucketName}/files")
@@ -80,22 +76,21 @@ public class FileController {
         String sourceBucketName = split[0];
         String sourceFileName = split[1];
 
-        File file = service.copyFile(destBucketName, null, sourceBucketName, sourceFileName);
+        FileResponse file = service.copyFile(destBucketName, null, sourceBucketName, sourceFileName);
 
-        FileInfoResponse fileInfoResponse = FileInfoResponse.success(file.getFileName(), "File copied successfully!", null);
-        return ResponseEntity.ok(Response.success(respMessage, fileInfoResponse));
+        return ResponseEntity.ok(Response.success("File copied successfully!", file));
     }
 
     @RequestMapping(value = "/{bucketName}/files/{fileName}", method = RequestMethod.HEAD)
     @Operation(summary = "Check if the file exists")
     public ResponseEntity<?> checkIfFileExists(@PathVariable String bucketName, @PathVariable String fileName) {
-        File file = service.getFile(bucketName, fileName);
+        FileResponse file = service.getFile(bucketName, fileName);
 
         return ResponseEntity.ok()
                 .header("Date", String.valueOf(LocalDateTime.now()))
-                .contentType(MediaType.valueOf(file.getContentType()))
-                .lastModified(ZonedDateTime.from(file.getLastModifiedDateTime()))
-                .contentLength(file.getContent().length)
+                .contentType(MediaType.valueOf(file.contentType()))
+                .lastModified(ZonedDateTime.from(file.lastModifiedDateTime()))
+                .contentLength(file.content().length)
                 .build();
     }
 }

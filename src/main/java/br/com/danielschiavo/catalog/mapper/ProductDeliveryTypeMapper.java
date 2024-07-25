@@ -1,6 +1,6 @@
 package br.com.danielschiavo.catalog.mapper;
 
-import br.com.danielschiavo.order.model.enums.DeliveryType;
+import br.com.danielschiavo.delivery.model.enums.DeliveryType;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import br.com.danielschiavo.catalog.model.enums.ProductDeliveryType;
 import org.mapstruct.Mapper;

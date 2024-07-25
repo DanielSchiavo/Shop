@@ -2,10 +2,15 @@ package br.com.danielschiavo.customer.service.card;
 
 import java.util.List;
 
+import br.com.danielschiavo.customer.dto.request.card.RegisterCardRequest;
+import br.com.danielschiavo.customer.dto.response.card.DetailCardResponse;
+import br.com.danielschiavo.customer.dto.response.card.ShowCardResponse;
+import br.com.danielschiavo.customer.mapper.CardMapper;
 import br.com.danielschiavo.customer.model.entity.Card;
 import br.com.danielschiavo.customer.repository.CardRepository;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,61 +23,66 @@ public class CardService {
 
 	@Autowired
 	private CardRepository repository;
+
+	@Autowired
+	private CardMapper mapper;
 	
 	@Autowired
 	private List<ValidatorRegisterCard> validators;
 	
 	@Transactional
 	public void deleteCardById(Long cardId, Long customerId) {
+		Card probe = new Card();
+		probe.setId(cardId);
+		probe.setCustomerId(customerId);
+		Example<Card> example = Example.of(probe);
+		if (!repository.exists(example)) {
+			throw new ValidationException("Could not delete this card, contact an administrator");
+		}
 		repository.deleteByIdAndCustomerId(cardId, customerId);
 	}
 	
-	public List<Card> getAllCardsByCustomerId(Long customerId) {
-		return repository.findAllByCustomerId(customerId)
+	public List<ShowCardResponse> getAllCardsByCustomerId(Long customerId) {
+		List<Card> cards = repository.findAllByCustomerId(customerId)
 				.orElseThrow(() -> new ValidationException("Customer doesn't have any registered card"));
+
+		return mapper.toListShowCard(cards);
 	}
 	
-	public Card getCardByIdAndCustomerId(Long cardId, Long customerId) {
-		return repository.findByIdAndCustomerId(cardId, customerId)
-				.orElseThrow(() -> new ValidationException("Customer doesn't have a card with id: " + cardId));
+	public DetailCardResponse getCardByIdAndCustomerId(Long cardId, Long customerId) {
+		Card card = repository.findByIdAndCustomerId(cardId, customerId)
+				.orElseThrow(() -> new ValidationException("Could not get card data, contact an administrator"));
+
+		return mapper.toDetailCard(card);
 	}
 
 	@Transactional
-	public Card registerCard(Long customerId, Card card) {
-		List<Card> cardsAlreadyRegistred = getAllCardsByCustomerId(customerId);
-		validators.forEach(v -> v.validar(card, cardsAlreadyRegistred, customerId));
+	public DetailCardResponse registerCard(Long customerId, RegisterCardRequest request) {
+		validators.forEach(v -> v.validar(customerId, request));
+
+		Card registerCard = mapper.toEntity(request, customerId);
+
+		if (request.isDefault()) {
+			defineOtherCardAsIsDefaultFalse(customerId);
+		}
+
+		registerCard.setBankName("Bank API needs to be implemented");
+		return mapper.toDetailCard(repository.save(registerCard));
+	}
+	
+	@Transactional
+	public void switchIsDefaultStatus(Long cardId, Long customerId) {
+		Card card = repository.findByIdAndCustomerId(cardId, customerId)
+				.orElseThrow(() -> new ValidationException("Could not switch default status, contact an administrator"));
 
 		if (card.getIsDefault()) {
-			cardsAlreadyRegistred.stream().filter(car -> car.getIsDefault().equals(true)).forEach(car -> car.setIsDefault(false));
+			card.setIsDefault(false);
+		} else {
+			defineOtherCardAsIsDefaultFalse(customerId);
+			card.setIsDefault(true);
 		}
 
-		card.setBankName("Bank API needs to be implemented");
-		cardsAlreadyRegistred.add(card);
-		repository.saveAll(cardsAlreadyRegistred);
-		return card;
-	}
-	
-	@Transactional
-	public void switchDefaultCardStatus(Long cardId, Long customerId) {
-		List<Card> cards = getAllCardsByCustomerId(customerId);
-
-		Card card = cards.stream()
-				.filter(c -> c.getId().equals(cardId))
-				.findFirst().orElseThrow(() -> new ValidationException("There's no card with provided id"));
-
-		boolean newDefaultCardState = !card.getIsDefault(); // Inverte o state do cartão
-
-		// Define o novo state do cartão encontrado
-		card.setIsDefault(newDefaultCardState);
-
-		// Define todos os outros cartões como não padrão, se necessário
-		if (newDefaultCardState) {
-			cards.stream()
-					.filter(c -> !c.getId().equals(cardId) && c.getIsDefault().equals(true))
-					.forEach(c -> c.setIsDefault(false));
-		}
-
-		repository.saveAll(cards);
+		repository.save(card);
 	}
 	
 	
@@ -82,6 +92,17 @@ public class CardService {
 //	------------------------------
 //	------------------------------
 
+	public void defineOtherCardAsIsDefaultFalse(Long customerId) {
+		Card probe = new Card();
+		probe.setCustomerId(customerId);
+		probe.setIsDefault(true);
 
+		Example<Card> example = Example.of(probe);
+
+		repository.findOne(example).ifPresent(card -> {
+			card.setIsDefault(false);
+			repository.save(card);
+		});
+	}
 	
 }

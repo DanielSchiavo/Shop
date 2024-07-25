@@ -19,6 +19,8 @@ public class File {
     @Id
     private String fileName;
 
+    private String prefix;
+
     private byte[] content;
 
     private String contentType;

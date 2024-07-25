@@ -1,15 +1,26 @@
 package br.com.danielschiavo.order.controller;
 
-import br.com.danielschiavo.order.mapper.OrderMapper;
-import br.com.danielschiavo.order.dto.request.order.PlaceOrderRequest;
-import br.com.danielschiavo.order.dto.response.order.ShowOrderResponse;
-import br.com.danielschiavo.order.model.entity.Order;
-import br.com.danielschiavo.order.service.order.OrderService;
+import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.service.product.ProductService;
+import br.com.danielschiavo.customer.dto.response.address.DetailAddressResponse;
+import br.com.danielschiavo.customer.dto.response.card.DetailCardResponse;
+import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
+import br.com.danielschiavo.customer.service.address.AddressService;
+import br.com.danielschiavo.customer.service.card.CardService;
+import br.com.danielschiavo.customer.service.customer.CustomerService;
+import br.com.danielschiavo.delivery.dto.response.ShowDeliveryResponse;
+import br.com.danielschiavo.delivery.service.DeliveryService;
+import br.com.danielschiavo.order.dto.request.OrderItemRequest;
+import br.com.danielschiavo.order.dto.request.PlaceOrderRequest;
+import br.com.danielschiavo.order.dto.response.DetailOrderResponse;
+import br.com.danielschiavo.order.service.OrderService;
+import br.com.danielschiavo.payment.dto.response.ShowPaymentResponse;
+import br.com.danielschiavo.payment.model.enums.PaymentStatus;
+import br.com.danielschiavo.payment.service.PaymentService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +32,6 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user/orders")
@@ -36,16 +46,31 @@ public class OrderUserController {
 	private SecurityService securityService;
 
 	@Autowired
-	private OrderMapper mapper;
+	private ProductService productService;
+
+	@Autowired
+	private CustomerService customerService;
+
+	@Autowired
+	private PaymentService paymentService;
+
+	@Autowired
+	private CardService cardService;
+
+	@Autowired
+	private DeliveryService deliveryService;
+
+	@Autowired
+	private AddressService addressService;
 
 	@GetMapping("/{orderId}")
 	@Operation(summary = "Get an order by id to get all the details about it")
 	public ResponseEntity<?> getOrderById(@PathVariable UUID orderId) {
 		Long customerId = securityService.getCustomerId();
 
-		Order order = service.getOrderByIdAndCustomerId(orderId, customerId);
+		DetailOrderResponse response = service.getOrderByIdAndCustomerId(orderId, customerId);
 
-		return ResponseEntity.ok(Response.success("Success recovering order", mapper.toDto(order)));
+		return ResponseEntity.ok(Response.success("Success recovering order", response));
 	}
 	
 	@GetMapping
@@ -53,20 +78,41 @@ public class OrderUserController {
 	public ResponseEntity<?> getAllOrders(Pageable pageable) {
 		Long customerId = securityService.getCustomerId();
 
-		Page<Order> pageOrder = service.getAllOrdersByCustomerId(pageable, customerId);
+		Page<DetailOrderResponse> response = service.getAllOrdersByCustomerId(pageable, customerId);
 
-		List<ShowOrderResponse> showOrdersList = pageOrder.getContent().stream().map(mapper::toDto).collect(Collectors.toList());
-		var resposta = new PageImpl<>(showOrdersList, pageOrder.getPageable(), pageOrder.getTotalElements());
-		return ResponseEntity.ok(Response.success("Success recovering all user orders", resposta));
+		return ResponseEntity.ok(Response.success("Success recovering all user orders", response));
 	}
 	
 	@PostMapping
 	@Operation(summary = "Place an order")
-	public ResponseEntity<?> realizarPedido(@RequestBody @Valid PlaceOrderRequest request) {
+	public ResponseEntity<?> placeOrder(@RequestBody @Valid PlaceOrderRequest request) {
 		Long customerId = securityService.getCustomerId();
+		DetailCustomerResponse customer = customerService.getCustomerById(customerId);
 
-		Order order = service.placeOrder(customerId, mapper.toEntity(request));
+		List<Long> ids = request.items().stream().map(OrderItemRequest::productId).toList();
+		List<ShowProductsResponse> products = productService.getProductsById(ids);
 
-		return ResponseEntity.ok(Response.success("Order placed successfully!", mapper.toDto(order)));
+		DetailOrderResponse order = service.placeOrder(customer, request.purchasedViaCart(), request.items(), products);
+
+		DetailCardResponse card = null;
+		if (request.payment().cardId() != null) {
+			card = cardService.getCardByIdAndCustomerId(request.payment().cardId(), customerId);
+		}
+		ShowPaymentResponse payment = paymentService.executePayment(request.payment(), order, card);
+
+		ShowDeliveryResponse delivery = null;
+		if (payment.paymentStatus() == PaymentStatus.APPROVED_NOT_INTEGRATED) {
+			service.paymentApproved(order.getId());
+
+			DetailAddressResponse address = null;
+			if (request.delivery().addressId() != null) {
+				address = addressService.getAddressByIdAndCustomerId(request.delivery().addressId(), customerId);
+			}
+			delivery = deliveryService.createDelivery(request.delivery(), address);
+			deliveryService.executeDelivery(delivery.id());
+		}
+
+		order.addPaymentAndDelivery(payment, delivery);
+		return ResponseEntity.ok(Response.success("Order placed successfully!", order));
 	}
 }

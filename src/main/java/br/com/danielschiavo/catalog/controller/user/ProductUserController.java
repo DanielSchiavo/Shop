@@ -3,6 +3,7 @@ package br.com.danielschiavo.catalog.controller.user;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
 import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
 import br.com.danielschiavo.catalog.mapper.ProductMapper;
 import br.com.danielschiavo.catalog.model.entity.Product;
@@ -15,40 +16,34 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@RequestMapping("/public/product")
 @Tag(name = "Product - User", description = "All endpoints related to a Product, for public use")
 public class ProductUserController {
 
 	@Autowired
 	private ProductService service;
 
-	@Autowired
-	private ProductMapper mapper;
-	
-	@GetMapping("/publico/produto")
+	@GetMapping
 	@Operation(summary = "Get all products")
-	public ResponseEntity<?> listarProdutos(Pageable pageable) {
-		Page<Product> pageProdutos = service.getAllProducts(pageable);
+	public ResponseEntity<?> getAllProducts(Pageable pageable) {
+		Page<ShowProductsResponse> response = service.getAllProducts(pageable);
 
-		List<ShowProductsResponse> listaMostrarProdutos = pageProdutos.getContent().stream()
-				.map(mapper::toShowProducts).collect(Collectors.toList());
-
-		var resposta = new PageImpl<>(listaMostrarProdutos, pageable, pageProdutos.getTotalElements());
-
-		return ResponseEntity.ok(Response.success("Sucesso ao recuperar products da loja", resposta));
+		return ResponseEntity.ok(Response.success("Success recovering all products", response));
 	}
 	
-	@GetMapping("/publico/produto/{produtoId}")
-	@Operation(summary = "Pega todos os dados do produto com id fornecido no parametro da requisição")
-	public ResponseEntity<?> detalharProdutoPorId(@PathVariable Long produtoId) {
-		Product produto = service.getProductById(produtoId);
+	@GetMapping("/{productId}")
+	@Operation(summary = "Get all product data by id")
+	public ResponseEntity<?> detailProductById(@PathVariable Long productId) {
+		DetailProductResponse response = service.getProductById(productId);
 		
-		return ResponseEntity.ok(Response.success("Sucesso ao recuperar o produto", mapper.toDetailProduct(produto)));
+		return ResponseEntity.ok(Response.success("Success recovering all product data", response));
 	}
 
 }
