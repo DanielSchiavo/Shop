@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class File {
 
     @Id
-    private String fileName;
+    private String name;
 
     private String prefix;
 

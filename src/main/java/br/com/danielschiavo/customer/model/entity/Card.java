@@ -36,12 +36,12 @@ public class Card {
 	private String nameOnCard;
 	
 	private String expirationDate;
-	
-	private Boolean isDefault;
-	
+
 	@Enumerated(EnumType.STRING)
 	private CardType cardType;
-	
+
 	private Long customerId;
-	
+
+	private Boolean isDefault;
+
 }

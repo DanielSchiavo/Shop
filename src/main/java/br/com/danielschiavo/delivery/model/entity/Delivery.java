@@ -21,13 +21,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.UUID;
+
 @Table(name = "orders_deliveries")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString(exclude = "order")
+@ToString
 @Builder
 @Entity
 public class Delivery {
@@ -43,7 +45,6 @@ public class Delivery {
 	@Embedded
 	private DeliveryAddress deliveryAddress;
 
-	@OneToOne(mappedBy = "delivery")
-	private Order order;
+	private UUID orderId;
 
 }

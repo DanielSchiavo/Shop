@@ -33,9 +33,6 @@ import lombok.Setter;
 public class OrderService {
 
 	@Autowired
-	private List<ValidatorPlaceOrder> validators;
-
-	@Autowired
 	private OrderRepository repository;
 
 	@Autowired

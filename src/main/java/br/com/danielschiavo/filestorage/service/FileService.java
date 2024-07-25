@@ -32,9 +32,9 @@ public class FileService {
     public FileResponse getFile(String fileName, String bucketName) {
         Bucket bucket = bucketService.getBucketByName(bucketName);
 
-        File file = dbRepository.findByFileNameAndBucket(fileName, bucket).orElseThrow(() -> new ValidationException("There's no file with given name in bucket " + bucketName));
+        File file = dbRepository.findByNameAndBucket(fileName, bucket).orElseThrow(() -> new ValidationException("There's no file with given name in bucket " + bucketName));
 
-        byte[] content = localStorage.get(Path.of(bucketName), file.getFileName());
+        byte[] content = localStorage.get(Path.of(bucketName), file.getName());
         file.setContent(content);
 
         return mapper.toDto(file);
@@ -51,13 +51,13 @@ public class FileService {
         File file = new File(fileName, null, content, contentType, LocalDateTime.now(), null, bucket);
         dbRepository.save(file);
 
-        localStorage.save(Path.of(bucketName), file.getFileName(), content);
+        localStorage.save(Path.of(bucketName), file.getName(), content);
 
         return mapper.toDto(file);
     }
 
     public void deleteFile(String bucketName, String fileName) {
-        if (!dbRepository.existsByIdAndBucket_name(fileName, bucketName)) {
+        if (!dbRepository.existsByNameAndBucket_name(fileName, bucketName)) {
             throw new ValidationException("Cannot delete because a file with name " + fileName + " does not exist");
         }
         dbRepository.deleteById(fileName);
@@ -79,6 +79,6 @@ public class FileService {
     public boolean checkIfFileExists(String bucketName, String fileName) {
         Bucket bucket = bucketService.getBucketByName(bucketName);
 
-        return dbRepository.findByFileNameAndBucket(fileName, bucket).isPresent();
+        return dbRepository.findByNameAndBucket(fileName, bucket).isPresent();
     }
 }
