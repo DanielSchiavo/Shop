@@ -6,12 +6,7 @@ import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerReques
 import br.com.danielschiavo.customer.dto.response.customer.ShowCustomersResponse;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 import br.com.danielschiavo.customer.dto.response.customer.ShowCustomerHomePageResponse;
 
@@ -33,7 +28,7 @@ public interface CustomerMapper {
 
     Customer toEntity(DetailCustomerResponse response);
     
-    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "authorities", ignore = true)
     void updateCustomer(UpdateCustomerRequest request, @MappingTarget Customer customer);
 

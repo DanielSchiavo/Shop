@@ -9,10 +9,12 @@ import br.com.danielschiavo.customer.model.enums.RoleName;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.customer.service.customer.validators.registercustomer.ValidatorRegisterCustomer;
 import br.com.danielschiavo.shared.exception.ValidationException;
+import br.com.danielschiavo.filestorage.infra.cloud.impl.S3CloudStorageProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,19 +37,13 @@ public class CustomerService {
 	@Autowired
 	private List<ValidatorRegisterCustomer> validators;
 
-	public static final String bucketName = "profile-picture", directory = "directory";
+	@Autowired
+	private S3CloudStorageProvider fileService;
 
+	@Autowired
+	private PasswordEncoder encoder;
 
-	@Transactional
-	public String deleteProfilePictureById(Long customerId) {
-		Customer customer = repository.findById(customerId)
-				.orElseThrow(() -> new ValidationException("Could not delete profile picture, contact an administrator"));
-
-		String oldProfilePicture = customer.getProfilePicture();
-		customer.setProfilePicture("Default.jpeg");
-		repository.save(customer);
-		return oldProfilePicture;
-	}
+	public static final String awsS3Directory = "profiles/";
 
 	public Page<ShowCustomersResponse> getAllCustomers(Pageable pageable) {
 		Page<Customer> all = repository.findAll(pageable);
@@ -74,6 +70,7 @@ public class CustomerService {
 	public DetailCustomerResponse registerCustomer(RegisterCustomerRequest request) {
 		validators.forEach(v -> v.validate(request));
 		Customer customer = mapper.toEntity(request);
+		customer.setPassword(encoder.encode(customer.getPassword()));
 		return mapper.toDetailCustomer(repository.save(customer));
 	}
 	
@@ -82,6 +79,9 @@ public class CustomerService {
 		Customer customer = repository.findById(customerId)
 				.orElseThrow(() -> new ValidationException("Could not update, contact an administrator"));
 		mapper.updateCustomer(request, customer);
+		if (request.password() != null) {
+			customer.setPassword(encoder.encode(customer.getPassword()));
+		}
 		
 		return mapper.toDetailCustomer(repository.save(customer));
 	}
@@ -92,8 +92,12 @@ public class CustomerService {
 				.orElseThrow(() -> new ValidationException("Could not update profile picture, contact an administrator"));
 
 		String oldProfilePicture = customer.getProfilePicture();
-		customer.setProfilePicture(nameNewPicture);
+		if (oldProfilePicture.equals("Default.jpg")) {
+			throw new ValidationException("You don't have a profile picture already");
+		}
 
+		customer.setProfilePicture(nameNewPicture);
+		repository.save(customer);
 		return oldProfilePicture;
 	}
 

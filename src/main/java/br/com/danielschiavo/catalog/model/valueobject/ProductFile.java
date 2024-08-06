@@ -2,13 +2,8 @@ package br.com.danielschiavo.catalog.model.valueobject;
 
 
 import br.com.danielschiavo.catalog.model.entity.Product;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import br.com.danielschiavo.catalog.model.enums.ProductFileType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,10 +25,13 @@ public class ProductFile {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column
-	private String name;
-	
-	@Column
+	private String fileName;
+
+	@Enumerated(EnumType.STRING)
+	private ProductFileType type;
+
+	private String urlVideo;
+
 	private Byte position;
 	
 	@ManyToOne

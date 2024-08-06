@@ -27,7 +27,9 @@ public interface ProductMapper extends ProductFileMapper, ProductDeliveryTypeMap
 
 	@Mapping(target = "deliveryTypes", ignore = true)
 	@Mapping(target = "productFiles", ignore = true)
-	@BeanMapping(builder = @Builder(disableBuilder = true), nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	@BeanMapping(builder = @Builder(disableBuilder = true),
+			nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+			nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateProduct(UpdateProductRequest request, @MappingTarget Product product);
 
 	@AfterMapping
@@ -36,12 +38,11 @@ public interface ProductMapper extends ProductFileMapper, ProductDeliveryTypeMap
 		mapDeliveryTypesToEntity(product, request.deliveryTypes());
 	}
 
+	@Mapping(target = "firstImage.fileName", expression = "java(product.getNameFirstImage())")
 	ShowProductsResponse toShowProducts(Product product);
 
 	List<ShowProductsResponse> toShowProducts(List<Product> products);
 
+	@Mapping(target = "files", source = "productFiles")
 	DetailProductResponse toDetailProduct(Product product);
-
-	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-	Product toEntity(UpdateProductRequest request);
 }

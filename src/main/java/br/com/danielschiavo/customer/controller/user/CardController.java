@@ -20,9 +20,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/user/clientes/cartoes")
+@RequestMapping("/user/customers/cards")
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Customer - Cartão", description = "Todos endpoints relacionados com os cartões do customer, que o próprio poderá utilizar")
+@Tag(name = "Customer - Card", description = "All Card related endpoints for the Customer")
 public class CardController {
 
 	@Autowired
@@ -56,7 +56,7 @@ public class CardController {
 	}
 	
 	@PostMapping
-	@Operation(summary = "Cadastra um novo cartão para o usuário")
+	@Operation(summary = "Register a new Card to Customer")
 	public ResponseEntity<?> registerCard(@RequestBody @Valid RegisterCardRequest request) {
 		Long customerId = securityService.getCustomerId();
 		DetailCardResponse response = service.registerCard(customerId, request);
@@ -72,7 +72,7 @@ public class CardController {
 	public ResponseEntity<?> switchDefaultCardStatus(@PathVariable Long cardId) {
 		Long customerId = securityService.getCustomerId();
 		service.switchIsDefaultStatus(cardId, customerId);
-		return ResponseEntity.status(HttpStatus.OK).body(Response.success("Cartão alterado com sucesso!", null));
+		return ResponseEntity.status(HttpStatus.OK).body(Response.success("Card updated successfully!", null));
 	}
 	
 	

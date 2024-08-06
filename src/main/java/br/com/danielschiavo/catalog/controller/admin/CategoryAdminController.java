@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/admin/category")
+@RequestMapping("/admin/categories")
 @Tag(name = "Category - Admin", description = "All endpoints related to Category of a product, for use by administrators")
 public class CategoryAdminController {
 	

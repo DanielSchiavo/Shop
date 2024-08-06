@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
-import br.com.danielschiavo.filestorage.service.FileService;
 import br.com.danielschiavo.order.dto.request.OrderItemRequest;
 import br.com.danielschiavo.order.dto.response.DetailOrderResponse;
 import br.com.danielschiavo.order.mapper.OrderMapper;
@@ -18,13 +17,13 @@ import br.com.danielschiavo.order.repository.OrderRepository;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import br.com.danielschiavo.order.model.entity.OrderItem;
+import br.com.danielschiavo.filestorage.infra.cloud.impl.S3CloudStorageProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.danielschiavo.order.service.validators.placeorder.ValidatorPlaceOrder;
 import jakarta.transaction.Transactional;
 import lombok.Setter;
 
@@ -38,10 +37,7 @@ public class OrderService {
 	@Autowired
 	private OrderMapper mapper;
 
-	@Autowired
-	private FileService fileService;
-
-	public static final String bucketName = "orders";
+	public static final String awsS3Directory = "orders/";
 
 	public Page<DetailOrderResponse> getAllOrdersByCustomerId(Pageable pageable, Long customerId) {
 		Page<Order> pageOrder = repository.findAllByCustomerId(pageable, customerId);
@@ -57,26 +53,25 @@ public class OrderService {
 		List<OrderItem> orderItems = orderItemsRequest.stream()
 				.map(request -> {
 					ShowProductsResponse product = products.stream()
-							.filter(p -> p.id().equals(request.productId()))
+							.filter(p -> p.getId().equals(request.productId()))
 							.findFirst()
 							.orElseThrow(() -> new ValidationException("Product not found"));
 
-					fileService.copyFile(OrderService.bucketName, null, ProductService.bucketName, product.firstImage());
+					if (request.quantity() > product.getQuantity()) {
+						throw new ValidationException("Could not proceed with order because the product does not sufficient stock");
+					}
 
 					OrderItem orderItem = new OrderItem();
-					orderItem.setName(product.name());
-					orderItem.setPrice(product.price());
-					orderItem.setFirstImage(product.firstImage());
-					orderItem.setQuantity(product.quantity());
+					orderItem.setPrice(product.getPrice());
+					orderItem.setQuantity(request.quantity());
+					orderItem.setName(product.getName());
+					orderItem.setFirstImage(awsS3Directory + product.getFirstImage());
+					orderItem.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(request.quantity())));
+					orderItem.setProductId(product.getId());
 
 					return orderItem;
 				})
 				.collect(Collectors.toList());
-
-		orderItems.forEach(item -> {
-			BigDecimal subTotal = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-			item.setSubTotal(subTotal);
-		});
 
 		BigDecimal totalValue = orderItems.stream().map(OrderItem::getSubTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -119,11 +114,4 @@ public class OrderService {
 		order.setOrderStatus(OrderStatus.AWAITING_SHIPMENT);
 		repository.save(order);
 	}
-
-//	------------------------------
-//	------------------------------
-//	METODOS UTILITÁRIOS
-//	------------------------------
-
-//	------------------------------
 }

@@ -1,5 +1,6 @@
 package br.com.danielschiavo.order.controller;
 
+import br.com.danielschiavo.catalog.dto.response.DetailProductFileResponse;
 import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.customer.dto.response.address.DetailAddressResponse;
@@ -10,6 +11,8 @@ import br.com.danielschiavo.customer.service.card.CardService;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.delivery.dto.response.ShowDeliveryResponse;
 import br.com.danielschiavo.delivery.service.DeliveryService;
+import br.com.danielschiavo.filestorage.infra.cloud.StorageProperties;
+import br.com.danielschiavo.filestorage.service.FileReferenceService;
 import br.com.danielschiavo.order.dto.request.OrderItemRequest;
 import br.com.danielschiavo.order.dto.request.PlaceOrderRequest;
 import br.com.danielschiavo.order.dto.response.DetailOrderResponse;
@@ -31,7 +34,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user/orders")
@@ -63,6 +68,12 @@ public class OrderUserController {
 	@Autowired
 	private AddressService addressService;
 
+	@Autowired
+	private StorageProperties storageProperties;
+
+	@Autowired
+	private FileReferenceService fileService;
+
 	@GetMapping("/{orderId}")
 	@Operation(summary = "Get an order by id to get all the details about it")
 	public ResponseEntity<?> getOrderById(@PathVariable UUID orderId) {
@@ -91,6 +102,15 @@ public class OrderUserController {
 
 		List<Long> ids = request.items().stream().map(OrderItemRequest::productId).toList();
 		List<ShowProductsResponse> products = productService.getProductsById(ids);
+
+		Set<DetailProductFileResponse> filesReferences = products.stream().map(ShowProductsResponse::getFirstImage).collect(Collectors.toSet());
+		filesReferences.forEach(f -> {
+			String[] split = f.getFileName().split("/");
+			String fileName = split[split.length - 1];
+
+			fileService.copy("products/", f.getFileName(),
+								OrderService.awsS3Directory, fileName);
+		});
 
 		DetailOrderResponse order = service.placeOrder(customer, request.purchasedViaCart(), request.items(), products);
 

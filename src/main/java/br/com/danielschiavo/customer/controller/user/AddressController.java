@@ -72,7 +72,7 @@ public class AddressController {
 	public ResponseEntity<?> updateAddress(@PathVariable Long addressId, @RequestBody UpdateAddressRequest request) {
 		Long customerId = securityService.getCustomerId();
 
-		DetailAddressResponse response = service.updateAddress(customerId, addressId, request);
+		DetailAddressResponse response = service.updateAddress(addressId, customerId, request);
 		return ResponseEntity.ok().body(Response.success("Address updated successfully!", null));
 	}
 	

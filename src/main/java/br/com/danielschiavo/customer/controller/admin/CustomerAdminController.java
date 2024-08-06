@@ -17,19 +17,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/clientes")
+@RequestMapping("/admin/customers")
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Customer - Admin", description = "All endpoints related to a Customer that only Administrators can use")
 public class CustomerAdminController {
 
     @Autowired
     private CustomerService service;
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private CustomerMapper mapper;
 
     @GetMapping("/{id}")
     @Operation(summary = "Show all the Customer's data")

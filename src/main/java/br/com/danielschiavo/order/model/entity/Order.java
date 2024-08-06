@@ -3,6 +3,7 @@ package br.com.danielschiavo.order.model.entity;
 import br.com.danielschiavo.order.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class Order {
 
 	@Id
-	@GeneratedValue(generator = "UUID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public UUID id;
 	
 	private BigDecimal totalValue;

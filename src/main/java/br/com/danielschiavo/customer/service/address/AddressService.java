@@ -70,11 +70,11 @@ public class AddressService {
 		Address address = repository.findByIdAndCustomerId(addressId, customerId)
 				.orElseThrow(() -> new ValidationException("Could not update this address, contact an administrator"));
 
-		mapper.updateAddress(request, address);
-
 		if (request.isDefault()) {
 			defineOtherAddressAsIsDefaultFalse(customerId);
 		}
+
+		mapper.updateAddress(request, address);
 
 		return mapper.toDetailAddress(repository.save(address));
 	}

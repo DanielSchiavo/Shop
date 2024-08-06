@@ -3,11 +3,12 @@ package br.com.danielschiavo.sales.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
-import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
+import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.sales.dto.request.AddCartItemRequest;
+import br.com.danielschiavo.sales.dto.response.ShowCartItemResponse;
 import br.com.danielschiavo.sales.dto.response.ShowCartResponse;
 import br.com.danielschiavo.sales.mapper.CartMapper;
 import br.com.danielschiavo.sales.model.entity.Cart;
@@ -27,9 +28,6 @@ public class CartService {
 	@Autowired
 	private CartRepository repository;
 	
-    @Autowired
-    private ProductService produtoService;
-
 	@Autowired
 	private CartMapper mapper;
 
@@ -45,10 +43,10 @@ public class CartService {
 		repository.deleteCartItemByCustomerIdAndProductId(customerId, productIdsList);
 	}
 
-	public ShowCartResponse getCartByCustomerId(Long customerId) {
+	public List<ShowCartItemResponse> getCartItems(Long customerId) {
 		Cart cart = repository.findByCustomerId(customerId)
 				.orElseThrow(() -> new ValidationException("User does not have a cart"));
-		return mapper.toDtoShowCart(cart);
+		return mapper.toDtoShowCartItem(cart.getCartItems());
 	}
 
 	@Transactional
@@ -61,18 +59,33 @@ public class CartService {
 
 		Cart cart = repository.findByCustomerId(customerId).orElseThrow(() -> new ValidationException("Cart does not exist"));
 
-		DetailProductResponse response = produtoService.getProductById(request.productId());
-		BigDecimal subTotal = response.price().multiply(BigDecimal.valueOf(request.quantity()));
 		CartItem cartItem = CartItem.builder()
 				.id(null)
 				.quantity(request.quantity())
 				.productId(request.productId())
-				.subTotal(subTotal)
 				.insertionDateTime(LocalDateTime.now())
 				.cart(cart).build();
 
 		cart.addCartItem(cartItem);
 
 		repository.save(cart);
+	}
+
+	public ShowCartResponse updateCart(Long customerId, List<ShowProductsResponse> products) {
+		Cart cart = repository.findByCustomerId(customerId).orElseThrow(() -> new ValidationException("Cart does not exist"));
+		List<CartItem> cartItems = cart.getCartItems();
+
+		AtomicReference<BigDecimal> total = new AtomicReference<>(BigDecimal.ZERO);
+		cartItems.forEach(item -> {
+			var product = products.stream().filter(p -> p.getId().equals(item.getProductId())).findFirst().get();
+			BigDecimal subTotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+			item.setSubTotal(subTotal);
+
+			total.updateAndGet(v -> v.add(subTotal));
+		});
+
+		cart.setTotalValue(total.get());
+
+		return mapper.toDtoShowCart(repository.save(cart));
 	}
 }

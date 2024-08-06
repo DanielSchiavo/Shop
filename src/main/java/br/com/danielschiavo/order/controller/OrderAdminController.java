@@ -32,7 +32,7 @@ public class OrderAdminController {
 	@Autowired
 	private OrderService service;
 
-	@GetMapping("/{customerId}")
+	@GetMapping("/customers/{customerId}")
 	@Operation(summary = "Get all orders by customer id")
 	public ResponseEntity<?> getAllOrdersByCustomerId(@PathVariable Long customerId, Pageable pageable) {
 		Page<DetailOrderResponse> pageOrders = service.getAllOrdersByCustomerId(pageable, customerId);

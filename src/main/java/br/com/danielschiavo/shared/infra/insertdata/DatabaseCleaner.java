@@ -11,32 +11,35 @@ public class DatabaseCleaner {
     private JdbcTemplate jdbcTemplate;
 
     public void clean() {
-        String[] tables = new String[]{"pedidos_items", 
-                                       "pedidos", 
-                                       "pedidos_entrega", 
-                                       "pedidos_pagamento", 
-                                       "clientes_carrinhos_items", 
-                                       "clientes_carrinhos", 
-                                       "produtos_tipo_entrega", 
-                                       "produtos_arquivos", 
+        String[] tables = new String[]{"files_references",
+                                       "orders_payments",
+                                       "orders_deliveries",
+                                       "orders",
+                                       "products_deliveries_types",
+                                       "products_files",
                                        "products",
-                                       "sub_categorias", 
-                                       "categorias", 
-                                       "clientes_enderecos", 
-                                       "clientes_cartoes", 
-                                       "clientes"};
-        
+                                       "customers_cards",
+                                       "customers_addresses",
+                                       "customers_roles",
+                                       "customers",
+                                       "categories"};
+
         for (String table : tables) {
             if (tabelaExiste(table)) {
                 jdbcTemplate.execute("DELETE FROM " + table + ";");
 
                 String sequenceName = null;
-                if (table.contentEquals("clientes_carrinhos")) {
-                	sequenceName = jdbcTemplate.queryForObject(
-                			"SELECT pg_get_serial_sequence('" + table + "', 'cliente_id')", String.class);
-                } else {
-                	sequenceName = jdbcTemplate.queryForObject(
-                			"SELECT pg_get_serial_sequence('" + table + "', 'id')", String.class);
+//                if (table.contentEquals("clientes_carrinhos")) {
+//                	sequenceName = jdbcTemplate.queryForObject(
+//                			"SELECT pg_get_serial_sequence('" + table + "', 'cliente_id')", String.class);
+//                } else {
+//                	sequenceName = jdbcTemplate.queryForObject(
+//                			"SELECT pg_get_serial_sequence('" + table + "_id_seq')", String.class);
+//                }
+
+                if (!table.contentEquals("files_references")){
+                    sequenceName = jdbcTemplate.queryForObject(
+                            "SELECT pg_get_serial_sequence('" + table + "', 'id')", String.class);
                 }
 
                 if(sequenceName != null) {

@@ -10,14 +10,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Builder
-public record ShowProductsResponse (
-		Long id,
-		String name,
-		BigDecimal price,
-		Integer quantity,
-		Boolean active,
-		@JsonProperty("first_image")
-		String firstImage
-) {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ShowProductsResponse {
+
+	private Long id;
+	private String name;
+	private BigDecimal price;
+	private Integer quantity;
+	private Boolean active;
+	@JsonProperty("first_image")
+	private DetailProductFileResponse firstImage;
 
 }

@@ -1,5 +1,6 @@
 package br.com.danielschiavo.shared.infra.insertdata;
 
+import br.com.danielschiavo.catalog.model.enums.ProductFileType;
 import br.com.danielschiavo.customer.model.entity.Card;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.CardType;
@@ -10,6 +11,10 @@ import br.com.danielschiavo.customer.model.valueobject.Role.RoleBuilder;
 import br.com.danielschiavo.customer.repository.CardRepository;
 import br.com.danielschiavo.customer.repository.CustomerRepository;
 import br.com.danielschiavo.customer.repository.AddressRepository;
+import br.com.danielschiavo.filestorage.model.FileReference;
+import br.com.danielschiavo.filestorage.model.FileReferenceKey;
+import br.com.danielschiavo.filestorage.model.FileType;
+import br.com.danielschiavo.filestorage.repository.FileReferenceRepository;
 import br.com.danielschiavo.order.model.entity.Order;
 import br.com.danielschiavo.delivery.model.enums.DeliveryType;
 import br.com.danielschiavo.order.repository.OrderRepository;
@@ -28,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Profile("dev")
@@ -35,7 +42,7 @@ import java.util.List;
 public class InitializationDevEnv implements CommandLineRunner {
 	
 	@Autowired
-	private CustomerRepository clienteRepository;
+	private CustomerRepository customerRepository;
 	
 	@Autowired
 	private CategoryRepository categoriaRepository;
@@ -48,6 +55,9 @@ public class InitializationDevEnv implements CommandLineRunner {
 	
 	@Autowired
 	private DatabaseCleaner databaseCleaner;
+
+	@Autowired
+	private FileReferenceRepository fileRepository;
 	
 	private final Product.ProductBuilder productBuilder = Product.builder();
 
@@ -69,9 +79,9 @@ public class InitializationDevEnv implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-//		databaseCleaner.clean();
-//
-//		insertData();
+		databaseCleaner.clean();
+
+		insertData();
 	}
 
 	public void insertData() {
@@ -96,14 +106,18 @@ public class InitializationDevEnv implements CommandLineRunner {
 		 produto.addDeliveryType(productDeliveryType);
 		 
 		 ProductFile productFile = ProductFile.builder()
-				 									   .name("Padrao.jpeg")
-				 									   .position((byte) 0)
-				 									   .product(produto).build();
+				 .fileName("Default.jpeg")
+				 .type(ProductFileType.IMAGE)
+				 .position((byte) 0)
+				 .product(produto)
+				 .build();
 		 
 		 ProductFile productFile3 = ProductFile.builder()
-													   .name("teste.jpeg")
-													   .position((byte) 1)
-													   .product(produto).build();
+				 .fileName("Default.jpeg")
+				 .type(ProductFileType.IMAGE)
+				 .position((byte) 1)
+				 .product(produto)
+				 .build();
 		 
 		 produto.addProductFile(productFile);
 		 produto.addProductFile(productFile3);
@@ -126,9 +140,11 @@ public class InitializationDevEnv implements CommandLineRunner {
 		produto2.addDeliveryType(productDeliveryType2);
 		
 		ProductFile productFile2 = ProductFile.builder()
-													   .name("Default.jpeg")
-													   .position((byte) 0)
-													   .product(produto2).build();
+				.fileName("Default.jpeg")
+				.type(ProductFileType.IMAGE)
+				.position((byte) 0)
+				.product(produto2)
+				.build();
 												
 		produto2.addProductFile(productFile2);
 		 
@@ -146,7 +162,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 						.email("daniel.schiavo35@gmail.com")
 						.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
 						.cellphoneNumber("27996121255")
-						.profilePicture("Default.jpeg")
+						.profilePicture("profiles/Default.jpeg")
 						.build();
 		
 		Role role = roleBuilder.id(null)
@@ -156,7 +172,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 		
 		Address address = addressBuilder.id(null)
 										  .postalCode("29142298")
-										  .state("NaoSeiONome")
+										  .street("NaoSeiONome")
 										  .number("15")
 										  .complement(null)
 										  .neighborhood("Itapua")
@@ -176,7 +192,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 		
 		customer.adicionarRole(role);
 
-		Customer customer2 = customerBuilder.id(null)
+		Customer customer2 = customerBuilder.id(2L)
 										.cpf("12345678994")
 										.name("Silvana")
 										.surname("Pereira da silva")
@@ -185,7 +201,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 										.email("silvana.dasilva@gmail.com")
 										.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
 										.cellphoneNumber("27999833653")
-										.profilePicture("Default.jpeg").build();
+										.profilePicture("profiles/Default.jpeg").build();
 		
 		Address address2 = addressBuilder.id(null)
 											  .postalCode("29142298")
@@ -208,7 +224,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 									  .customerId(customer2.getId()).build();
 		
 
-		clienteRepository.saveAll(List.of(customer, customer2));
+		customerRepository.saveAll(List.of(customer, customer2));
 		addressRepository.saveAll(List.of(address, address2));
 		cardRepository.saveAll(List.of(card, card2));
 //		
@@ -225,6 +241,37 @@ public class InitializationDevEnv implements CommandLineRunner {
 //		
 //			
 //		orderRepository.saveAll(pedidos);
-		
+
+		FileReference fileReference = FileReference.builder()
+				.contentType("image/jpeg")
+				.file(new FileReferenceKey("products", "Default.jpeg"))
+				.contentLength(7200L)
+				.createdAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC))
+				.isPublicAccessible(true)
+				.type(FileType.IMAGE)
+				.temp(false)
+				.build();
+
+		FileReference fileReference2 = FileReference.builder()
+				.contentType("image/jpeg")
+				.file(new FileReferenceKey("orders", "Default.jpeg"))
+				.contentLength(7200L)
+				.createdAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC))
+				.isPublicAccessible(true)
+				.type(FileType.IMAGE)
+				.temp(false)
+				.build();
+
+		FileReference fileReference3 = FileReference.builder()
+				.contentType("image/jpeg")
+				.file(new FileReferenceKey("profiles", "Default.jpeg"))
+				.contentLength(19200L)
+				.createdAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC))
+				.isPublicAccessible(true)
+				.type(FileType.IMAGE)
+				.temp(false)
+				.build();
+
+		fileRepository.saveAll(List.of(fileReference, fileReference2, fileReference3));
 	}
 }

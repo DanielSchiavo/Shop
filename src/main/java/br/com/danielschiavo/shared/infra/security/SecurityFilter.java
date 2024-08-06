@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,7 +38,6 @@ public class SecurityFilter extends OncePerRequestFilter{
 			Long clienteId = tokenService.getClienteId();
 			String email = tokenService.getEmail();
 			List<SimpleGrantedAuthority> roles = tokenService.getRoles();
-			System.out.println("TESTEr" + roles);
 
 			var authentication = new JwtAuthenticationToken(clienteId, null, tokenComBearer, roles);
 			SecurityContextHolder.getContext().setAuthentication(authentication);

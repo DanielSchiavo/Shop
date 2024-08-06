@@ -34,7 +34,7 @@ public class CategoryUserController {
 		return ResponseEntity.ok(Response.success("Success recovering all starting with provided name", response));
 	}
 
-	@GetMapping("/hierarchical")
+	@GetMapping
 	@Operation(summary = "Get all existing categories hierarchicaly")
 	public ResponseEntity<?> getAllCategoriesHierarchical(){
 		List<CategoryDto> allHierarchical = service.getAllRootCategoriesAndItsChildren();

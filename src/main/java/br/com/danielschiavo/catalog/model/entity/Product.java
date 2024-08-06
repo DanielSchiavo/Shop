@@ -94,10 +94,10 @@ public class Product {
     }
 
 	public List<String> getAllImageNames() {
-		return getProductFiles().stream().map(ProductFile::getName).collect(Collectors.toList());
+		return getProductFiles().stream().map(ProductFile::getFileName).collect(Collectors.toList());
 	}
 
 	public String getNameFirstImage() {
-		return getProductFiles().stream().filter(ap -> ap.getPosition().equals((byte) 0)).findFirst().get().getName();
+		return getProductFiles().stream().filter(ap -> ap.getPosition().equals((byte) 0)).findFirst().get().getFileName();
 	}
 }

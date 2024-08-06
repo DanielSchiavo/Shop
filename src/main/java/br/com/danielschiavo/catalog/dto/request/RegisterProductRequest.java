@@ -24,6 +24,7 @@ public record RegisterProductRequest(
 		@NotNull
 		Boolean active,
 		@NotNull
+		@JsonProperty("category_id")
 		Long categoryId,
 		@NotNull
 		@JsonProperty("delivery_types")

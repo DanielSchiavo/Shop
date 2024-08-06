@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/user/payments")
 public class PaymentController {
@@ -34,9 +36,9 @@ public class PaymentController {
     private CardService cardService;
     
     @PostMapping
-    public ResponseEntity<?> executePayment(@RequestBody AddPaymentRequest request) {
+    public ResponseEntity<?> executePayment(@RequestBody AddPaymentRequest request, UUID orderId) {
         Long customerId = securityService.getCustomerId();
-        DetailOrderResponse order = orderService.getOrderById(request.orderId());
+        DetailOrderResponse order = orderService.getOrderById(orderId);
         DetailCardResponse card = null;
         if (request.cardId() != null) {
             card = cardService.getCardByIdAndCustomerId(request.cardId(), customerId);

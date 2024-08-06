@@ -4,10 +4,8 @@ package br.com.danielschiavo.customer.controller.user;
 import br.com.danielschiavo.customer.dto.request.customer.UpdateCustomerRequest;
 import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
-import br.com.danielschiavo.customer.mapper.CustomerMapper;
-import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
-import br.com.danielschiavo.filestorage.service.FileService;
+import br.com.danielschiavo.filestorage.service.FileReferenceService;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/user/customers")
@@ -34,8 +30,9 @@ public class CustomerUserController {
 
 	@Autowired
 	private SecurityService securityService;
-    @Autowired
-    private FileService fileService;
+
+	@Autowired
+	private FileReferenceService fileService;
 
 	@GetMapping("/home-page")
 	@Operation(summary = "Show Customer data for home page")
@@ -73,21 +70,15 @@ public class CustomerUserController {
 		return ResponseEntity.ok(Response.success("Customer updated successfully!", null));
 	}
 	
-	@PutMapping("/profile-picture/{profilePictureName}")
+	@PatchMapping("/profile-picture/{profilePictureName}")
 	@Operation(summary = "Customer update your profile picture")
 	public ResponseEntity<?> updateProfilePicture(@PathVariable String profilePictureName) {
 		Long customerId = securityService.getCustomerId();
-		String oldProfilePicture = customerService.updateProfilePictureById(profilePictureName, customerId);
-		fileService.deleteFile(CustomerService.bucketName, oldProfilePicture);
-		return ResponseEntity.ok(Response.success("Profile picture updated successfully!", null));
-	}
 
-	@DeleteMapping("/profile-picture")
-	@Operation(summary = "Customer delete your profile picture")
-	public ResponseEntity<?> deleteProfilePicture() {
-		Long customerId = securityService.getCustomerId();
-		String oldProfilePicture = customerService.deleteProfilePictureById(customerId);
-		fileService.deleteFile(CustomerService.bucketName, oldProfilePicture);
-		return ResponseEntity.ok().body(Response.success("Profile picture deleted successfully", null));
+		String oldProfilePicture = customerService.updateProfilePictureById(profilePictureName, customerId);
+
+		fileService.delete(CustomerService.awsS3Directory, oldProfilePicture);
+
+		return ResponseEntity.ok(Response.success("Profile picture updated successfully!", null));
 	}
 }

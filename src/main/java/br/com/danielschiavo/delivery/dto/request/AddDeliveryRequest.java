@@ -13,9 +13,7 @@ public record AddDeliveryRequest(
 			@JsonProperty("delivery_type")
 			DeliveryType deliveryType,
 			@JsonProperty("address_id")
-			Long addressId,
-			@JsonProperty("order_id")
-			UUID orderId
+			Long addressId
 		) {
 
 }

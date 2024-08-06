@@ -7,10 +7,7 @@ import br.com.danielschiavo.customer.dto.request.address.RegisterAddressRequest;
 import br.com.danielschiavo.customer.dto.response.address.DetailAddressResponse;
 import br.com.danielschiavo.customer.dto.response.address.ShowAddressesResponse;
 import br.com.danielschiavo.customer.model.entity.Address;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring")
@@ -26,6 +23,6 @@ public interface AddressMapper {
 	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 	Address toEntity(DetailAddressResponse response);
 
-	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+	@BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	void updateAddress(UpdateAddressRequest request, @MappingTarget Address address);
 }

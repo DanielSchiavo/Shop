@@ -15,9 +15,7 @@ public record AddPaymentRequest(
 				@JsonProperty("card_id")
 				Long cardId,
 				@JsonProperty("number_of_installments")
-				Byte numberOfInstallments,
-				@JsonProperty("order_id")
-				UUID orderId
+				Byte numberOfInstallments
 		) {
 
 }

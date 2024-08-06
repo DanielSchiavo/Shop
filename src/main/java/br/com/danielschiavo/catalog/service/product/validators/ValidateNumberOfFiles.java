@@ -1,0 +1,21 @@
+package br.com.danielschiavo.catalog.service.product.validators;
+
+import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
+import br.com.danielschiavo.shared.exception.ValidationException;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public class ValidateNumberOfFiles implements ValidatorRegisterProduct {
+
+	private final int MAX_FILES = 10;
+	
+	@Override
+	public void validate(RegisterProductRequest request) {
+		if (request.files().size() > MAX_FILES) {
+			throw new ValidationException("The maximum number of files is: " + MAX_FILES);
+		}
+	}
+
+
+}

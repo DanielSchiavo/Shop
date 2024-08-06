@@ -6,19 +6,17 @@ import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
 import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
 import br.com.danielschiavo.catalog.mapper.ProductMapper;
 import br.com.danielschiavo.catalog.model.entity.Product;
-import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
+import br.com.danielschiavo.catalog.model.enums.ProductFileType;
 import br.com.danielschiavo.catalog.repository.ProductRepository;
-import br.com.danielschiavo.catalog.service.product.validators.registerproduct.ValidatorRegisterProduct;
+import br.com.danielschiavo.catalog.service.product.validators.ValidatorRegisterProduct;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,14 +31,20 @@ public class ProductService {
 	@Autowired
 	private List<ValidatorRegisterProduct> validators;
 
-	public static final String bucketName = "product";
-	
+	public static final String awsS3Directory = "products";
+
 	@Transactional
-	public Set<ProductFile> deleteProduct(Long productId) {
+	public List<String> deleteProduct(Long productId) {
 		Product product = repository.findById(productId)
 				.orElseThrow(() -> new ValidationException("Could not delete product because there's no product with id: " + productId));
+
+		List<String> productFilesNames = product.getProductFiles().stream()
+				.filter(pf -> pf.getType().equals(ProductFileType.IMAGE))
+				.map(pf -> awsS3Directory + pf.getFileName())
+				.collect(Collectors.toList());
+
 		repository.deleteById(productId);
-		return product.getProductFiles();
+		return productFilesNames;
 	}
 	
 	@Transactional
@@ -62,13 +66,11 @@ public class ProductService {
 		return mapper.toDetailProduct(repository.save(product));
 	}
 
-	public Page<ShowProductsResponse> getAllProducts(Pageable pageable) {
+	public List<ShowProductsResponse> getAllProducts(Pageable pageable) {
 		Page<Product> all = repository.findAll(pageable);
 
-		List<ShowProductsResponse> list = all.getContent().stream()
+		return all.getContent().stream()
 				.map(mapper::toShowProducts).collect(Collectors.toList());
-
-		return new PageImpl<>(list, pageable, all.getTotalElements());
 	}
 
 	public DetailProductResponse getProductById(Long id) {
@@ -81,6 +83,13 @@ public class ProductService {
 		List<Product> allById = repository.findAllById(ids);
 
 		return mapper.toShowProducts(allById);
+	}
+
+	public void checkIfProductExist(Long productId) {
+		boolean exists = repository.existsById(productId);
+		if (!exists) {
+			throw new ValidationException("Product does not exist!");
+		}
 	}
 
 
