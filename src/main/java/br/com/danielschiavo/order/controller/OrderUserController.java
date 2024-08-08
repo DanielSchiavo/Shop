@@ -1,7 +1,6 @@
 package br.com.danielschiavo.order.controller;
 
-import br.com.danielschiavo.catalog.dto.response.DetailProductFileResponse;
-import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.dto.response.product.ShowProductsResponse;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.customer.dto.response.address.DetailAddressResponse;
 import br.com.danielschiavo.customer.dto.response.card.DetailCardResponse;
@@ -11,19 +10,22 @@ import br.com.danielschiavo.customer.service.card.CardService;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.delivery.dto.response.ShowDeliveryResponse;
 import br.com.danielschiavo.delivery.service.DeliveryService;
-import br.com.danielschiavo.filestorage.infra.cloud.StorageProperties;
 import br.com.danielschiavo.filestorage.service.FileReferenceService;
 import br.com.danielschiavo.order.dto.request.OrderItemRequest;
 import br.com.danielschiavo.order.dto.request.PlaceOrderRequest;
 import br.com.danielschiavo.order.dto.response.DetailOrderResponse;
+import br.com.danielschiavo.order.dto.response.DetailOrderItemResponse;
 import br.com.danielschiavo.order.service.OrderService;
 import br.com.danielschiavo.payment.dto.response.ShowPaymentResponse;
 import br.com.danielschiavo.payment.model.enums.PaymentStatus;
 import br.com.danielschiavo.payment.service.PaymentService;
+import br.com.danielschiavo.shared.DetailFileResponse;
+import br.com.danielschiavo.shared.FileMapper;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/user/orders")
@@ -69,7 +72,7 @@ public class OrderUserController {
 	private AddressService addressService;
 
 	@Autowired
-	private StorageProperties storageProperties;
+	private FileMapper fileMapper;
 
 	@Autowired
 	private FileReferenceService fileService;
@@ -79,9 +82,14 @@ public class OrderUserController {
 	public ResponseEntity<?> getOrderById(@PathVariable UUID orderId) {
 		Long customerId = securityService.getCustomerId();
 
-		DetailOrderResponse response = service.getOrderByIdAndCustomerId(orderId, customerId);
+		DetailOrderResponse order = service.getOrderByIdAndCustomerId(orderId, customerId);
 
-		return ResponseEntity.ok(Response.success("Success recovering order", response));
+		List<DetailFileResponse> listDetailFile = order.getAllDetailFile();
+		Set<String> fileNames = order.getAllFileNames();
+
+		fileMapper.mapFilesToDto(listDetailFile, OrderService.awsS3Directory, fileNames);
+
+		return ResponseEntity.ok(Response.success("Success recovering order", order));
 	}
 	
 	@GetMapping
@@ -89,9 +97,19 @@ public class OrderUserController {
 	public ResponseEntity<?> getAllOrders(Pageable pageable) {
 		Long customerId = securityService.getCustomerId();
 
-		Page<DetailOrderResponse> response = service.getAllOrdersByCustomerId(pageable, customerId);
+		List<DetailOrderResponse> orders = service.getAllOrdersByCustomerId(pageable, customerId);
 
-		return ResponseEntity.ok(Response.success("Success recovering all user orders", response));
+		List<DetailFileResponse> listDetailFile = orders.stream()
+				.flatMap(order -> order.getAllDetailFile().stream()) // Converte cada lista de items em um único stream
+				.toList();
+
+		Set<String> fileNames = orders.stream()
+				.flatMap(order -> order.getAllFileNames().stream()) // Achata todos os nomes de arquivos em um único stream
+				.collect(Collectors.toSet());
+
+		fileMapper.mapFilesToDto(listDetailFile, OrderService.awsS3Directory, fileNames);
+
+		return ResponseEntity.ok(Response.success("Success recovering all user orders", new PageImpl<>(orders, pageable, orders.size())));
 	}
 	
 	@PostMapping
@@ -103,23 +121,35 @@ public class OrderUserController {
 		List<Long> ids = request.items().stream().map(OrderItemRequest::productId).toList();
 		List<ShowProductsResponse> products = productService.getProductsById(ids);
 
-		Set<DetailProductFileResponse> filesReferences = products.stream().map(ShowProductsResponse::getFirstImage).collect(Collectors.toSet());
-		filesReferences.forEach(f -> {
-			String[] split = f.getFileName().split("/");
-			String fileName = split[split.length - 1];
-
-			fileService.copy("products/", f.getFileName(),
-								OrderService.awsS3Directory, fileName);
-		});
-
 		DetailOrderResponse order = service.placeOrder(customer, request.purchasedViaCart(), request.items(), products);
 
+		Set<String> fileNames = order.getAllFileNames();
+		List<DetailFileResponse> productFiles = order.getAllDetailFile();
+
+		saveProductsFirstImage(fileNames);
+		fileMapper.mapFilesToDto(productFiles, OrderService.awsS3Directory, fileNames);
+
+		ShowPaymentResponse payment = executePayment(request, customerId, order);
+		ShowDeliveryResponse delivery = executeDelivery(request, payment, order, customerId);
+
+		order.addPaymentAndDelivery(payment, delivery);
+		return ResponseEntity.ok(Response.success("Order placed successfully!", order));
+	}
+
+	private void saveProductsFirstImage(Set<String> fileNames) {
+		fileNames.forEach(name -> fileService.copy(ProductService.awsS3Directory, name,
+												   OrderService.awsS3Directory, name));
+	}
+
+	private ShowPaymentResponse executePayment(PlaceOrderRequest request, Long customerId, DetailOrderResponse order) {
 		DetailCardResponse card = null;
 		if (request.payment().cardId() != null) {
 			card = cardService.getCardByIdAndCustomerId(request.payment().cardId(), customerId);
 		}
-		ShowPaymentResponse payment = paymentService.executePayment(request.payment(), order, card);
+        return paymentService.executePayment(request.payment(), order, card);
+	}
 
+	private ShowDeliveryResponse executeDelivery(PlaceOrderRequest request, ShowPaymentResponse payment, DetailOrderResponse order, Long customerId) {
 		ShowDeliveryResponse delivery = null;
 		if (payment.paymentStatus() == PaymentStatus.APPROVED_NOT_INTEGRATED) {
 			service.paymentApproved(order.getId());
@@ -131,8 +161,6 @@ public class OrderUserController {
 			delivery = deliveryService.createDelivery(request.delivery(), address);
 			deliveryService.executeDelivery(delivery.id());
 		}
-
-		order.addPaymentAndDelivery(payment, delivery);
-		return ResponseEntity.ok(Response.success("Order placed successfully!", order));
+		return delivery;
 	}
 }

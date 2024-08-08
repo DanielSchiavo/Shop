@@ -1,4 +1,4 @@
-package br.com.danielschiavo.catalog.dto.request;
+package br.com.danielschiavo.catalog.dto.request.product;
 
 import java.math.BigDecimal;
 import java.util.Set;

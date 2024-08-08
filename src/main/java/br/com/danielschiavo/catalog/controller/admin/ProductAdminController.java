@@ -1,13 +1,13 @@
 package br.com.danielschiavo.catalog.controller.admin;
 
-import br.com.danielschiavo.catalog.dto.request.UpdateProductRequest;
-import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
-import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
-import br.com.danielschiavo.catalog.service.CategoryService;
+import br.com.danielschiavo.catalog.dto.request.product.UpdateProductRequest;
+import br.com.danielschiavo.catalog.dto.request.product.RegisterProductRequest;
+import br.com.danielschiavo.catalog.dto.response.product.DetailProductResponse;
+import br.com.danielschiavo.catalog.service.category.CategoryService;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.filestorage.service.FileReferenceService;
 import br.com.danielschiavo.shared.Response;
-import br.com.danielschiavo.filestorage.infra.cloud.impl.S3CloudStorageProvider;
+import br.com.danielschiavo.shared.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -52,8 +53,15 @@ public class ProductAdminController {
 	public ResponseEntity<?> registerProduct(
 			@RequestBody @Valid RegisterProductRequest request,
 			UriComponentsBuilder uriBuilder) {
+		categoryService.categoryExists(request.categoryId());
 
-		categoryService.validateCategoryExists(request.categoryId());
+		request.files().forEach(file -> {
+			boolean exists = fileService.fileExists(ProductService.awsS3Directory, file.fileReferenceId());
+			if (!exists) {
+				throw new ValidationException("Unable to register the product because the file: " + file.fileReferenceId() + " was not uploaded");
+			}
+		});
+
 		DetailProductResponse response = service.registerProduct(request);
 		var uri = uriBuilder.path("/products/{id}").buildAndExpand(response.getId()).toUri();
 		return ResponseEntity.created(uri).body(Response.success("Product registered successfully!", null));
@@ -65,7 +73,15 @@ public class ProductAdminController {
 	public ResponseEntity<?> updateProductById(
 			@PathVariable Long productId,
 			@RequestBody UpdateProductRequest request) {
-		categoryService.validateCategoryExists(request.categoryId());
+		categoryService.categoryExists(request.categoryId());
+
+		request.files().forEach(file -> {
+			boolean exists = fileService.fileExists(ProductService.awsS3Directory, file.fileReferenceId());
+			if (!exists) {
+				throw new ValidationException("Unable to register the product because the file: " + file.fileReferenceId() + " was not uploaded");
+			}
+		});
+
 		DetailProductResponse response = service.updateProduct(productId, request);
 			
 		return ResponseEntity.ok(Response.success("Product updated successfully!", null));

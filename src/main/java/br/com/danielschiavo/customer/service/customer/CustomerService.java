@@ -3,6 +3,7 @@ package br.com.danielschiavo.customer.service.customer;
 import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
 import br.com.danielschiavo.customer.dto.request.customer.UpdateCustomerRequest;
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
+import br.com.danielschiavo.customer.dto.response.customer.ShowCustomerHomePageResponse;
 import br.com.danielschiavo.customer.dto.response.customer.ShowCustomersResponse;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
@@ -43,21 +44,18 @@ public class CustomerService {
 	@Autowired
 	private PasswordEncoder encoder;
 
-	public static final String awsS3Directory = "profiles/";
+	public static final String awsS3Directory = "profiles";
 
-	public Page<ShowCustomersResponse> getAllCustomers(Pageable pageable) {
+	public List<ShowCustomersResponse> getAllCustomers(Pageable pageable) {
 		Page<Customer> all = repository.findAll(pageable);
 
-		List<ShowCustomersResponse> list = all.getContent().stream()
-				.map(mapper::toShowCustomers).collect(Collectors.toList());
-
-		return new PageImpl<>(list, pageable, all.getTotalElements());
+		return all.getContent().stream().map(mapper::toShowCustomers).collect(Collectors.toList());
 	}
 
-	public DetailCustomerResponse getCustomerForHomePageById(Long customerId) {
+	public ShowCustomerHomePageResponse getCustomerForHomePageById(Long customerId) {
 		Customer customer = repository.findByIdHomePage(customerId)
 				.orElseThrow(() -> new ValidationException("There's no customer with id: " + customerId));
-		return mapper.toDetailCustomer(customer);
+		return mapper.toHomePage(customer);
 	}
 	
 	public DetailCustomerResponse getCustomerById(Long customerId) {

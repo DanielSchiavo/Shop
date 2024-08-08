@@ -1,5 +1,6 @@
 package br.com.danielschiavo.customer.dto.response.customer;
 
+import br.com.danielschiavo.shared.DetailFileResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
@@ -7,7 +8,7 @@ import lombok.Builder;
 public record ShowCustomerHomePageResponse (
 		String name,
 		@JsonProperty("profile_picture")
-		String profilePicture
+		DetailFileResponse profilePicture
 ) {
 
 }

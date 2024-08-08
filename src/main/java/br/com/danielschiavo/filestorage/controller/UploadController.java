@@ -2,6 +2,7 @@ package br.com.danielschiavo.filestorage.controller;
 
 import br.com.danielschiavo.filestorage.dto.request.UploadObjectRequest;
 import br.com.danielschiavo.filestorage.service.FileReferenceService;
+import br.com.danielschiavo.shared.Response;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UploadController {
 
     @PostMapping("/filestorage/uploads")
     public ResponseEntity<?> newDocumentUploadRequest(@RequestBody @Valid UploadObjectRequest request) {
-        return ResponseEntity.ok(service.generateUploadUrl(request));
+        return ResponseEntity.ok(Response.success("Success generating an upload url", service.generateUploadUrl(request)));
     }
 
 }

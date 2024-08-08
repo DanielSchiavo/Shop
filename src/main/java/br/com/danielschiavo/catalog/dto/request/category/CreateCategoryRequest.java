@@ -1,4 +1,4 @@
-package br.com.danielschiavo.catalog.dto.request;
+package br.com.danielschiavo.catalog.dto.request.category;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;

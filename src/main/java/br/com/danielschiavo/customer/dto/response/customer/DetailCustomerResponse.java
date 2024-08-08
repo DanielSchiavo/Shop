@@ -2,6 +2,7 @@ package br.com.danielschiavo.customer.dto.response.customer;
 
 import java.time.LocalDate;
 
+import br.com.danielschiavo.shared.DetailFileResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -27,7 +28,7 @@ public record DetailCustomerResponse (
 		@JsonProperty("cellphone_number")
 		String cellphoneNumber,
 		@JsonProperty("profile_picture")
-		String profilePicture
+		DetailFileResponse profilePicture
 ) {
 	
 

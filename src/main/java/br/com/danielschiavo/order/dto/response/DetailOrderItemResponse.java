@@ -3,11 +3,12 @@ package br.com.danielschiavo.order.dto.response;
 import java.math.BigDecimal;
 
 import br.com.danielschiavo.order.model.entity.OrderItem;
+import br.com.danielschiavo.shared.DetailFileResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record ShowOrderItemResponse(
+public record DetailOrderItemResponse(
 		@JsonProperty("product_id")
 		Long productId,
 		@JsonProperty("product_name")
@@ -17,16 +18,16 @@ public record ShowOrderItemResponse(
 		@JsonProperty("sub_total")
 		BigDecimal subTotal,
 		@JsonProperty("first_image")
-		byte[] firstImage
+		DetailFileResponse firstImage
 		) {
 
-	public ShowOrderItemResponse(OrderItem orderItem, byte[] firstImage) {
+	public DetailOrderItemResponse(OrderItem orderItem, DetailFileResponse firstImage) {
 		this(orderItem.getProductId(),
 			 orderItem.getName(),
 			 orderItem.getPrice(),
 			 orderItem.getQuantity(),
 			 orderItem.getSubTotal(),
-			 firstImage);
+				firstImage);
 	}
 
 }

@@ -1,7 +1,7 @@
 package br.com.danielschiavo.catalog.mapper;
 
-import br.com.danielschiavo.catalog.dto.request.AddProductFileRequest;
-import br.com.danielschiavo.catalog.dto.response.DetailProductFileResponse;
+import br.com.danielschiavo.catalog.dto.request.product.AddProductFileRequest;
+import br.com.danielschiavo.catalog.dto.response.product.DetailProductFileResponse;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import br.com.danielschiavo.filestorage.dto.response.DetailFileReferenceResponse;
@@ -20,18 +20,4 @@ public interface ProductFileMapper {
                 .collect(Collectors.toSet());
         product.addProductFiles(productFiles);
     }
-
-    default void mapFilesToDto(List<DetailProductFileResponse> productFiles,
-                               List<DetailFileReferenceResponse> filesReferences,
-                               String downloadUrl) {
-        productFiles.forEach(pf -> {
-            DetailFileReferenceResponse fr = filesReferences.stream().filter(f -> f.fileName().equals(pf.getFileName())).findFirst().get();
-
-            pf.setDirectory(fr.directory());
-            pf.setContentType(fr.contentType());
-            pf.setDownloadUrl(downloadUrl + "/" + pf.getFileName());
-            pf.setContentLength(fr.contentLength());
-        });
-    }
-
 }

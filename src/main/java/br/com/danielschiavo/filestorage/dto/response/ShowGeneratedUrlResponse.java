@@ -1,4 +1,4 @@
-package br.com.danielschiavo.filestorage.service;
+package br.com.danielschiavo.filestorage.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

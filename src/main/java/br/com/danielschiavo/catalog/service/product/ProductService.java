@@ -1,9 +1,9 @@
 package br.com.danielschiavo.catalog.service.product;
 
-import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
-import br.com.danielschiavo.catalog.dto.request.UpdateProductRequest;
-import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
-import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.dto.request.product.RegisterProductRequest;
+import br.com.danielschiavo.catalog.dto.request.product.UpdateProductRequest;
+import br.com.danielschiavo.catalog.dto.response.product.DetailProductResponse;
+import br.com.danielschiavo.catalog.dto.response.product.ShowProductsResponse;
 import br.com.danielschiavo.catalog.mapper.ProductMapper;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import br.com.danielschiavo.catalog.model.enums.ProductFileType;
@@ -49,9 +49,9 @@ public class ProductService {
 	
 	@Transactional
 	public DetailProductResponse registerProduct(RegisterProductRequest request) {
-		validators.forEach(v -> v.validate(request));
-
 		Product product = mapper.toEntity(request);
+
+		validators.forEach(v -> v.validate(product));
 
 		return mapper.toDetailProduct(repository.save(product));
 	}
@@ -62,6 +62,8 @@ public class ProductService {
 				.orElseThrow(() -> new ValidationException("Cannot update product because there's no product with given id: " + productId));
 
 		mapper.updateProduct(request, product);
+
+		validators.forEach(v -> v.validate(product));
 
 		return mapper.toDetailProduct(repository.save(product));
 	}

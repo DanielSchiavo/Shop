@@ -2,6 +2,7 @@ package br.com.danielschiavo.filestorage.dto.response;
 
 import br.com.danielschiavo.filestorage.model.FileType;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
 
 public record DetailFileReferenceResponse(
         @JsonProperty("file_name")

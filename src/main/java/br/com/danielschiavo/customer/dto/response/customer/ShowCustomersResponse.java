@@ -1,5 +1,6 @@
 package br.com.danielschiavo.customer.dto.response.customer;
 
+import br.com.danielschiavo.shared.DetailFileResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
@@ -9,7 +10,7 @@ public record ShowCustomersResponse(
         String name,
         String surname,
         @JsonProperty("profile_picture")
-        String profilePicture,
+        DetailFileResponse profilePicture,
         @JsonProperty("account_creation_date")
         LocalDate accountCreationDate
 ) {

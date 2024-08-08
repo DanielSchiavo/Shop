@@ -3,8 +3,8 @@ package br.com.danielschiavo.catalog.service.product.validators;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import br.com.danielschiavo.catalog.dto.request.AddProductFileRequest;
-import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 public class ValidateFileOrdering implements ValidatorRegisterProduct {
 
 	@Override
-	public void validate(RegisterProductRequest request) {
-        List<Byte> orderedPositions = request.files().stream()
-									                .map(AddProductFileRequest::position)
+	public void validate(Product product) {
+        List<Byte> orderedPositions = product.getProductFiles().stream()
+									                .map(ProductFile::getPosition)
 									                .sorted()
 									                .toList();
 

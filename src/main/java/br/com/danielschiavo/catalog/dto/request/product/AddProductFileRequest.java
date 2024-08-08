@@ -1,4 +1,4 @@
-package br.com.danielschiavo.catalog.dto.request;
+package br.com.danielschiavo.catalog.dto.request.product;
 
 import br.com.danielschiavo.catalog.model.enums.ProductFileType;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -2,19 +2,28 @@ package br.com.danielschiavo.customer.controller.admin;
 
 
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
+import br.com.danielschiavo.customer.dto.response.customer.ShowCustomersResponse;
 import br.com.danielschiavo.customer.mapper.CustomerMapper;
 import br.com.danielschiavo.customer.model.entity.Customer;
 import br.com.danielschiavo.customer.model.enums.RoleName;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
+import br.com.danielschiavo.filestorage.service.FileReferenceService;
+import br.com.danielschiavo.shared.DetailFileResponse;
+import br.com.danielschiavo.shared.FileMapper;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/customers")
@@ -25,19 +34,34 @@ public class CustomerAdminController {
     @Autowired
     private CustomerService service;
 
+    @Autowired
+    private FileMapper fileMapper;
+
     @GetMapping("/{id}")
     @Operation(summary = "Show all the Customer's data")
     public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
-        DetailCustomerResponse response = service.getCustomerById(id);
+        DetailCustomerResponse customer = service.getCustomerById(id);
 
-        return ResponseEntity.ok(Response.success("Success in recovering customer's data", response));
+        DetailFileResponse detailFileResponse = customer.profilePicture();
+        String fileName = customer.profilePicture().getFileName();
+
+        fileMapper.mapFilesToDto(List.of(detailFileResponse), CustomerService.awsS3Directory, Set.of(fileName));
+
+        return ResponseEntity.ok(Response.success("Success in recovering customer's data", customer));
     }
 
 	@GetMapping
 	@Operation(summary = "Show all registred customers")
 	public ResponseEntity<?> getAllCustomers(Pageable pageable) {
 		var customers = service.getAllCustomers(pageable);
-		return ResponseEntity.ok(Response.success("Success in recovering all registred customers", customers));
+
+        List<DetailFileResponse> detailFileResponses = customers.stream().map(ShowCustomersResponse::profilePicture).toList();
+
+        Set<String> fileNames = customers.stream().map(c -> c.profilePicture().getFileName()).collect(Collectors.toSet());
+
+        fileMapper.mapFilesToDto(detailFileResponses, CustomerService.awsS3Directory, fileNames);
+
+        return ResponseEntity.ok(Response.success("Success in recovering all registred customers", new PageImpl<>(customers, pageable, customers.size())));
 	}
 
     @PostMapping("/{customerId}/roles/{roleName}")

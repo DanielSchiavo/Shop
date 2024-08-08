@@ -1,9 +1,9 @@
 package br.com.danielschiavo.catalog.mapper;
 
-import br.com.danielschiavo.catalog.dto.request.UpdateProductRequest;
-import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
-import br.com.danielschiavo.catalog.dto.response.DetailProductResponse;
-import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.dto.request.product.UpdateProductRequest;
+import br.com.danielschiavo.catalog.dto.request.product.RegisterProductRequest;
+import br.com.danielschiavo.catalog.dto.response.product.DetailProductResponse;
+import br.com.danielschiavo.catalog.dto.response.product.ShowProductsResponse;
 import br.com.danielschiavo.catalog.model.entity.Product;
 import org.mapstruct.*;
 
@@ -38,7 +38,7 @@ public interface ProductMapper extends ProductFileMapper, ProductDeliveryTypeMap
 		mapDeliveryTypesToEntity(product, request.deliveryTypes());
 	}
 
-	@Mapping(target = "firstImage.fileName", expression = "java(product.getNameFirstImage())")
+	@Mapping(target = "firstImage.fileData.fileName", expression = "java(product.getNameFirstImage())")
 	ShowProductsResponse toShowProducts(Product product);
 
 	List<ShowProductsResponse> toShowProducts(List<Product> products);

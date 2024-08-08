@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.dto.response.product.ShowProductsResponse;
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
 import br.com.danielschiavo.order.dto.request.OrderItemRequest;
 import br.com.danielschiavo.order.dto.response.DetailOrderResponse;
@@ -14,10 +14,8 @@ import br.com.danielschiavo.order.mapper.OrderMapper;
 import br.com.danielschiavo.order.model.entity.Order;
 import br.com.danielschiavo.order.model.enums.OrderStatus;
 import br.com.danielschiavo.order.repository.OrderRepository;
-import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import br.com.danielschiavo.order.model.entity.OrderItem;
-import br.com.danielschiavo.filestorage.infra.cloud.impl.S3CloudStorageProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,14 +35,12 @@ public class OrderService {
 	@Autowired
 	private OrderMapper mapper;
 
-	public static final String awsS3Directory = "orders/";
+	public static final String awsS3Directory = "orders";
 
-	public Page<DetailOrderResponse> getAllOrdersByCustomerId(Pageable pageable, Long customerId) {
+	public List<DetailOrderResponse> getAllOrdersByCustomerId(Pageable pageable, Long customerId) {
 		Page<Order> pageOrder = repository.findAllByCustomerId(pageable, customerId);
 
-		List<DetailOrderResponse> list = pageOrder.getContent().stream().map(mapper::toShowOrder).toList();
-
-		return new PageImpl<>(list, pageable, pageOrder.getTotalElements());
+		return pageOrder.getContent().stream().map(mapper::toShowOrder).toList();
 	}
 	
 	@Transactional
@@ -65,7 +61,7 @@ public class OrderService {
 					orderItem.setPrice(product.getPrice());
 					orderItem.setQuantity(request.quantity());
 					orderItem.setName(product.getName());
-					orderItem.setFirstImage(awsS3Directory + product.getFirstImage());
+					orderItem.setFirstImage(product.getFirstImage().getFileData().getFileName());
 					orderItem.setSubTotal(product.getPrice().multiply(BigDecimal.valueOf(request.quantity())));
 					orderItem.setProductId(product.getId());
 
@@ -101,12 +97,10 @@ public class OrderService {
 		return mapper.toShowOrder(repository.save(order));
 	}
 
-	public Page<DetailOrderResponse> getAllOrders(Pageable pageable) {
+	public List<DetailOrderResponse> getAllOrders(Pageable pageable) {
 		Page<Order> all = repository.findAll(pageable);
 
-		List<DetailOrderResponse> list = all.getContent().stream().map(mapper::toShowOrder).toList();
-
-		return new PageImpl<>(list, pageable, all.getTotalElements());
+		return all.getContent().stream().map(mapper::toShowOrder).toList();
 	}
 
 	public void paymentApproved(UUID orderId) {

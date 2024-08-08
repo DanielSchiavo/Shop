@@ -1,10 +1,9 @@
 package br.com.danielschiavo.catalog.controller.admin;
 
-import br.com.danielschiavo.catalog.dto.request.UpdateCategoryRequest;
-import br.com.danielschiavo.catalog.dto.response.DetailCategoryResponse;
-import br.com.danielschiavo.catalog.model.entity.Category;
-import br.com.danielschiavo.catalog.dto.request.CreateCategoryRequest;
-import br.com.danielschiavo.catalog.service.CategoryService;
+import br.com.danielschiavo.catalog.dto.request.category.UpdateCategoryRequest;
+import br.com.danielschiavo.catalog.dto.response.category.DetailCategoryResponse;
+import br.com.danielschiavo.catalog.dto.request.category.CreateCategoryRequest;
+import br.com.danielschiavo.catalog.service.category.CategoryService;
 import br.com.danielschiavo.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +42,6 @@ public class CategoryAdminController {
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Create a Category")
 	public ResponseEntity<?> createCategory(@RequestBody @Valid CreateCategoryRequest request) {
-		service.validateCategoryExists(request.parentCategoryId());
 		service.createCategory(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Category created successfully!", null));
 	}
@@ -52,7 +50,6 @@ public class CategoryAdminController {
 	@SecurityRequirement(name = "bearer-key")
 	@Operation(summary = "Update a Category")
 	public ResponseEntity<?> updateCategory(@PathVariable Long categoryId, @RequestBody @NotNull UpdateCategoryRequest request) {
-		service.validateCategoryExists(request.parentCategoryId());
 		DetailCategoryResponse category = service.updateCategory(categoryId, request);
 
 		return ResponseEntity.status(HttpStatus.OK).body(Response.success("Category updated successfully", null));

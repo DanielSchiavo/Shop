@@ -1,13 +1,13 @@
-package br.com.danielschiavo.catalog.service;
+package br.com.danielschiavo.catalog.service.category;
 
-import br.com.danielschiavo.catalog.dto.request.CreateCategoryRequest;
-import br.com.danielschiavo.catalog.dto.request.UpdateCategoryRequest;
-import br.com.danielschiavo.catalog.dto.response.CategoryDto;
-import br.com.danielschiavo.catalog.dto.response.DetailCategoryResponse;
-import br.com.danielschiavo.catalog.exception.CategoryNotFoundException;
+import br.com.danielschiavo.catalog.dto.request.category.CreateCategoryRequest;
+import br.com.danielschiavo.catalog.dto.request.category.UpdateCategoryRequest;
+import br.com.danielschiavo.catalog.dto.response.category.ShowCategoriesResponse;
+import br.com.danielschiavo.catalog.dto.response.category.DetailCategoryResponse;
 import br.com.danielschiavo.catalog.mapper.CategoryMapper;
 import br.com.danielschiavo.catalog.model.entity.Category;
 import br.com.danielschiavo.catalog.repository.CategoryRepository;
+import br.com.danielschiavo.catalog.service.category.validators.ValidatorCategory;
 import br.com.danielschiavo.shared.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +27,11 @@ public class CategoryService {
 	@Autowired
 	private CategoryMapper mapper;
 
+	@Autowired
+	private List<ValidatorCategory> validators;
+
+	public static final String awsS3Directory = "categories";
+
 	@Transactional
 	public void deleteCategoryById(Long categoryId) {
 		if (!repository.existsById(categoryId)) {
@@ -38,12 +43,11 @@ public class CategoryService {
 
 	@Transactional
 	public DetailCategoryResponse createCategory(CreateCategoryRequest request) {
-		repository.findByNomeLowerCase(request.name())
-				.ifPresent(c -> {throw new ValidationException("A category with name " + c.getName() + " already exists");});
+		Category category = mapper.toEntity(request);
 
-		Category createCategory = mapper.toEntity(request);
+		validators.forEach(v -> v.validate(category));
 
-		return mapper.toDetailCategory(repository.save(createCategory));
+		return mapper.toDetailCategory(repository.save(category));
 	}
 
 	@Transactional
@@ -51,6 +55,8 @@ public class CategoryService {
 		Category category = repository.findById(categoryId)
 				.orElseThrow(() -> new ValidationException("Cannot update because there is no category with given id: " + categoryId));
 		mapper.update(category, request);
+
+		validators.forEach(v -> v.validate(category));
 
 		return mapper.toDetailCategory(repository.save(category));
 	}
@@ -61,14 +67,14 @@ public class CategoryService {
 		return mapper.toDetailCategory(category);
 	}
 
-	public List<CategoryDto> getRootCategoryByIdAndItsChildren(Long categoryId) {
+	public List<ShowCategoriesResponse> getRootCategoryByIdAndItsChildren(Long categoryId) {
 		List<Category> all = repository.getCategoryByIdAndAllSubCategories(categoryId);
 		return mapToDto(all);
 	}
 
-	public List<CategoryDto> getAllRootCategoriesAndItsChildren() {
-		List<Category> all = repository.findAll();
-		return mapToDto(all);
+	public List<ShowCategoriesResponse> getAllRootCategoriesAndItsChildren(Pageable pageable) {
+		Page<Category> all = repository.findAll(pageable);
+		return mapToDto(all.getContent());
 	}
 
 	public List<DetailCategoryResponse> getAllCategoriesByName(String categoryName) {
@@ -78,29 +84,23 @@ public class CategoryService {
 		return all.stream().map(mapper::toDetailCategory).toList();
 	}
 
-	public void validateCategoryExists(Long categoryId) {
-		if (categoryId != null && !repository.existsById(categoryId)) {
-			throw new CategoryNotFoundException("Category with ID " + categoryId + " does not exist.");
-		}
-	}
-
-	public List<CategoryDto> mapToDto(List<Category> all) {
-		Map<Long, CategoryDto> allDtoMap = new HashMap<>();
-		List<CategoryDto> rootDtos = new ArrayList<>();
+	public List<ShowCategoriesResponse> mapToDto(List<Category> all) {
+		Map<Long, ShowCategoriesResponse> allDtoMap = new HashMap<>();
+		List<ShowCategoriesResponse> rootDtos = new ArrayList<>();
 
 		// Map every from the list to dto
 		for (Category category : all) {
-			CategoryDto dto = new CategoryDto(category.getId(), category.getName());
+			ShowCategoriesResponse dto = new ShowCategoriesResponse(category.getId(), category.getName());
 			allDtoMap.put(category.getId(), dto);
 		}
 
 		// Build hierarchical structure
 		for (Category category : all) {
-			CategoryDto dto = allDtoMap.get(category.getId());
+			ShowCategoriesResponse dto = allDtoMap.get(category.getId());
 			Long parentCategoryId = category.getParentCategoryId();
 
 			if (parentCategoryId != null) {
-				CategoryDto parentDto = allDtoMap.get(parentCategoryId);
+				ShowCategoriesResponse parentDto = allDtoMap.get(parentCategoryId);
 				parentDto.addChild(dto);
 			} else {
 				rootDtos.add(dto);
@@ -108,5 +108,11 @@ public class CategoryService {
 		}
 
 		return rootDtos;
+	}
+
+	public void categoryExists(Long categoryId) {
+		if (!repository.existsById(categoryId)) {
+			throw new ValidationException("There is no category with provided id");
+		}
 	}
 }

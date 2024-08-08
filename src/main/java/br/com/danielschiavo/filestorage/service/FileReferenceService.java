@@ -2,6 +2,7 @@ package br.com.danielschiavo.filestorage.service;
 
 import br.com.danielschiavo.filestorage.dto.request.UploadObjectRequest;
 import br.com.danielschiavo.filestorage.dto.response.DetailFileReferenceResponse;
+import br.com.danielschiavo.filestorage.dto.response.ShowGeneratedUrlResponse;
 import br.com.danielschiavo.filestorage.exception.FileStorageException;
 import br.com.danielschiavo.filestorage.infra.cloud.CloudStorageProvider;
 import br.com.danielschiavo.filestorage.mapper.FileReferenceMapper;

@@ -1,4 +1,4 @@
-package br.com.danielschiavo.catalog.dto.response;
+package br.com.danielschiavo.catalog.dto.response.product;
 
 import br.com.danielschiavo.delivery.dto.response.ShowDeliveryResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;

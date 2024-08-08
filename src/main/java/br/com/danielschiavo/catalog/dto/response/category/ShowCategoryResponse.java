@@ -1,4 +1,4 @@
-package br.com.danielschiavo.catalog.dto.response;
+package br.com.danielschiavo.catalog.dto.response.category;
 
 public record ShowCategoryResponse(
 			Long id,

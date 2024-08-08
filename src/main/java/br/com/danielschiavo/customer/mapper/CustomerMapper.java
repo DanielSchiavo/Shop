@@ -14,10 +14,11 @@ import java.time.LocalDate;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {LocalDate.class})
 public interface CustomerMapper {
-	
+
+    @Mapping(target = "profilePicture.fileName", source = "customer.profilePicture")
 	ShowCustomerHomePageResponse toHomePage(Customer customer);
 
-    @Mapping(source = "customer.name", target = "name")
+    @Mapping(target = "profilePicture.fileName", source = "customer.profilePicture")
     DetailCustomerResponse toDetailCustomer(Customer customer);
     
     @Mapping(target = "accountCreationDate", expression = "java(LocalDate.now())")
@@ -26,11 +27,10 @@ public interface CustomerMapper {
 
     Customer toEntity(UpdateCustomerRequest request);
 
-    Customer toEntity(DetailCustomerResponse response);
-    
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "authorities", ignore = true)
     void updateCustomer(UpdateCustomerRequest request, @MappingTarget Customer customer);
 
+    @Mapping(target = "profilePicture.fileName", source = "customer.profilePicture")
     ShowCustomersResponse toShowCustomers(Customer customer);
 }

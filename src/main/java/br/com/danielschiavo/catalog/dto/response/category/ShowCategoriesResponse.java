@@ -1,5 +1,6 @@
-package br.com.danielschiavo.catalog.dto.response;
+package br.com.danielschiavo.catalog.dto.response.category;
 
+import br.com.danielschiavo.shared.DetailFileResponse;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,13 +13,15 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = {"id"})
 @ToString(exclude = {"children"})
-public class CategoryDto {
+public class ShowCategoriesResponse {
 
     private Long id;
     private String name;
-    private List<CategoryDto> children;
+    private String description;
+    private DetailFileResponse image;
+    private List<ShowCategoriesResponse> children;
 
-    public CategoryDto(Long id, String name) {
+    public ShowCategoriesResponse(Long id, String name) {
         this.id = id;
         this.name = name;
         this.children = new ArrayList<>();
@@ -26,7 +29,7 @@ public class CategoryDto {
 
     // Getters and setters (omitted for brevity)
 
-    public void addChild(CategoryDto child) {
+    public void addChild(ShowCategoriesResponse child) {
         children.add(child);
     }
 }

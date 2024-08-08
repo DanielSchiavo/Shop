@@ -2,8 +2,8 @@ package br.com.danielschiavo.catalog.service.product.validators;
 
 import java.util.List;
 
-import br.com.danielschiavo.catalog.dto.request.AddProductFileRequest;
-import br.com.danielschiavo.catalog.dto.request.RegisterProductRequest;
+import br.com.danielschiavo.catalog.model.entity.Product;
+import br.com.danielschiavo.catalog.model.valueobject.ProductFile;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.filestorage.service.FileReferenceService;
 import br.com.danielschiavo.shared.exception.ValidationException;
@@ -17,10 +17,9 @@ public class ValidateIfImagesExist implements ValidatorRegisterProduct {
 	private FileReferenceService fileService;
 	
 	@Override
-	public void validate(RegisterProductRequest request) {
-		List<String> filesReferencesId = request.files().stream().map(AddProductFileRequest::fileReferenceId).toList();
+	public void validate(Product product) {
+		List<String> filesReferencesId = product.getProductFiles().stream().map(ProductFile::getFileName).toList();
 
-		System.out.println(" TESTE " + filesReferencesId);
 		filesReferencesId.forEach(fileReference -> {
 			if (!fileService.fileExists(ProductService.awsS3Directory, fileReference))
 				throw new ValidationException("Unable to register the product because the file: " + fileReference + " was not uploaded");

@@ -60,10 +60,8 @@ public class InitializationDevEnv implements CommandLineRunner {
 	private FileReferenceRepository fileRepository;
 	
 	private final Product.ProductBuilder productBuilder = Product.builder();
-
 	private final Category.CategoryBuilder categoryBuilder = Category.builder();
 
-	
 	private final Address.AddressBuilder addressBuilder = Address.builder();
 	private final Card.CardBuilder cardBuilder = Card.builder();
 	private final Customer.CustomerBuilder customerBuilder = Customer.builder();
@@ -162,7 +160,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 						.email("daniel.schiavo35@gmail.com")
 						.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
 						.cellphoneNumber("27996121255")
-						.profilePicture("profiles/Default.jpeg")
+						.profilePicture("Default.jpeg")
 						.build();
 		
 		Role role = roleBuilder.id(null)
@@ -201,7 +199,7 @@ public class InitializationDevEnv implements CommandLineRunner {
 										.email("silvana.dasilva@gmail.com")
 										.password("$2a$12$g/401MRFl.y7b4x5jOPjeu5d31oI9a.uI9WL1pWXR.0ocFj9J/DNu")
 										.cellphoneNumber("27999833653")
-										.profilePicture("profiles/Default.jpeg").build();
+										.profilePicture("Default.jpeg").build();
 		
 		Address address2 = addressBuilder.id(null)
 											  .postalCode("29142298")

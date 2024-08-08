@@ -4,10 +4,14 @@ package br.com.danielschiavo.customer.controller.user;
 import br.com.danielschiavo.customer.dto.request.customer.UpdateCustomerRequest;
 import br.com.danielschiavo.customer.dto.request.customer.RegisterCustomerRequest;
 import br.com.danielschiavo.customer.dto.response.customer.DetailCustomerResponse;
+import br.com.danielschiavo.customer.dto.response.customer.ShowCustomerHomePageResponse;
 import br.com.danielschiavo.customer.service.customer.CustomerService;
 import br.com.danielschiavo.filestorage.service.FileReferenceService;
+import br.com.danielschiavo.shared.DetailFileResponse;
+import br.com.danielschiavo.shared.FileMapper;
 import br.com.danielschiavo.shared.Response;
 import br.com.danielschiavo.shared.infra.security.SecurityService;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -34,27 +41,45 @@ public class CustomerUserController {
 	@Autowired
 	private FileReferenceService fileService;
 
+	@Autowired
+	private FileMapper fileMapper;
+
 	@GetMapping("/home-page")
 	@Operation(summary = "Show Customer data for home page")
 	public ResponseEntity<?> getCustomerHomePage() {
 		Long customerId = securityService.getCustomerId();
-		DetailCustomerResponse response = customerService.getCustomerForHomePageById(customerId);
-		
-		return ResponseEntity.ok(Response.success("Success in recovering customer data for home page", response));
+		ShowCustomerHomePageResponse customer = customerService.getCustomerForHomePageById(customerId);
+
+		DetailFileResponse detailFileResponse = customer.profilePicture();
+		String fileName = customer.profilePicture().getFileName();
+
+		fileMapper.mapFilesToDto(List.of(detailFileResponse), CustomerService.awsS3Directory, Set.of(fileName));
+
+		return ResponseEntity.ok(Response.success("Success in recovering customer data for home page", customer));
 	}
 
 	@GetMapping
 	@Operation(summary = "Show all Customer data")
 	public ResponseEntity<?> getCustomer() {
 		Long customerId = securityService.getCustomerId();
-		DetailCustomerResponse response = customerService.getCustomerById(customerId);
+		DetailCustomerResponse customer = customerService.getCustomerById(customerId);
 
-		return ResponseEntity.ok(Response.success("Success in recovering customer data", response));
+		DetailFileResponse detailFileResponse = customer.profilePicture();
+		String fileName = customer.profilePicture().getFileName();
+
+		fileMapper.mapFilesToDto(List.of(detailFileResponse), CustomerService.awsS3Directory, Set.of(fileName));
+
+		return ResponseEntity.ok(Response.success("Success in recovering customer data", customer));
 	}
 	
 	@PostMapping("/register")
 	@Operation(summary = "Register customer")
 	public ResponseEntity<?> registerCustomer(@RequestBody @Valid RegisterCustomerRequest request) {
+		boolean existsProfilePicture = fileService.fileExists(CustomerService.awsS3Directory, request.profilePicture());
+		if (!existsProfilePicture) {
+			throw new ValidationException("Could not found profile picture");
+		}
+
 		DetailCustomerResponse response = customerService.registerCustomer(request);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(Response.success("Customer registred successfully!", null));
@@ -70,12 +95,17 @@ public class CustomerUserController {
 		return ResponseEntity.ok(Response.success("Customer updated successfully!", null));
 	}
 	
-	@PatchMapping("/profile-picture/{profilePictureName}")
+	@PatchMapping("/profile-picture/{newProfilePictureName}")
 	@Operation(summary = "Customer update your profile picture")
-	public ResponseEntity<?> updateProfilePicture(@PathVariable String profilePictureName) {
+	public ResponseEntity<?> updateProfilePicture(@PathVariable String newProfilePictureName) {
 		Long customerId = securityService.getCustomerId();
 
-		String oldProfilePicture = customerService.updateProfilePictureById(profilePictureName, customerId);
+		boolean existsProfilePicture = fileService.fileExists(CustomerService.awsS3Directory, newProfilePictureName);
+		if (!existsProfilePicture) {
+			throw new ValidationException("Could not found profile picture");
+		}
+
+		String oldProfilePicture = customerService.updateProfilePictureById(newProfilePictureName, customerId);
 
 		fileService.delete(CustomerService.awsS3Directory, oldProfilePicture);
 

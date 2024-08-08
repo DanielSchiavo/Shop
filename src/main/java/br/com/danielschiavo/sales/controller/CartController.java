@@ -1,6 +1,6 @@
 package br.com.danielschiavo.sales.controller;
 
-import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
+import br.com.danielschiavo.catalog.dto.response.product.ShowProductsResponse;
 import br.com.danielschiavo.catalog.service.product.ProductService;
 import br.com.danielschiavo.sales.dto.response.ShowCartItemResponse;
 import br.com.danielschiavo.sales.dto.response.ShowCartResponse;

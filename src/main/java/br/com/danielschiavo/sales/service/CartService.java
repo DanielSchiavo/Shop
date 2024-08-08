@@ -5,8 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import br.com.danielschiavo.catalog.dto.response.ShowProductsResponse;
-import br.com.danielschiavo.catalog.service.product.ProductService;
+import br.com.danielschiavo.catalog.dto.response.product.ShowProductsResponse;
 import br.com.danielschiavo.sales.dto.request.AddCartItemRequest;
 import br.com.danielschiavo.sales.dto.response.ShowCartItemResponse;
 import br.com.danielschiavo.sales.dto.response.ShowCartResponse;
